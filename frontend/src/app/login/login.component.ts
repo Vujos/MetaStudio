@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-
 import { NgForm } from '@angular/forms';
+
+import { AuthService } from '../auth/auth.service';
 import { FormErrorService } from '../shared/formError.service';
 
 @Component({
@@ -10,9 +11,16 @@ import { FormErrorService } from '../shared/formError.service';
 })
 export class LoginComponent implements OnInit {
 
-  constructor() { }
+  constructor(private authService : AuthService, public readonly formError: FormErrorService) { }
 
   ngOnInit() {
+  }
+
+  onLogin(form: NgForm){
+    if (form.invalid) {
+      return;
+    }
+    this.authService.login(form.value.username, form.value.password);
   }
 
 }

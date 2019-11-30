@@ -42,7 +42,7 @@ public class UserController {
         return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
     }
 
-    @RequestMapping(value="", method=RequestMethod.POST)
+    @RequestMapping(value="/register", method=RequestMethod.POST)
     public ResponseEntity<User> addUser(@RequestBody User Users) {
         userService.addUser(Users);
         return new ResponseEntity<User>(Users, HttpStatus.CREATED);
