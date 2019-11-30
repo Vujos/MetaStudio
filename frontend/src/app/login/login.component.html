@@ -1,0 +1,23 @@
+<div class="login-div">
+  <mat-card class="login-card">
+    <mat-tab-group>
+      <mat-tab label="Login">
+        <form (submit)="onLogin(loginForm)" #loginForm="ngForm" class="login-content">
+          <mat-form-field>
+            <span matPrefix><mat-icon aria-hidden="false" aria-label="Example home icon">person</mat-icon></span>
+            <input matInput name="username" ngModel type="text" placeholder="Username" #usernameInput="ngModel" required>
+            <!--<mat-error>{{formError.mapErrors(usernameInput, 'Username')}}</mat-error>-->
+          </mat-form-field><br>
+          <mat-form-field class="password-form">
+            <span matPrefix><mat-icon aria-hidden="false" aria-label="Example home icon">lock</mat-icon></span>
+            <input type="password" name="password" ngModel matInput placeholder="Password" #passwordInput="ngModel"
+              required>
+            <!--<mat-error>{{formError.mapErrors(passwordInput, 'Password')}}</mat-error>-->
+          </mat-form-field><br>
+          <button class="login-button" mat-raised-button color="primary" type="submit">LOGIN <mat-icon aria-hidden="false" aria-label="Example home icon">input</mat-icon></button>
+        </form>
+      </mat-tab>
+      <mat-tab label="Register"> Content 2 </mat-tab>
+    </mat-tab-group>
+  </mat-card>
+</div>
