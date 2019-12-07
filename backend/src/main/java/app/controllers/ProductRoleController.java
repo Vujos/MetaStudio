@@ -43,15 +43,15 @@ public class ProductRoleController {
     }
 
     @RequestMapping(value="", method=RequestMethod.POST)
-    public ResponseEntity<ProductRole> addProductRole(@RequestBody ProductRole ProductRoles) {
-        productRoleService.addProductRole(ProductRoles);
-        return new ResponseEntity<ProductRole>(ProductRoles, HttpStatus.CREATED);
+    public ResponseEntity<ProductRole> addProductRole(@RequestBody ProductRole productRoles) {
+        productRoleService.addProductRole(productRoles);
+        return new ResponseEntity<ProductRole>(productRoles, HttpStatus.CREATED);
     }
 
     @RequestMapping(value="/{id}", method=RequestMethod.PUT)
-    public ResponseEntity<ProductRole> updateProductRole(@PathVariable Long id, @RequestBody ProductRole ProductRoles) {
-        productRoleService.updateProductRole(id, ProductRoles);
-        return new ResponseEntity<ProductRole>(ProductRoles, HttpStatus.CREATED);
+    public ResponseEntity<ProductRole> updateProductRole(@PathVariable Long id, @RequestBody ProductRole productRoles) {
+        productRoleService.updateProductRole(id, productRoles);
+        return new ResponseEntity<ProductRole>(productRoles, HttpStatus.CREATED);
     }
 
     @RequestMapping(value="/{id}", method=RequestMethod.DELETE)

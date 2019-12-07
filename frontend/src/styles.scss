@@ -2,3 +2,41 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+@import "~golden-layout/src/css/goldenlayout-base.css";
+@import "~golden-layout/src/css/goldenlayout-light-theme.css";
+
+body, html {
+  width: 100vw;
+  height: 100vh;
+  padding: 0;
+  margin: 0;
+}
+
+.lm_content {
+  overflow: scroll;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  visibility: hidden;
+  background: #888; 
+}
+
+::-webkit-scrollbar-thumb {
+  visibility: hidden;
+  background: #888; 
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(73, 70, 70); 
+}
+
+.lm_content:hover {
+  &::-webkit-scrollbar-thumb {
+    visibility: visible;
+  }
+}

@@ -20,7 +20,7 @@ public class ProductRole {
 	private Set<Product> products;
 
 	@ManyToOne(cascade=CascadeType.ALL)
-	private ProjectTeam ProjectTeam;
+	private ProjectTeam projectTeam;
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -28,8 +28,8 @@ public class ProductRole {
 
 	public ProductRole() {}
 
-	public ProductRole(ProjectTeam ProjectTeam, Long id){
-		this.ProjectTeam = ProjectTeam;
+	public ProductRole(ProjectTeam projectTeam, Long id){
+		this.projectTeam = projectTeam;
 		this.id = id;
 	}
 
