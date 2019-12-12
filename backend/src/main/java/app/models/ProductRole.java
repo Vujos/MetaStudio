@@ -42,11 +42,11 @@ public class ProductRole {
 	}
 	
 	public ProjectTeam getProjectTeam(){
-		return ProjectTeam;
+		return projectTeam;
 	}
 
-	public void setProjectTeam(ProjectTeam ProjectTeam){
-		this.ProjectTeam = ProjectTeam;
+	public void setProjectTeam(ProjectTeam projectTeam){
+		this.projectTeam = projectTeam;
 	}
 	
 	public Long getId(){

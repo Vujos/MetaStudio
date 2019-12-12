@@ -51,3 +51,9 @@
 
 /backend/target
 /backend/src/main/resources/application.properties
+/backend/.classpath
+/backend/.settings
+/backend/.vscode
+
+
+/.vscode
