@@ -13,17 +13,15 @@ body, html {
   margin: 0;
 }
 
-.lm_content {
-  overflow: scroll;
-}
 
+
+//Custom scrollbar
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 12px;
 }
 
 ::-webkit-scrollbar-track {
-  visibility: hidden;
-  background: #888; 
+  background: transparent; 
 }
 
 ::-webkit-scrollbar-thumb {
@@ -39,4 +37,24 @@ body, html {
   &::-webkit-scrollbar-thumb {
     visibility: visible;
   }
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+
+// Drag handle was to big
+.lm_splitter.lm_vertical .lm_drag_handle {
+  height: 5px;
+  top: 0; 
+}
+.lm_splitter.lm_horizontal .lm_drag_handle {
+  width: 5px;
+  left: 0;
+}
+
+//Scroll auto for golden layout
+.lm_content {
+  overflow: auto;
 }
