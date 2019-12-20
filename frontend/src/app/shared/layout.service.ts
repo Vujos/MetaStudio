@@ -41,6 +41,17 @@ export class LayoutService {
                             tooltip: 'Second one tooltip',
                             componentName: 'MainLayout',
                             componentState: {
+                                component: 'LifeCyclesComponent'
+                            }
+                        }]
+                    }, {
+                        type: 'column',
+                        content: [{
+                            type: 'component',
+                            title: 'Third one title',
+                            tooltip: 'Third one tooltip',
+                            componentName: 'MainLayout',
+                            componentState: {
                                 component: 'LoginComponent'
                             }
                         }]
