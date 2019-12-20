@@ -1,0 +1,29 @@
+{
+    "content": [{
+        "type": "row",
+        "content": [{
+            "type": "component",
+            "title": "Primer2",
+            "tooltip": "pr2",
+            "componentName": "MainLayout",
+            "componentState": {
+                "message": "Top Left",
+                "text": "aaaaaaaaaaa",
+                "component": "LoginComponent"
+            }
+        }, {
+            "type": "column",
+            "content": [{
+                "type": "component",
+                "title": "Primer1",
+                "tooltip": "big and hairy",
+                "componentName": "MainLayout",
+                "componentState": {
+                    "message": "Top Right",
+                    "text": "aaaaaaaaaaa",
+                    "component": "LoginComponent"
+                }
+            }]
+        }]
+    }]
+}

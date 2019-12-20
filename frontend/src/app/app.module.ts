@@ -11,13 +11,15 @@ import { SharedModule } from './shared/shared.module';
 import { MaterialModule } from './shared/material.module';
 
 import { LoginComponent } from './login/login.component';
+import { PluginManagerComponent } from './plugin manager/plugin-manager.component';
 
 window['$'] = $;
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent
+    LoginComponent,
+    PluginManagerComponent
   ],
   imports: [
     BrowserModule,
@@ -27,7 +29,8 @@ window['$'] = $;
     MaterialModule
   ],
   entryComponents: [
-    LoginComponent
+    LoginComponent,
+    PluginManagerComponent
   ],
   providers: [],
   bootstrap: [AppComponent]
