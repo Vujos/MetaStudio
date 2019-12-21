@@ -115,8 +115,8 @@
             </td>
         </tr>  
         <tr>
-            <td class="context-view" *ngIf="contextViewOn">
-                <app-context-view [content]=content></app-context-view>
+            <td class="context-view" *ngIf="true" [ngStyle]="{'display': contextViewOn ? '' : 'none'}">
+                <app-context-view #contextView></app-context-view>
             </td>
             <td>
                 <app-life-cycles></app-life-cycles>

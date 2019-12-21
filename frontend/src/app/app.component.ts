@@ -1,6 +1,7 @@
-import { Component, ViewContainerRef, Inject } from '@angular/core';
+import { Component, ViewContainerRef, Inject, ViewChild, ViewChildren } from '@angular/core';
 import { LayoutService } from './shared/layout.service';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
+import { ContextViewComponent } from './context-view/context-view.component';
 
 @Component({
   selector: 'app-root',
@@ -8,9 +9,11 @@ import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+  @ViewChild("contextView", {static: false}) contextViewComponent:ContextViewComponent;
   contextViewOn = true;
-  content = ["CONTEXT VIEW"];
+  TREE_DATA: TreeNode[] = [];
   title = 'popout-ex';
+
   constructor(
     private viewContainer: ViewContainerRef,
     private layoutService: LayoutService,
@@ -54,17 +57,64 @@ export class AppComponent {
 
   projects(){
     this.contextViewOn = true;
-    this.content=["Project 1", "Project 2", "Project 3"];
+    this.TREE_DATA=[
+      {
+        name: 'Project 1',
+        children: [
+          {name: 'Subproject 1'},
+          {name: 'Subproject 2'},
+          {name: 'Subproject 3'},
+        ]
+      }, {
+        name: 'Project 2',
+        children: [
+          {
+            name: 'Subproject 1',
+            children: [
+              {name: 'Subsubproject 1'},
+              {name: 'Subsubproject 2'},
+            ]
+          }, {
+            name: 'Subproject 2',
+            children: [
+              {name: 'Subsubproject 1'},
+              {name: 'Subsubproject 2'},
+            ]
+          },
+        ]
+      },
+    ];
+    this.contextViewComponent.update(this.TREE_DATA);
   }
 
   teams(){
     this.contextViewOn = true;
-    this.content=["Team 1", "Team 2"];
+    this.TREE_DATA=[
+      {
+        name: 'Team 1',
+        children: [
+          {name: 'Member 1'},
+          {name: 'Member 2'},
+          {name: 'Member 3'},
+        ]
+      }, {
+        name: 'Team2',
+        children: [
+          {name: 'Member 1'},
+        ]
+      },
+    ];
+    this.contextViewComponent.update(this.TREE_DATA);
   }
 
   tools(){
     this.contextViewOn = true;
-    this.content=["Tool 1", "Tool 2", "Tool 3", "Tool 4", "Tool 5", "Tool 6"];
+    this.TREE_DATA=[
+      {name: 'Tool 1'},
+      {name: 'Tool 2'},
+      {name: 'Tool 3'},
+    ];
+    this.contextViewComponent.update(this.TREE_DATA);
   }
 
   contextView(){
