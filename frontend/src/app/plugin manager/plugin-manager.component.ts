@@ -7,7 +7,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { PluginConfig } from './plugin-config.model';
 import { SelectionModel } from '@angular/cdk/collections';
 
-const fs = (<any>window).require("fs");
+//const fs = (<any>window).require("fs");
 
 @Component({
   selector: 'app-plugin-manager',
@@ -39,7 +39,7 @@ export class PluginManagerComponent implements OnInit {
   }
 
   getPluginList(): Promise<PluginConfig[]> {
-    return new Promise(function (resolve, reject) {
+    /*return new Promise(function (resolve, reject) {
       fs.readFile("\plugin_conf.json", "utf8", function (err, data) {
         if (err)
           reject(err);
@@ -47,7 +47,8 @@ export class PluginManagerComponent implements OnInit {
           resolve(<Array<PluginConfig>>JSON.parse(data));
         }
       });
-    });
+    });*/
+    return;
   }
 
   applyFilter(filterValue: string) {

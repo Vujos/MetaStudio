@@ -1,7 +1,7 @@
 import { Injectable, ViewContainerRef, ComponentFactoryResolver, Type, ChangeDetectorRef } from '@angular/core';
 
 import * as GoldenLayout from 'golden-layout';
-const fs = (<any>window).require("fs");
+//const fs = (<any>window).require("fs");
 
 @Injectable({
     providedIn: 'root'
@@ -56,8 +56,8 @@ export class LayoutService {
     }
 
     setDefaultLayout(){
-        const data = fs.readFileSync("\layout_conf.json", "utf8");
-        this.layout = new GoldenLayout(JSON.parse(data), document.getElementById('layout'));
+        //const data = fs.readFileSync("\layout_conf.json", "utf8");
+        //this.layout = new GoldenLayout(JSON.parse(data), document.getElementById('layout'));
     }
 
     addComponent(config) {
