@@ -1,127 +1,130 @@
-    <div class="main">
-        <mat-toolbar class="vertical-menu">  
-            <mat-toolbar-row>
-                <button mat-icon-button>
-                    <mat-icon>code</mat-icon>
-                </button>
-            </mat-toolbar-row>
+<table class="main">
+    <tbody>
+        <tr class="menu">
+            <td rowspan="2" class="vertical-menu correction">
+                <mat-toolbar class="vertical-menu">  
+                    <mat-toolbar-row>
+                        <button mat-icon-button>
+                            <mat-icon>code</mat-icon>
+                        </button>
+                    </mat-toolbar-row>
 
-            <mat-toolbar-row>
-                <button mat-icon-button (click)="contextView()">
-                    <mat-icon *ngIf="contextViewOn" class="vertical-menu-item">arrow_back_ios</mat-icon>
-                    <mat-icon *ngIf="!contextViewOn" class="vertical-menu-item">arrow_forward_ios</mat-icon>
-                </button>
-            </mat-toolbar-row>
+                    <mat-toolbar-row>
+                        <button mat-icon-button (click)="contextView()">
+                            <mat-icon *ngIf="contextViewOn" class="vertical-menu-item">arrow_back_ios</mat-icon>
+                            <mat-icon *ngIf="!contextViewOn" class="vertical-menu-item">arrow_forward_ios</mat-icon>
+                        </button>
+                    </mat-toolbar-row>
 
-            <mat-toolbar-row>
-                <button mat-icon-button matTooltip="Projects" (click)="projects()">
-                    <mat-icon class="vertical-menu-item">folder</mat-icon>
-                </button>
-            </mat-toolbar-row>
-        
-            <mat-toolbar-row>
-                <button mat-icon-button matTooltip="Teams" (click)="teams()">
-                    <mat-icon class="vertical-menu-item">people</mat-icon>
-                </button>
-            </mat-toolbar-row>
+                    <mat-toolbar-row>
+                        <button mat-icon-button matTooltip="Projects" (click)="projects()">
+                            <mat-icon class="vertical-menu-item">folder</mat-icon>
+                        </button>
+                    </mat-toolbar-row>
+                
+                    <mat-toolbar-row>
+                        <button mat-icon-button matTooltip="Teams" (click)="teams()">
+                            <mat-icon class="vertical-menu-item">people</mat-icon>
+                        </button>
+                    </mat-toolbar-row>
 
-            <mat-toolbar-row>
-                <button mat-icon-button matTooltip="Tools" (click)="tools()">
-                    <mat-icon class="vertical-menu-item">build</mat-icon>
-                </button>
-            </mat-toolbar-row>
-        </mat-toolbar>
+                    <mat-toolbar-row>
+                        <button mat-icon-button matTooltip="Tools" (click)="tools()">
+                            <mat-icon class="vertical-menu-item">build</mat-icon>
+                        </button>
+                    </mat-toolbar-row>
+                </mat-toolbar>
+            </td>
+            <td colspan="2">
+                <div>
+                    <button class="menuItem" mat-button [matMenuTriggerFor]="file">File</button>
 
-        <div class="menu">
-            <button class="menuItem" mat-button [matMenuTriggerFor]="file">File</button>
+                    <mat-menu #file="matMenu">
+                    <button mat-menu-item>New Project</button>
+                    <mat-divider></mat-divider>
+                    <button mat-menu-item>Save</button>
+                    <button mat-menu-item>Save As</button>
+                    <mat-divider></mat-divider>
+                    <button mat-menu-item>Exit</button>
+                    </mat-menu>
 
-            <mat-menu #file="matMenu">
-            <button mat-menu-item>New Project</button>
-            <mat-divider></mat-divider>
-            <button mat-menu-item>Save</button>
-            <button mat-menu-item>Save As</button>
-            <mat-divider></mat-divider>
-            <button mat-menu-item>Exit</button>
-            </mat-menu>
+                    <button class="menuItem" mat-button [matMenuTriggerFor]="edit">Edit</button>
 
-            <button class="menuItem" mat-button [matMenuTriggerFor]="edit">Edit</button>
+                    <mat-menu #edit="matMenu">
+                    <button mat-menu-item>Undo</button>
+                    <button mat-menu-item>Redo</button>
+                    <mat-divider></mat-divider>
+                    <button mat-menu-item>Cut</button>
+                    <button mat-menu-item>Copy</button>
+                    <button mat-menu-item>Paste</button>
+                    <mat-divider></mat-divider>
+                    <button mat-menu-item>Find</button>
+                    <button mat-menu-item>Replace</button>
+                    </mat-menu>
 
-            <mat-menu #edit="matMenu">
-            <button mat-menu-item>Undo</button>
-            <button mat-menu-item>Redo</button>
-            <mat-divider></mat-divider>
-            <button mat-menu-item>Cut</button>
-            <button mat-menu-item>Copy</button>
-            <button mat-menu-item>Paste</button>
-            <mat-divider></mat-divider>
-            <button mat-menu-item>Find</button>
-            <button mat-menu-item>Replace</button>
-            </mat-menu>
+                    <button class="menuItem" mat-button [matMenuTriggerFor]="view">View</button>
 
-            <button class="menuItem" mat-button [matMenuTriggerFor]="view">View</button>
+                    <mat-menu #view="matMenu">
+                    <button mat-menu-item>Zoom</button>
+                    <button mat-menu-item>Zoom In</button>
+                    <button mat-menu-item>Zoom Out</button>
+                    <mat-divider></mat-divider>
+                    <button mat-menu-item [matMenuTriggerFor]="fitToWindow">Fit to Window</button>
+                    <mat-menu #fitToWindow="matMenu">
+                    <button mat-menu-item>Window</button>
+                    <button mat-menu-item>Window Width</button>
+                    <button mat-menu-item>Window Height</button>
+                    </mat-menu>
+                    </mat-menu>
 
-            <mat-menu #view="matMenu">
-            <button mat-menu-item>Zoom</button>
-            <button mat-menu-item>Zoom In</button>
-            <button mat-menu-item>Zoom Out</button>
-            <mat-divider></mat-divider>
-            <button mat-menu-item [matMenuTriggerFor]="fitToWindow">Fit to Window</button>
-            <mat-menu #fitToWindow="matMenu">
-            <button mat-menu-item>Window</button>
-            <button mat-menu-item>Window Width</button>
-            <button mat-menu-item>Window Height</button>
-            </mat-menu>
-            </mat-menu>
+                    <button class="menuItem" mat-button [matMenuTriggerFor]="plugins">Plugins</button>
 
-            <button class="menuItem" mat-button [matMenuTriggerFor]="plugins">Plugins</button>
+                    <mat-menu #plugins="matMenu">
+                    <button mat-menu-item>Install/Uninstall Plugins</button>
+                    <mat-divider></mat-divider>
+                    <button mat-menu-item>Let's Develop Plugins</button>
+                    </mat-menu>
 
-            <mat-menu #plugins="matMenu">
-            <button mat-menu-item>Install/Uninstall Plugins</button>
-            <mat-divider></mat-divider>
-            <button mat-menu-item>Let's Develop Plugins</button>
-            </mat-menu>
+                    <button class="menuItem" mat-button [matMenuTriggerFor]="preferences">Preferences</button>
 
-            <button class="menuItem" mat-button [matMenuTriggerFor]="preferences">Preferences</button>
+                    <mat-menu #preferences="matMenu">
+                        <button mat-menu-item>Settings</button>
+                        <mat-divider></mat-divider>
+                        <button mat-menu-item>Theme</button>
+                    </mat-menu>
 
-            <mat-menu #preferences="matMenu">
-                <button mat-menu-item>Settings</button>
-                <mat-divider></mat-divider>
-                <button mat-menu-item>Theme</button>
-            </mat-menu>
+                    <button class="menuItem" mat-button [matMenuTriggerFor]="help">Help</button>
 
-            <button class="menuItem" mat-button [matMenuTriggerFor]="help">Help</button>
+                    <mat-menu #help="matMenu">
+                        <button mat-menu-item>Welcome</button>
+                        <button mat-menu-item>User Guide</button>
+                        <button mat-menu-item>Documentation</button>
+                        <mat-divider></mat-divider>
+                        <button mat-menu-item>License</button>
+                        <button mat-menu-item>Privacy Statement</button>
+                        <mat-divider></mat-divider>
+                        <button mat-menu-item>Check for Updates</button>
+                        <mat-divider></mat-divider>
+                        <button mat-menu-item>About</button>
+                    </mat-menu>
 
-            <mat-menu #help="matMenu">
-                <button mat-menu-item>Welcome</button>
-                <button mat-menu-item>User Guide</button>
-                <button mat-menu-item>Documentation</button>
-                <mat-divider></mat-divider>
-                <button mat-menu-item>License</button>
-                <button mat-menu-item>Privacy Statement</button>
-                <mat-divider></mat-divider>
-                <button mat-menu-item>Check for Updates</button>
-                <mat-divider></mat-divider>
-                <button mat-menu-item>About</button>
-            </mat-menu>
-
-            <button class="menuItem login" mat-icon-button matTooltip="Login" (click)="openLoginDialog()">
-                <mat-icon>person</mat-icon>
-            </button>
-        </div>
-
-        <table>
-            <tbody>
-                <tr>
-                    <td class="context-view" *ngIf="contextViewOn">
-                        <app-context-view [content]=content></app-context-view>
-                    </td>
-                    <td>
-                        <app-life-cycles></app-life-cycles>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+                    <button class="menuItem login" mat-icon-button matTooltip="Login" (click)="openLoginDialog()">
+                        <mat-icon>person</mat-icon>
+                    </button>
+                </div>
+            </td>
+        </tr>  
+        <tr>
+            <td class="context-view" *ngIf="contextViewOn">
+                <app-context-view [content]=content></app-context-view>
+            </td>
+            <td>
+                <app-life-cycles></app-life-cycles>
+            </td>
+        </tr>
+    </tbody>
+</table>
+   
 <!--<app-life-cycles></app-life-cycles>
 <div id="layout">
     <button (click)="dodaj()">Dodaj</button>
