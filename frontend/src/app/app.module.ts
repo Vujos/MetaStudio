@@ -5,13 +5,14 @@ import { NgModule } from '@angular/core';
 import * as $ from 'jquery';
 
 import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
+import { AppComponent, DialogDataExampleDialog } from './app.component';
 
 import { SharedModule } from './shared/shared.module';
 import { MaterialModule } from './shared/material.module';
 
 import { LoginComponent } from './login/login.component';
 import { LifeCyclesComponent } from './life-cycles/life-cycles.component';
+import { ContextViewComponent } from './context-view/context-view.component';
 
 window['$'] = $;
 
@@ -19,7 +20,9 @@ window['$'] = $;
   declarations: [
     AppComponent,
     LoginComponent,
-    LifeCyclesComponent
+    LifeCyclesComponent,
+    ContextViewComponent,
+    DialogDataExampleDialog
   ],
   imports: [
     BrowserModule,
@@ -30,7 +33,8 @@ window['$'] = $;
   ],
   entryComponents: [
     LoginComponent,
-    LifeCyclesComponent
+    LifeCyclesComponent,
+    DialogDataExampleDialog
   ],
   providers: [],
   bootstrap: [AppComponent]

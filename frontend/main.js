@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, Menu } = require('electron')
 const path = require('path')
 
 require('electron-reload')(__dirname, {
@@ -18,6 +18,8 @@ function createWindow () {
       nodeIntegration: true
     }
   })
+
+  Menu.setApplicationMenu(null)
 
   // and load the index.html of the app.
   win.loadURL('http://localhost:4200')

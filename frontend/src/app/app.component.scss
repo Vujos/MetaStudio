@@ -1,0 +1,42 @@
+.main{
+    background-color: #1a1a1a;
+    display: inline-block;
+}
+
+.mat-toolbar-multiple-rows{
+    width: fit-content;
+}
+
+.menu{
+    background-color: #333333;
+    color: #cccccc;
+    height: fit-content;
+    width: 100vw;
+}
+
+.menuItem{
+    height: fit-content;
+}
+
+.vertical-menu{
+    background-color: #333333;
+    height: 100vh;
+    float: left;
+}
+
+table tbody tr td {
+    vertical-align: unset;
+}
+
+.context-view {
+    background-color: #262626;
+    color: #cccccc;
+}
+
+.login{
+    float: right;
+}
+
+.vertical-menu-item{
+    color: #cccccc;
+}
