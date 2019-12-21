@@ -1,4 +1,4 @@
-import { Component, ViewContainerRef, OnInit, OnDestroy, ComponentFactoryResolver, Inject, ViewChild } from '@angular/core';
+import { Component, ViewContainerRef, Inject } from '@angular/core';
 import { LayoutService } from './shared/layout.service';
 import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
 
@@ -18,23 +18,38 @@ export class AppComponent {
   ) {}
 
   ngOnInit() {
-    //this.layoutService.printPortalRef = this.viewContainer;
+    // this.setMenu();
+    //this.layoutService.ViewContainerRefSetter = this.viewContainer;
     //this.layoutService.setLayout();
   }
 
-  ngOnDestroy() {
-
-  }
+  // setMenu () {
+  //   let template = [{
+  //         label: 'Menu',
+  //         submenu: [
+  //             {label:'Adjust Notification Value'},
+  //             {label:'CoinMarketCap'},
+  //             {label:'Exit',
+  //               click() { 
+  //                 app.quit() 
+  //               } 
+  //             }
+  //         ]
+  //     }
+  //   ];
+  //   var menu = Menu.buildFromTemplate(template)
+  //   Menu.setApplicationMenu(menu);
+  // }
 
   dodaj(){
     let conf = {
       type: 'component',
-      title: 'Title example',
-      tooltip: 'Tooltip example',
+      title: 'Plugin settings',
+      tooltip: 'Plugins',
       componentName: 'MainLayout',
-      componentState: { component: 'LoginComponent' }
+      componentState: { component: 'PluginManagerComponent' }
     }
-    this.layoutService.addConponent(conf);
+    this.layoutService.addComponent(conf);
   }
 
   projects(){

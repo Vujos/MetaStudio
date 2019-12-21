@@ -1,0 +1,110 @@
+[
+    {
+    	"id":"pl1",
+		"name":"plugin1",
+		"author":"author1",
+	    "version":"1.0.2",
+	    "categories":"cat1",
+	    "description":"desc1",
+	    "status": "true"
+    },
+    {
+    	"id":"pl2",
+		"name":"plugin2",
+		"author":"author2",
+	    "version":"1.0.3",
+	    "categories":"cat2",
+	    "description":"desc2",
+	    "status": "true"
+    },
+    {
+    	"id":"pl3",
+		"name":"plugin3",
+		"author":"author3",
+	    "version":"1.0.3",
+	    "categories":"cat3",
+	    "description":"desc3",
+	    "status": "false"
+    },
+    {
+    	"id":"pl4",
+		"name":"plugin4",
+		"author":"author4",
+	    "version":"1.0.4",
+	    "categories":"cat4",
+	    "description":"desc4",
+	    "status": "false"
+    },
+    {
+    	"id":"pl5",
+		"name":"plugin5",
+		"author":"author5",
+	    "version":"1.2.3",
+	    "categories":"cat5",
+	    "description":"desc5",
+	    "status": "true"
+    },
+    {
+    	"id":"pl3",
+		"name":"plugin3",
+		"author":"author3",
+	    "version":"1.0.3",
+	    "categories":"cat3",
+	    "description":"desc3",
+	    "status": "false"
+    },
+    {
+    	"id":"pl3",
+		"name":"plugin3",
+		"author":"author3",
+	    "version":"1.0.3",
+	    "categories":"cat3",
+	    "description":"desc3",
+	    "status": "false"
+    },
+    {
+    	"id":"pl3",
+		"name":"plugin3",
+		"author":"author3",
+	    "version":"1.0.3",
+	    "categories":"cat3",
+	    "description":"desc3",
+	    "status": "false"
+    },
+    {
+    	"id":"pl3",
+		"name":"plugin3",
+		"author":"author3",
+	    "version":"1.0.3",
+	    "categories":"cat3",
+	    "description":"desc3",
+	    "status": "false"
+    },
+    {
+    	"id":"pl3",
+		"name":"plugin3",
+		"author":"author3",
+	    "version":"1.0.3",
+	    "categories":"cat3",
+	    "description":"desc3",
+	    "status": "false"
+    },
+    {
+    	"id":"pl3",
+		"name":"plugin3",
+		"author":"author3",
+	    "version":"1.0.3",
+	    "categories":"cat3",
+	    "description":"desc3",
+	    "status": "false"
+    },
+    {
+    	"id":"pl3",
+		"name":"plugin3",
+		"author":"author3",
+	    "version":"1.0.3",
+	    "categories":"cat3",
+	    "description":"desc3",
+	    "status": "false"
+    }
+]

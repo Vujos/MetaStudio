@@ -18,7 +18,7 @@ import app.utils.View.ShowProjectTeamProject;
 public class ProjectTeam {
 
 	@JsonView(ShowProductRole.class)
-	@OneToMany(mappedBy="ProjectTeam")
+	@OneToMany(mappedBy="projectTeam")
 	private Set<ProductRole> productRoles;
 
 	@JsonView(ShowTeamRole.class)

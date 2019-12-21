@@ -13,6 +13,7 @@ import { MaterialModule } from './shared/material.module';
 import { LoginComponent } from './login/login.component';
 import { LifeCyclesComponent } from './life-cycles/life-cycles.component';
 import { ContextViewComponent } from './context-view/context-view.component';
+import { PluginManagerComponent } from './plugin manager/plugin-manager.component';
 
 window['$'] = $;
 
@@ -22,7 +23,8 @@ window['$'] = $;
     LoginComponent,
     LifeCyclesComponent,
     ContextViewComponent,
-    DialogDataExampleDialog
+    DialogDataExampleDialog,
+    PluginManagerComponent
   ],
   imports: [
     BrowserModule,
@@ -34,7 +36,8 @@ window['$'] = $;
   entryComponents: [
     LoginComponent,
     LifeCyclesComponent,
-    DialogDataExampleDialog
+    DialogDataExampleDialog,
+    PluginManagerComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

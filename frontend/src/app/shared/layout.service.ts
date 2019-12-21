@@ -1,6 +1,7 @@
-import { Injectable, ViewContainerRef, ComponentFactoryResolver, Type } from '@angular/core';
+import { Injectable, ViewContainerRef, ComponentFactoryResolver, Type, ChangeDetectorRef } from '@angular/core';
 
 import * as GoldenLayout from 'golden-layout';
+const fs = (<any>window).require("fs");
 
 @Injectable({
     providedIn: 'root'
@@ -9,7 +10,7 @@ export class LayoutService {
     private layout: any;
     public viewContainer: ViewContainerRef;
 
-    set printPortalRef(vcr: ViewContainerRef) {
+    set ViewContainerRefSetter(vcr: ViewContainerRef) {
         this.viewContainer = vcr;
     }
 
@@ -20,45 +21,16 @@ export class LayoutService {
     setLayout() {
         const savedState = localStorage.getItem('savedState');
         if(savedState){
-            this.layout = new GoldenLayout(JSON.parse(savedState), document.getElementById('layout'));
+            try {
+                this.layout = new GoldenLayout(JSON.parse(savedState), document.getElementById('layout'));
+                // this.setDefaultLayout();
+            }
+            catch(error){
+                this.setDefaultLayout();
+            }
         }
         else{
-            let config = {
-                content: [{
-                    type: 'row',
-                    content: [{
-                        type: 'component',
-                        title: 'First one title',
-                        componentName: 'MainLayout',
-                        componentState: {
-                            component: 'LoginComponent'
-                        }
-                    }, {
-                        type: 'column',
-                        content: [{
-                            type: 'component',
-                            title: 'Second one title',
-                            tooltip: 'Second one tooltip',
-                            componentName: 'MainLayout',
-                            componentState: {
-                                component: 'LifeCyclesComponent'
-                            }
-                        }]
-                    }, {
-                        type: 'column',
-                        content: [{
-                            type: 'component',
-                            title: 'Third one title',
-                            tooltip: 'Third one tooltip',
-                            componentName: 'MainLayout',
-                            componentState: {
-                                component: 'LoginComponent'
-                            }
-                        }]
-                    }]
-                }]
-            };
-            this.layout = new GoldenLayout(config, document.getElementById('layout'));
+            this.setDefaultLayout();
         }
         var cmp = this.componentFactoryResolver;
         var vc = this.viewContainer;
@@ -83,7 +55,12 @@ export class LayoutService {
         this.layout.init();
     }
 
-    addConponent(config) {
+    setDefaultLayout(){
+        const data = fs.readFileSync("\layout_conf.json", "utf8");
+        this.layout = new GoldenLayout(JSON.parse(data), document.getElementById('layout'));
+    }
+
+    addComponent(config) {
         this.layout.root.contentItems[0].addChild(config);
     }
 }
