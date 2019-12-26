@@ -37,75 +37,89 @@
             </td>
             <td colspan="2">
                 <div>
-                    <button class="menuItem" mat-button [matMenuTriggerFor]="file">File</button>
+                    <button #button class="menuItem" mat-button [matMenuTriggerFor]="file" #fileTrigger="matMenuTrigger" (mouseenter)="fileTrigger.openMenu()" (mouseleave)="buttonLeave(fileTrigger, button)">File</button>
 
-                    <mat-menu #file="matMenu">
-                    <button mat-menu-item>New Project</button>
-                    <mat-divider></mat-divider>
-                    <button mat-menu-item>Save</button>
-                    <button mat-menu-item>Save As</button>
-                    <mat-divider></mat-divider>
-                    <button mat-menu-item>Exit</button>
+                    <mat-menu #file="matMenu" [hasBackdrop]="false">
+                        <span (mouseenter)="menuenter()" (mouseleave)="menuLeave(fileTrigger, button)">
+                            <button mat-menu-item>New Project</button>
+                            <mat-divider></mat-divider>
+                            <button mat-menu-item>Save</button>
+                            <button mat-menu-item>Save As</button>
+                            <mat-divider></mat-divider>
+                            <button mat-menu-item>Exit</button>
+                        </span>
                     </mat-menu>
 
-                    <button class="menuItem" mat-button [matMenuTriggerFor]="edit">Edit</button>
+                    <button #button class="menuItem" mat-button [matMenuTriggerFor]="edit" #editTrigger="matMenuTrigger" (mouseenter)="editTrigger.openMenu()" (mouseleave)="buttonLeave(editTrigger, button)">Edit</button>
 
-                    <mat-menu #edit="matMenu">
-                    <button mat-menu-item>Undo</button>
-                    <button mat-menu-item>Redo</button>
-                    <mat-divider></mat-divider>
-                    <button mat-menu-item>Cut</button>
-                    <button mat-menu-item>Copy</button>
-                    <button mat-menu-item>Paste</button>
-                    <mat-divider></mat-divider>
-                    <button mat-menu-item>Find</button>
-                    <button mat-menu-item>Replace</button>
+                    <mat-menu #edit="matMenu" [hasBackdrop]="false">
+                        <span (mouseenter)="menuenter()" (mouseleave)="menuLeave(editTrigger, button)">
+                            <button mat-menu-item>Undo</button>
+                            <button mat-menu-item>Redo</button>
+                            <mat-divider></mat-divider>
+                            <button mat-menu-item>Cut</button>
+                            <button mat-menu-item>Copy</button>
+                            <button mat-menu-item>Paste</button>
+                            <mat-divider></mat-divider>
+                            <button mat-menu-item>Find</button>
+                            <button mat-menu-item>Replace</button>
+                        </span>
                     </mat-menu>
 
-                    <button class="menuItem" mat-button [matMenuTriggerFor]="view">View</button>
+                    <button #button class="menuItem" mat-button [matMenuTriggerFor]="view" #viewTrigger="matMenuTrigger" (mouseenter)="viewTrigger.openMenu()" (mouseleave)="buttonLeave(viewTrigger, button)">View</button>
 
-                    <mat-menu #view="matMenu">
-                    <button mat-menu-item>Zoom</button>
-                    <button mat-menu-item>Zoom In</button>
-                    <button mat-menu-item>Zoom Out</button>
-                    <mat-divider></mat-divider>
-                    <button mat-menu-item [matMenuTriggerFor]="fitToWindow">Fit to Window</button>
-                    <mat-menu #fitToWindow="matMenu">
-                    <button mat-menu-item>Window</button>
-                    <button mat-menu-item>Window Width</button>
-                    <button mat-menu-item>Window Height</button>
-                    </mat-menu>
-                    </mat-menu>
-
-                    <button class="menuItem" mat-button [matMenuTriggerFor]="plugins">Plugins</button>
-
-                    <mat-menu #plugins="matMenu">
-                    <button mat-menu-item>Install/Uninstall Plugins</button>
-                    <mat-divider></mat-divider>
-                    <button mat-menu-item>Let's Develop Plugins</button>
+                    <mat-menu #view="matMenu" [hasBackdrop]="false">
+                        <span (mouseenter)="menuenter()" (mouseleave)="menuLeave(viewTrigger, button)">
+                            <button mat-menu-item>Zoom</button>
+                            <button mat-menu-item>Zoom In</button>
+                            <button mat-menu-item>Zoom Out</button>
+                            <mat-divider></mat-divider>
+                            <button mat-menu-item [matMenuTriggerFor]="fitToWindow" #fitToWindowTrigger="matMenuTrigger">Fit to Window</button>
+                            <mat-menu #fitToWindow="matMenu">
+                                <span (mouseenter)="menu2enter()" (mouseleave)="menu2Leave(viewTrigger, fitToWindowTrigger, button)">
+                                    <button mat-menu-item>Window</button>
+                                    <button mat-menu-item>Window Width</button>
+                                    <button mat-menu-item>Window Height</button>
+                                </span>
+                            </mat-menu>
+                        </span>
                     </mat-menu>
 
-                    <button class="menuItem" mat-button [matMenuTriggerFor]="preferences">Preferences</button>
+                    <button #button class="menuItem" mat-button [matMenuTriggerFor]="plugins" #pluginsTrigger="matMenuTrigger" (mouseenter)="pluginsTrigger.openMenu()" (mouseleave)="buttonLeave(pluginsTrigger, button)">Plugins</button>
 
-                    <mat-menu #preferences="matMenu">
-                        <button mat-menu-item>Settings</button>
-                        <mat-divider></mat-divider>
-                        <button mat-menu-item>Theme</button>
+                    <mat-menu #plugins="matMenu" [hasBackdrop]="false">
+                        <span (mouseenter)="menuenter()" (mouseleave)="menuLeave(pluginsTrigger, button)">
+                            <button mat-menu-item>Install/Uninstall Plugins</button>
+                            <mat-divider></mat-divider>
+                            <button mat-menu-item>Let's Develop Plugins</button>
+                        </span>
                     </mat-menu>
 
-                    <button class="menuItem" mat-button [matMenuTriggerFor]="help">Help</button>
+                    <button #button class="menuItem" mat-button [matMenuTriggerFor]="preferences" #preferencesTrigger="matMenuTrigger" (mouseenter)="preferencesTrigger.openMenu()" (mouseleave)="buttonLeave(preferencesTrigger, button)">Preferences</button>
 
-                    <mat-menu #help="matMenu">
-                        <button mat-menu-item>Welcome</button>
-                        <button mat-menu-item>User Guide</button>
-                        <button mat-menu-item>Documentation</button>
-                        <mat-divider></mat-divider>
-                        <button mat-menu-item>License</button>
-                        <button mat-menu-item>Privacy Statement</button>
-                        <mat-divider></mat-divider>
-                        <button mat-menu-item>Check for Updates</button>
-                        <mat-divider></mat-divider>
-                        <button mat-menu-item>About</button>
+                    <mat-menu #preferences="matMenu" [hasBackdrop]="false">
+                        <span (mouseenter)="menuenter()" (mouseleave)="menuLeave(preferencesTrigger, button)">
+                            <button mat-menu-item>Settings</button>
+                            <mat-divider></mat-divider>
+                            <button mat-menu-item>Theme</button>
+                        </span>
+                    </mat-menu>
+
+                    <button #button class="menuItem" mat-button [matMenuTriggerFor]="help" #helpTrigger="matMenuTrigger" (mouseenter)="helpTrigger.openMenu()" (mouseleave)="buttonLeave(helpTrigger, button)">Help</button>
+
+                    <mat-menu #help="matMenu" [hasBackdrop]="false">
+                        <span (mouseenter)="menuenter()" (mouseleave)="menuLeave(helpTrigger, button)">
+                            <button mat-menu-item>Welcome</button>
+                            <button mat-menu-item>User Guide</button>
+                            <button mat-menu-item>Documentation</button>
+                            <mat-divider></mat-divider>
+                            <button mat-menu-item>License</button>
+                            <button mat-menu-item>Privacy Statement</button>
+                            <mat-divider></mat-divider>
+                            <button mat-menu-item>Check for Updates</button>
+                            <mat-divider></mat-divider>
+                            <button mat-menu-item>About</button>
+                        </span>
                     </mat-menu>
 
                     <button class="menuItem login" mat-icon-button matTooltip="Login" (click)="openLoginDialog()">

@@ -1,6 +1,6 @@
-import { Component, ViewContainerRef, Inject, ViewChild, ViewChildren } from '@angular/core';
+import { Component, ViewContainerRef, Inject, ViewChild, ViewChildren, Renderer2 } from '@angular/core';
 import { LayoutService } from './shared/layout.service';
-import { MatDialog, MAT_DIALOG_DATA } from '@angular/material';
+import { MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { ContextViewComponent } from './context-view/context-view.component';
 
 @Component({
@@ -14,10 +14,17 @@ export class AppComponent {
   TREE_DATA: TreeNode[] = [];
   title = 'popout-ex';
 
+  // menu
+  enteredButton = false;
+  isMatMenuOpen = false;
+  isMatMenu2Open = false;
+  prevButtonTrigger;
+
   constructor(
     private viewContainer: ViewContainerRef,
     private layoutService: LayoutService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private ren: Renderer2
   ) {}
 
   ngOnInit() {
@@ -122,10 +129,88 @@ export class AppComponent {
   }
 
   openLoginDialog() {
-    this.dialog.open(DialogDataExampleDialog, {
-
-    });
+    this.dialog.open(DialogDataExampleDialog, {panelClass: 'myapp-no-padding-dialog'});
   }
+
+
+  // menu
+  menuenter() {
+    this.isMatMenuOpen = true;
+    if (this.isMatMenu2Open) {
+      this.isMatMenu2Open = false;
+    }
+  }
+
+  menuLeave(trigger, button) {
+    setTimeout(() => {
+      if (!this.isMatMenu2Open && !this.enteredButton) {
+        this.isMatMenuOpen = false;
+        trigger.closeMenu();
+        this.ren.removeClass(button['_elementRef'].nativeElement, 'cdk-focused');
+        this.ren.removeClass(button['_elementRef'].nativeElement, 'cdk-program-focused');
+      } else {
+        this.isMatMenuOpen = false;
+      }
+    }, 80)
+  }
+
+  menu2enter() {
+    this.isMatMenu2Open = true;
+  }
+
+  menu2Leave(trigger1, trigger2, button) {
+    setTimeout(() => {
+      if (this.isMatMenu2Open) {
+        trigger1.closeMenu();
+        this.isMatMenuOpen = false;
+        this.isMatMenu2Open = false;
+        this.enteredButton = false;
+        this.ren.removeClass(button['_elementRef'].nativeElement, 'cdk-focused');
+        this.ren.removeClass(button['_elementRef'].nativeElement, 'cdk-program-focused');
+      } else {
+        this.isMatMenu2Open = false;
+        trigger2.closeMenu();
+      }
+    }, 100)
+  }
+
+  buttonEnter(trigger) {
+    setTimeout(() => {
+      if(this.prevButtonTrigger && this.prevButtonTrigger != trigger){
+        this.prevButtonTrigger.closeMenu();
+        this.prevButtonTrigger = trigger;
+        trigger.openMenu();
+      }
+      else if (!this.isMatMenuOpen) {
+        this.enteredButton = true;
+        this.prevButtonTrigger = trigger
+        trigger.openMenu()
+      }
+      else {
+        this.enteredButton = true;
+        this.prevButtonTrigger = trigger
+      }
+    })
+  }
+
+  buttonLeave(trigger, button) {
+    setTimeout(() => {
+      if (this.enteredButton && !this.isMatMenuOpen) {
+        trigger.closeMenu();
+        this.ren.removeClass(button['_elementRef'].nativeElement, 'cdk-focused');
+        this.ren.removeClass(button['_elementRef'].nativeElement, 'cdk-program-focused');
+      } if (!this.isMatMenuOpen) {
+        trigger.closeMenu();
+        this.ren.removeClass(button['_elementRef'].nativeElement, 'cdk-focused');
+        this.ren.removeClass(button['_elementRef'].nativeElement, 'cdk-program-focused');
+      } else {
+        this.enteredButton = false;
+      }
+    }, 100)
+  }
+
+
+
 }
 
 export interface DialogData {
@@ -135,7 +220,13 @@ export interface DialogData {
 @Component({
   selector: 'dialog-data-example-dialog',
   templateUrl: 'dialog-data-example-dialog.html',
+  styleUrls: ['./dialog-data-example-dialog.scss']
 })
 export class DialogDataExampleDialog {
-  constructor(@Inject(MAT_DIALOG_DATA) public data: DialogData) {}
+  constructor(public dialog: MatDialogRef<DialogDataExampleDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: DialogData) {}
+
+  onClose(): void {
+    this.dialog.close();
+  }
 }
