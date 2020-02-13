@@ -14,6 +14,7 @@ import { LoginComponent } from './login/login.component';
 import { LifeCyclesComponent } from './life-cycles/life-cycles.component';
 import { ContextViewComponent } from './context-view/context-view.component';
 import { PluginManagerComponent } from './plugin manager/plugin-manager.component';
+import { VisionComponent } from './vision/vision.component';
 
 window['$'] = $;
 
@@ -24,7 +25,8 @@ window['$'] = $;
     LifeCyclesComponent,
     ContextViewComponent,
     DialogDataExampleDialog,
-    PluginManagerComponent
+    PluginManagerComponent,
+    VisionComponent
   ],
   imports: [
     BrowserModule,

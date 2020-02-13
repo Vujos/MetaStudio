@@ -3,6 +3,14 @@
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
+.myapp-no-padding-dialog .mat-dialog-container {
+  padding: 0;
+}
+
+
+
+/*
+
 @import "~golden-layout/src/css/goldenlayout-base.css";
 @import "~golden-layout/src/css/goldenlayout-light-theme.css";
 
@@ -12,14 +20,6 @@ body, html {
   padding: 0;
   margin: 0;
 }
-
-
-
-.myapp-no-padding-dialog .mat-dialog-container {
-  padding: 0;
-}
-
-
 
 //Custom scrollbar
 ::-webkit-scrollbar {
@@ -64,3 +64,7 @@ body, html {
 .lm_content {
   overflow: auto;
 }
+
+
+
+*/
