@@ -117,7 +117,7 @@ export class AppComponent {
   tools(){
     this.contextViewOn = true;
     this.TREE_DATA=[
-      {name: 'Tool 1'},
+      {name: 'Vision', route: '/vision'},
       {name: 'Tool 2'},
       {name: 'Tool 3'},
     ];
