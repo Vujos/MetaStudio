@@ -1,3 +1,3 @@
 #!/bin/bash
 cd frontend
-electron6 .
+electron .

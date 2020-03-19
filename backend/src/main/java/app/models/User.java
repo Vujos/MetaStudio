@@ -14,7 +14,7 @@ import app.utils.View.ShowUserProjectTeam;
 @Entity
 public class User {
 
-	@Column(length=128, nullable = false)
+	@Column(length=128, nullable = false, unique = true)
 	private String username;
 
 	@Column(length=128, nullable = false)

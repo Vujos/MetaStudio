@@ -1,0 +1,20 @@
+<form (submit)="onRegister(registerForm)" #registerForm="ngForm" class="register-content">
+    <mat-form-field>
+        <span matPrefix>
+            <mat-icon aria-hidden="false" aria-label="Person icon">person</mat-icon>
+        </span>
+        <input matInput name="username" ngModel type="text" placeholder="Username" #usernameInput="ngModel" required>
+        <mat-error>{{formError.mapErrors(usernameInput, 'Username')}}</mat-error>
+    </mat-form-field><br>
+    <mat-form-field class="password-form">
+        <span matPrefix>
+            <mat-icon aria-hidden="false" aria-label="Lock icon">lock</mat-icon>
+        </span>
+        <input type="password" name="password" ngModel matInput placeholder="Password" #passwordInput="ngModel"
+            required>
+        <mat-error>{{formError.mapErrors(passwordInput, 'Password')}}</mat-error>
+    </mat-form-field><br>
+    <p [style.color]=message_color>{{message}}</p>
+    <button cdkFocusInitial class="register-button" mat-raised-button color="primary" type="submit">REGISTER <mat-icon
+            aria-hidden="false" aria-label="Example home icon">input</mat-icon></button>
+</form>

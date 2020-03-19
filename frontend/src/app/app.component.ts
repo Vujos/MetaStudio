@@ -129,7 +129,7 @@ export class AppComponent {
   }
 
   openLoginDialog() {
-    this.dialog.open(DialogDataExampleDialog, {panelClass: 'myapp-no-padding-dialog'});
+    this.dialog.open(LoginDialog, {panelClass: 'myapp-no-padding-dialog'});
   }
 
 
@@ -218,12 +218,12 @@ export interface DialogData {
 }
 
 @Component({
-  selector: 'dialog-data-example-dialog',
-  templateUrl: 'dialog-data-example-dialog.html',
-  styleUrls: ['./dialog-data-example-dialog.scss']
+  selector: 'login-dialog',
+  templateUrl: 'login/login-dialog.html',
+  styleUrls: ['login/login-dialog.scss']
 })
-export class DialogDataExampleDialog {
-  constructor(public dialog: MatDialogRef<DialogDataExampleDialog>,
+export class LoginDialog {
+  constructor(public dialog: MatDialogRef<LoginDialog>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData) {}
 
   onClose(): void {
