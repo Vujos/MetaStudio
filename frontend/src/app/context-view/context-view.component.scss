@@ -8,3 +8,19 @@
     margin-bottom: 0;
     list-style-type: none;
 }
+
+.mat-tree-node {
+    //overflow: visible !important;
+    min-width: max-content;
+}
+
+.example-tree {
+    height: 92vh;
+    overflow: auto;
+    width: 15vw;
+}
+
+.node {
+    color: white;
+    cursor: pointer;
+}

@@ -1,42 +1,42 @@
-<table class="main">
+<table class="main" cellspacing="0">
     <tbody>
         <tr class="menu">
-            <td rowspan="2" class="vertical-menu correction">
-                <mat-toolbar class="vertical-menu">  
-                    <mat-toolbar-row>
-                        <button mat-icon-button>
-                            <mat-icon>code</mat-icon>
+            <td rowspan="2" class="vertical-menu">
+                <div class="vertical-menu">  
+                    <div>
+                        <button class="menuItem" mat-icon-button matTooltip="Login" (click)="openLoginDialog()">
+                            <mat-icon>person</mat-icon>
                         </button>
-                    </mat-toolbar-row>
+                    </div>
 
-                    <mat-toolbar-row>
+                    <div>
                         <button mat-icon-button (click)="contextView()">
                             <mat-icon *ngIf="contextViewOn" class="vertical-menu-item">arrow_back_ios</mat-icon>
                             <mat-icon *ngIf="!contextViewOn" class="vertical-menu-item">arrow_forward_ios</mat-icon>
                         </button>
-                    </mat-toolbar-row>
+                    </div>
 
-                    <mat-toolbar-row>
+                    <div>
                         <button mat-icon-button matTooltip="Projects" (click)="projects()">
                             <mat-icon class="vertical-menu-item">folder</mat-icon>
                         </button>
-                    </mat-toolbar-row>
+                    </div>
                 
-                    <mat-toolbar-row>
+                    <div>
                         <button mat-icon-button matTooltip="Teams" (click)="teams()">
                             <mat-icon class="vertical-menu-item">people</mat-icon>
                         </button>
-                    </mat-toolbar-row>
+                    </div>
 
-                    <mat-toolbar-row>
+                    <div>
                         <button mat-icon-button matTooltip="Tools" (click)="tools()">
                             <mat-icon class="vertical-menu-item">build</mat-icon>
                         </button>
-                    </mat-toolbar-row>
-                </mat-toolbar>
+                    </div>
+                </div>
             </td>
             <td colspan="2">
-                <div>
+                <div class="horizontal-menu">
                     <button #fileButton class="menuItem" mat-button [matMenuTriggerFor]="file" #fileTrigger="matMenuTrigger" (mouseenter)="fileTrigger.openMenu()" (mouseleave)="buttonLeave(fileTrigger, fileButton)">File</button>
 
                     <mat-menu #file="matMenu" [hasBackdrop]="false">
@@ -121,10 +121,6 @@
                             <button mat-menu-item>About</button>
                         </span>
                     </mat-menu>
-
-                    <button class="menuItem login" mat-icon-button matTooltip="Login" (click)="openLoginDialog()">
-                        <mat-icon>person</mat-icon>
-                    </button>
                 </div>
             </td>
         </tr>  

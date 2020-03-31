@@ -2,6 +2,7 @@ import { Component, ViewContainerRef, Inject, ViewChild, ViewChildren, Renderer2
 import { LayoutService } from './shared/layout.service';
 import { MatDialog, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { ContextViewComponent } from './context-view/context-view.component';
+import { SharedDataService } from './shared/shared-data.service';
 
 @Component({
   selector: 'app-root',
@@ -24,13 +25,15 @@ export class AppComponent {
     private viewContainer: ViewContainerRef,
     private layoutService: LayoutService,
     public dialog: MatDialog,
-    private ren: Renderer2
+    private ren: Renderer2,
+    private sharedDataService: SharedDataService
   ) {}
 
   ngOnInit() {
     // this.setMenu();
     //this.layoutService.ViewContainerRefSetter = this.viewContainer;
     //this.layoutService.setLayout();
+    this.sharedDataService.contextViewOn = this.contextViewOn;
   }
 
   // setMenu () {
@@ -64,6 +67,7 @@ export class AppComponent {
 
   projects(){
     this.contextViewOn = true;
+    this.sharedDataService.contextViewOn = this.contextViewOn;
     this.TREE_DATA=[
       {
         name: 'Project 1',
@@ -96,6 +100,7 @@ export class AppComponent {
 
   teams(){
     this.contextViewOn = true;
+    this.sharedDataService.contextViewOn = this.contextViewOn;
     this.TREE_DATA=[
       {
         name: 'Team 1',
@@ -116,16 +121,18 @@ export class AppComponent {
 
   tools(){
     this.contextViewOn = true;
+    this.sharedDataService.contextViewOn = this.contextViewOn;
     this.TREE_DATA=[
       {name: 'Vision', route: '/vision'},
-      {name: 'Tool 2'},
-      {name: 'Tool 3'},
+      {name: 'Project Manager', route: '/projectManager'},
+      {name: 'Tool 3'}
     ];
     this.contextViewComponent.update(this.TREE_DATA);
   }
 
   contextView(){
     this.contextViewOn = !this.contextViewOn
+    this.sharedDataService.contextViewOn = this.contextViewOn;
   }
 
   openLoginDialog() {

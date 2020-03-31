@@ -16,6 +16,13 @@ import { ContextViewComponent } from './context-view/context-view.component';
 import { PluginManagerComponent } from './plugin manager/plugin-manager.component';
 import { VisionComponent } from './vision/vision.component';
 
+
+import { AdBannerComponent }    from './app/ad-banner.component';
+import { HeroProfileComponent } from './app/hero-profile.component';
+import { AdDirective }          from './app/ad.directive';
+import { AdService }            from './app/ad.service';
+
+
 window['$'] = $;
 
 @NgModule({
@@ -26,7 +33,10 @@ window['$'] = $;
     ContextViewComponent,
     DialogDataExampleDialog,
     PluginManagerComponent,
-    VisionComponent
+    VisionComponent,
+    AdBannerComponent,
+    HeroProfileComponent,
+    AdDirective
   ],
   imports: [
     BrowserModule,
@@ -39,9 +49,10 @@ window['$'] = $;
     LoginComponent,
     LifeCyclesComponent,
     DialogDataExampleDialog,
-    PluginManagerComponent
+    PluginManagerComponent,  
+    HeroProfileComponent
   ],
-  providers: [],
+  providers: [AdService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
