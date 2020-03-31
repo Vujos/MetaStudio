@@ -6,25 +6,15 @@ import { Subject } from 'rxjs';
 
 @Injectable({ providedIn: "root" })
 export class AuthService {
-
-  loggedInStatusChanged = new Subject<boolean>();
-
   constructor(private http: HttpClient, private router: Router) {}
 
-  login(username: string, password: string){
-    this.http.post<{token: string}>("http://localhost:8080/login", {username: username, password: password}).subscribe(response =>{
-      if(response.token){
-        localStorage.setItem('token', response.token);
-        this.router.navigate(['/']);
-        this.loggedInStatusChanged.next(true);
-      }
-    });
+  login(username: string, password: string) {
+    return this.http.post<{token: string}>("http://localhost:8080/login", {username: username, password: password});
   }
 
   logout(){
     localStorage.removeItem('token');
     this.router.navigate(['/']);
-    this.loggedInStatusChanged.next(false);
   }
 
   getCurrentUser(){

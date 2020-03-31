@@ -5,12 +5,13 @@ import { NgModule } from '@angular/core';
 import * as $ from 'jquery';
 
 import { AppRoutingModule } from './app-routing.module';
-import { AppComponent, DialogDataExampleDialog } from './app.component';
+import { AppComponent, LoginDialog } from './app.component';
 
 import { SharedModule } from './shared/shared.module';
 import { MaterialModule } from './shared/material.module';
 
 import { LoginComponent } from './login/login.component';
+import { UserAddEditComponent } from './user/user-add-edit/user-add-edit.component';
 import { LifeCyclesComponent } from './life-cycles/life-cycles.component';
 import { ContextViewComponent } from './context-view/context-view.component';
 import { PluginManagerComponent } from './plugin manager/plugin-manager.component';
@@ -29,9 +30,10 @@ window['$'] = $;
   declarations: [
     AppComponent,
     LoginComponent,
+    UserAddEditComponent,
     LifeCyclesComponent,
     ContextViewComponent,
-    DialogDataExampleDialog,
+    LoginDialog,
     PluginManagerComponent,
     VisionComponent,
     AdBannerComponent,
@@ -48,9 +50,9 @@ window['$'] = $;
   entryComponents: [
     LoginComponent,
     LifeCyclesComponent,
-    DialogDataExampleDialog,
     PluginManagerComponent,  
-    HeroProfileComponent
+    HeroProfileComponent,
+    LoginDialog
   ],
   providers: [AdService],
   bootstrap: [AppComponent]
