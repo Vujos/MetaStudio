@@ -91,6 +91,10 @@
   color: white !important;
 }
 
+.black-important {
+  color: black !important;
+}
+
 .list-more {
   float: right;
 }
@@ -126,6 +130,10 @@ td {
   background-color: white;
 }
 
+.add-list-title-black .mat-form-field-wrapper .mat-form-field-underline {
+  background-color: black;
+}
+
 .cursor-default {
   cursor: default;
 }
@@ -140,4 +148,12 @@ td {
   padding: 15px;
   background-color: whitesmoke;
   border-radius: 4px;
+}
+
+.menu-item-padding {
+  padding: 0 16px;
+}
+
+.center {
+  text-align: center;
 }
