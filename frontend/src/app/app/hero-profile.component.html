@@ -25,7 +25,7 @@
                 #boardDescriptionInput class="white"></textarea>
             </mat-form-field>
             <br>
-            <button class="center" mat-menu-item (click)="saveBoardDescription()">Save</button>
+            <button class="center white background-color-gray" mat-button (click)="saveBoardDescription()">Save</button>
           </div>
 
         </mat-menu>
@@ -55,7 +55,7 @@
                 (keyup.enter)="renameBoard()">
             </mat-form-field>
             <br>
-            <button class="center white" mat-menu-item (click)="renameBoard()">Save</button>
+            <button class="center white background-color-gray" mat-button (click)="renameBoard()">Save</button>
           </div>
 
         </mat-menu>
@@ -117,22 +117,23 @@
                   <div class="menu-item-padding" (click)="$event.stopPropagation()"
                     (keydown)="$event.stopPropagation()">
                     <mat-form-field>
-                      <mat-label>Select a position</mat-label>
+                      <mat-label class="white">Select a position</mat-label>
                       <mat-select [(value)]="selectedMoveListPosition">
                         <mat-option value="before">Before</mat-option>
                         <mat-option value="after">After</mat-option>
                       </mat-select>
                     </mat-form-field>
                     <mat-form-field>
-                      <mat-label>Select a list</mat-label>
+                      <mat-label class="white">Select a list</mat-label>
                       <mat-select [(value)]="selectedMoveList">
                         <ng-container *ngFor="let list of lists; index as j">
                           <mat-option *ngIf="i!=j" [value]="j">{{list.title}}</mat-option>
                         </ng-container>
                       </mat-select>
                     </mat-form-field>
-                    <button class="center white" mat-menu-item
-                      (click)="moveList(i, selectedMoveListPosition, selectedMoveList)">Move</button>
+                    <br>
+                    <button class="center white background-color-gray" mat-button
+                      (click)="moveList(i, selectedMoveListPosition, selectedMoveList)" [disabled]="selectedMoveListPosition==undefined || selectedMoveList==undefined">Move</button>
                   </div>
                 </mat-menu>
 
@@ -147,7 +148,7 @@
                         [(ngModel)]="listTitleRename" (keyup.enter)="renameList(i)">
                     </mat-form-field>
                     <br>
-                    <button class="center white" mat-menu-item (click)="renameList(i)">Save</button>
+                    <button class="center white background-color-gray" mat-button (click)="renameList(i)">Save</button>
                   </div>
                 </mat-menu>
                 <button mat-menu-item (click)="deleteListDialog(i)">Delete list</button>
@@ -161,12 +162,13 @@
                   <div class="menu-item-padding" (click)="$event.stopPropagation()"
                     (keydown)="$event.stopPropagation()">
                     <mat-form-field>
-                      <mat-label>Select a list</mat-label>
+                      <mat-label class="white">Select a list</mat-label>
                       <mat-select [(value)]="selectedCopyAllCards">
                         <mat-option *ngFor="let list of lists; index as j" [value]="j">{{list.title}}</mat-option>
                       </mat-select>
                     </mat-form-field>
-                    <button class="center white" mat-menu-item (click)="copyAllCards(i, selectedCopyAllCards)"
+                    <br>
+                    <button class="center white background-color-gray" mat-button (click)="copyAllCards(i, selectedCopyAllCards)"
                       [disabled]="selectedCopyAllCards == undefined">Copy</button>
                   </div>
                 </mat-menu>
@@ -178,7 +180,7 @@
                   <div class="menu-item-padding" (click)="$event.stopPropagation()"
                     (keydown)="$event.stopPropagation()">
                     <mat-form-field>
-                      <mat-label>Select a list</mat-label>
+                      <mat-label class="white">Select a list</mat-label>
                       <mat-select [(value)]="selectedMoveAllCards" [disabled]="lists.length < 2">
                         <ng-container *ngFor="let list of lists; index as j">
                           <mat-option *ngIf="i!=j" [value]="j">{{list.title}}</mat-option>
@@ -186,7 +188,8 @@
 
                       </mat-select>
                     </mat-form-field>
-                    <button class="center white" mat-menu-item (click)="moveAllCards(i, selectedMoveAllCards)"
+                    <br>
+                    <button class="center white background-color-gray" mat-button (click)="moveAllCards(i, selectedMoveAllCards)"
                       [disabled]="selectedMoveAllCards == undefined">Move</button>
                   </div>
                 </mat-menu>
@@ -200,7 +203,7 @@
             </button>
             -->
           </div>
-          <div class="example-box cursor-default list-header"
+          <div class="example-box-list-header cursor-default list-header"
             [ngStyle]="{'background-color':lightBackground?'lightgray':'white'}">
             <mat-form-field class="add-card-title">
               <mat-label class="black">Enter card title</mat-label>
@@ -212,8 +215,15 @@
             </button>
           </div>
           <div class="list-content">
-            <div class="example-box" *ngFor="let item of list.cards"
-              [ngStyle]="{'background-color':lightBackground?'lightgray':'white'}" cdkDrag>{{item.title}}</div>
+            <div class="example-box" *ngFor="let item of list.cards" (click)="openCardDetailsDialog(item)"
+              [ngStyle]="{'background-color':lightBackground?'lightgray':'white'}" cdkDrag>
+              <span *ngFor="let label of item.labels">
+                <span class="label" [ngStyle]="{'background-color':label}"></span>
+                &nbsp;
+              </span>
+              
+              <div>{{item.title}}</div>
+            </div>
           </div>
 
         </div>

@@ -1,4 +1,4 @@
-import { Component, Input, ViewEncapsulation, ViewChild, ElementRef, ViewChildren } from '@angular/core';
+import { Component, Input, ViewEncapsulation, ViewChild, ElementRef, ViewChildren, Inject } from '@angular/core';
 
 import { AdComponent } from './ad.component';
 
@@ -6,7 +6,7 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/dr
 import { SharedDataService } from '../shared/shared-data.service';
 import { Board } from './board.model';
 import { Card } from './card.model';
-import { MatMenuTrigger, MatDialog } from '@angular/material';
+import { MatMenuTrigger, MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { DialogSaveChanges } from './dialog/dialog-save-changes';
 import { List } from './list.model';
 
@@ -53,7 +53,7 @@ export class HeroProfileComponent implements AdComponent {
         id: 'list-1',
         title: 'List',
         cards: [
-          new Card("1", "Card 1", new Date(), "", [], new Date(), new Date(), [], [], []),
+          new Card("1", "Card 1", new Date(), "This is description", [], new Date(), new Date(), [], ["#000000", "#ffffff", "#ff0000"], []),
           new Card("2", "Card 2", new Date(), "", [], new Date(), new Date(), [], [], []),
           new Card("3", "Card 3", new Date(), "", [], new Date(), new Date(), [], [], []),
           new Card("4", "Card 4", new Date(), "", [], new Date(), new Date(), [], [], []),
@@ -89,7 +89,7 @@ export class HeroProfileComponent implements AdComponent {
       this.connectedTo.push(list.id);
     };
 
-    this.board = new Board('1', 'Board 1', new Date(), "This is description", "#1e1e1e", [], this.lists, 1);
+    this.board = new Board('1', 'Board 1', new Date(), "This is description", "#55aa55", [], this.lists, 1);
 
     this.boardDescription = this.board.description;
     this.boardTitle = this.board.title;
@@ -353,21 +353,47 @@ export class HeroProfileComponent implements AdComponent {
   }
 
   moveListDialog(indexFromList, position, indexToList) {
-    if (indexToList != undefined) {
+    if (indexToList != undefined && position != undefined) {
       const dialogRef = this.dialog.open(DialogSaveChanges, {
-        data: { title: "Unsaved Changes", content: "Move All Cards from " + this.lists[indexFromList].title + " to " + this.lists[indexToList].title }
+        data: { title: "Unsaved Changes", content: "Move List " + position + " " + this.lists[indexToList].title }
       });
 
       dialogRef.afterClosed().subscribe(result => {
         if (result) {
-          this.moveAllCards(indexFromList, indexToList);
+          this.moveList(indexFromList, position, indexToList);
         }
         else {
-          this.selectedMoveAllCards = undefined;
+          this.selectedMoveList = undefined;
+          this.selectedMoveListPosition = undefined;
         }
       });
     }
+    else{
+      this.selectedMoveList = undefined;
+      this.selectedMoveListPosition = undefined;
+    }
+  }
+
+  openCardDetailsDialog(card) {
+    this.dialog.open(CardDetailsDialog, { panelClass: 'myapp-no-padding-dialog', data: {card} });
   }
 }
 
+export interface CardDetailsDialogData {
+  card: Card;
+}
+
+@Component({
+  selector: 'card-details-dialog',
+  templateUrl: 'card-details/card-details-dialog.html',
+  styleUrls: ['card-details/card-details-dialog.scss']
+})
+export class CardDetailsDialog {
+  constructor(public dialog: MatDialogRef<CardDetailsDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: CardDetailsDialogData) { }
+
+  onClose(): void {
+    this.dialog.close();
+  }
+}
 

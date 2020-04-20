@@ -19,10 +19,11 @@ import { VisionComponent } from './vision/vision.component';
 
 
 import { AdBannerComponent }    from './app/ad-banner.component';
-import { HeroProfileComponent } from './app/hero-profile.component';
+import { HeroProfileComponent, CardDetailsDialog } from './app/hero-profile.component';
 import { AdDirective }          from './app/ad.directive';
 import { AdService }            from './app/ad.service';
 import { DialogSaveChanges } from './app/dialog/dialog-save-changes';
+import { CardDetailsComponent } from './app/card-details/card-details.component';
 
 
 window['$'] = $;
@@ -40,7 +41,9 @@ window['$'] = $;
     AdBannerComponent,
     HeroProfileComponent,
     AdDirective,
-    DialogSaveChanges
+    DialogSaveChanges,
+    CardDetailsComponent,
+    CardDetailsDialog
   ],
   imports: [
     BrowserModule,
@@ -55,7 +58,9 @@ window['$'] = $;
     PluginManagerComponent,  
     HeroProfileComponent,
     LoginDialog,
-    DialogSaveChanges
+    DialogSaveChanges,
+    CardDetailsComponent,
+    CardDetailsDialog
   ],
   providers: [AdService],
   bootstrap: [AppComponent]
