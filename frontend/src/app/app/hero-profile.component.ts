@@ -8,6 +8,7 @@ import { Board } from './board.model';
 import { Card } from './card.model';
 import { MatMenuTrigger, MatDialog } from '@angular/material';
 import { DialogSaveChanges } from './dialog/dialog-save-changes';
+import { List } from './list.model';
 
 @Component({
   selector: 'app-hero-profile',
@@ -31,6 +32,11 @@ export class HeroProfileComponent implements AdComponent {
   boardBackground = "";
 
   listTitleRename = "";
+
+  selectedCopyAllCards;
+  selectedMoveAllCards;
+  selectedMoveListPosition;
+  selectedMoveList;
 
   lightBackground = false;
 
@@ -83,7 +89,7 @@ export class HeroProfileComponent implements AdComponent {
       this.connectedTo.push(list.id);
     };
 
-    this.board = new Board('1', 'Board 1', new Date(), "This is description", "#1a1a1a", [], this.lists, 1);
+    this.board = new Board('1', 'Board 1', new Date(), "This is description", "#1e1e1e", [], this.lists, 1);
 
     this.boardDescription = this.board.description;
     this.boardTitle = this.board.title;
@@ -99,6 +105,10 @@ export class HeroProfileComponent implements AdComponent {
         event.previousIndex,
         event.currentIndex);
     }
+  }
+
+  dropList(event: CdkDragDrop<string[]>) {
+    moveItemInArray(this.lists, event.previousIndex, event.currentIndex);
   }
 
   showAddList() {
@@ -120,6 +130,7 @@ export class HeroProfileComponent implements AdComponent {
       date: new Date()
     });
     this.listTitle = "";
+    this.connectedTo.push('list-'.concat((this.lists.length).toString()));
   }
 
   showAddCard(index) {
@@ -145,11 +156,20 @@ export class HeroProfileComponent implements AdComponent {
   }
 
   saveBoardDescription() {
-    if (this.boardDescription.trim() != "") {
-      this.board.description = this.boardDescription.trim();
-      this.boardDescription = this.board.description;
-    }
+    this.board.description = this.boardDescription.trim();
+    this.boardDescription = this.board.description;
+  }
 
+  deleteAllListsDialog() {
+    const dialogRef = this.dialog.open(DialogSaveChanges, {
+      data: { title: "Confirmation", content: "Delete All Lists" }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.lists = [];
+      }
+    });
   }
 
   renameBoard() {
@@ -157,12 +177,15 @@ export class HeroProfileComponent implements AdComponent {
       this.board.title = this.boardTitle.trim();
       this.boardTitle = this.board.title;
     }
+    else {
+      this.boardTitle = this.board.title;
+    }
   }
 
   saveBoardTitleDialog() {
-    if (this.boardTitle.trim() != this.board.title) {
+    if (this.boardTitle.trim() != this.board.title && this.boardTitle.trim() != "") {
       const dialogRef = this.dialog.open(DialogSaveChanges, {
-        data: { yes: true, object: "Board Title" }
+        data: { title: "Unsaved Changes", content: "Save Changes to Board Title" }
       });
 
       dialogRef.afterClosed().subscribe(result => {
@@ -174,12 +197,15 @@ export class HeroProfileComponent implements AdComponent {
         }
       });
     }
+    else {
+      this.boardTitle = this.board.title;
+    }
   }
 
   saveBoardDescriptionDialog() {
     if (this.boardDescription.trim() != this.board.description) {
       const dialogRef = this.dialog.open(DialogSaveChanges, {
-        data: { yes: true, object: "Board Description" }
+        data: { title: "Unsaved Changes", content: "Save Changes to Board Description" }
       });
 
       dialogRef.afterClosed().subscribe(result => {
@@ -194,7 +220,6 @@ export class HeroProfileComponent implements AdComponent {
   }
 
   changeBackground() {
-    console.log(this.boardBackground)
     this.board.background = this.boardBackground;
     this.checkBoardBackground();
   }
@@ -204,31 +229,141 @@ export class HeroProfileComponent implements AdComponent {
     if (colors.indexOf(this.boardBackground) != -1) {
       this.lightBackground = true;
     }
-    else{
+    else {
       this.lightBackground = false;
     }
-    
+
   }
 
-  renameList(index){
+  renameList(index) {
     if (this.listTitleRename.trim() != "") {
       this.lists[index].title = this.listTitleRename.trim();
+      this.listTitleRename = this.lists[index].title;
+    }
+    else {
       this.listTitleRename = this.lists[index].title;
     }
   }
 
   saveListTitleDialog(index) {
-    if (this.listTitleRename.trim() != this.lists[index].title) {
+    if (this.listTitleRename.trim() != this.lists[index].title && this.listTitleRename.trim() != "") {
       const dialogRef = this.dialog.open(DialogSaveChanges, {
-        data: { yes: true, object: "List Title" }
+        data: { title: "Unsaved Changes", content: "Save Changes to List Title" }
       });
 
       dialogRef.afterClosed().subscribe(result => {
         if (result) {
-          this.renameList(index)
+          this.renameList(index);
         }
         else {
           this.listTitleRename = this.lists[index].title;
+        }
+      });
+    }
+    else {
+      this.listTitleRename = this.lists[index].title;
+    }
+  }
+
+  copyAllCards(indexFromList, indexToList) {
+    if (indexFromList != undefined && indexToList != undefined) {
+      this.lists[indexToList].cards = this.lists[indexToList].cards.concat(this.lists[indexFromList].cards);
+      this.selectedCopyAllCards = undefined;
+    }
+  }
+
+  copyAllCardsDialog(indexFromList, indexToList) {
+    if (indexToList != undefined) {
+      const dialogRef = this.dialog.open(DialogSaveChanges, {
+        data: { title: "Unsaved Changes", content: "Copy All Cards from " + this.lists[indexFromList].title + " to " + this.lists[indexToList].title }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.copyAllCards(indexFromList, indexToList);
+        }
+        else {
+          this.selectedCopyAllCards = undefined;
+        }
+      });
+    }
+  }
+
+  moveAllCards(indexFromList, indexToList) {
+    if (indexFromList != undefined && indexToList != undefined) {
+      this.lists[indexToList].cards = this.lists[indexToList].cards.concat(this.lists[indexFromList].cards);
+      this.lists[indexFromList].cards = [];
+      this.selectedMoveAllCards = undefined;
+    }
+
+  }
+
+  moveAllCardsDialog(indexFromList, indexToList) {
+    if (indexToList != undefined) {
+      const dialogRef = this.dialog.open(DialogSaveChanges, {
+        data: { title: "Unsaved Changes", content: "Move All Cards from " + this.lists[indexFromList].title + " to " + this.lists[indexToList].title }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.moveAllCards(indexFromList, indexToList);
+        }
+        else {
+          this.selectedMoveAllCards = undefined;
+        }
+      });
+    }
+  }
+
+  deleteAllCardsDialog(index) {
+    const dialogRef = this.dialog.open(DialogSaveChanges, {
+      data: { title: "Confirmation", content: "Delete All Cards from " + this.lists[index].title }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.lists[index].cards = [];
+      }
+    });
+  }
+
+  deleteListDialog(index) {
+    const dialogRef = this.dialog.open(DialogSaveChanges, {
+      data: { title: "Confirmation", content: "Delete this list" }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.lists.splice(index, 1);
+      }
+    });
+  }
+
+  moveList(indexFromList, position, indexToList) {
+    if (indexFromList != undefined && position != undefined && indexToList != undefined) {
+      let index = indexToList;
+      if (position == "before") {
+        index--;
+      }
+      this.lists.splice(index, 0, this.lists.splice(indexFromList, 1)[0]);
+      this.selectedMoveList = undefined;
+      this.selectedMoveListPosition = undefined;
+    }
+
+  }
+
+  moveListDialog(indexFromList, position, indexToList) {
+    if (indexToList != undefined) {
+      const dialogRef = this.dialog.open(DialogSaveChanges, {
+        data: { title: "Unsaved Changes", content: "Move All Cards from " + this.lists[indexFromList].title + " to " + this.lists[indexToList].title }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.moveAllCards(indexFromList, indexToList);
+        }
+        else {
+          this.selectedMoveAllCards = undefined;
         }
       });
     }

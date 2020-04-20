@@ -1,13 +1,16 @@
 .project-manager {
-  height: 92vh;
-  min-height: 92vh;
+  height: 95vh;
+  min-height: 95vh;
 }
 
 .project-manager-menu {
-  height: 10vh;
-  min-height: 3em;
+  text-align:center;
+  height: 11vh;
+  min-height: 4em;
   margin-left: 10px;
   border-radius: 4px;
+  //margin-bottom: 1px;
+  overflow: auto;
   //padding: 5px;
 }
 
@@ -16,41 +19,49 @@
   max-width: 100%; 
   overflow:auto;
   display:block;
-  height: 82vh;
-  min-height: 82vh;
+  height: 84vh;
+  min-height: 84vh;
 }
 
 .example-container {
   min-width: 300px;
   width: 300px;
   max-width: 300px;
-  margin: 0 25px 25px 0;
+  margin: 0 5px 0 10px;
   //display: inline-block;
   vertical-align: top;
 }
 
 .example-list {
-  border: solid 1px #ccc;
+  min-width: 300px;
+  width: 300px;
+  max-width: 300px;
+  //border: solid 1px #ccc;
   min-height: 60px;
-  height: 75vh;
-  max-height: 75vh;
-  background: white;
+  //height: 75vh;
+  //max-height: 75vh;
+  background: rgb(235, 235, 235);
   border-radius: 4px;
   //overflow: auto;
   display: block;
-  margin-right: 5px;
-  margin-top: 5px;
-  margin-left: 10px;
+  //margin-right: 5px;
+  //margin-top: 5px;
+  //margin-left: 10px;
+  //padding-bottom: 10px;
 }
 
 .list-title{
   padding: 0px 10px;
   display: inline-block;
+  width: 200px;
+  white-space: nowrap;
+  overflow: auto;
 }
 
 .example-box {
+  margin: 5px;
   padding: 20px 10px;
-  border-bottom: solid 1px #ccc;
+  border-bottom: solid 1px #bbb;
   color: rgba(0, 0, 0, 0.87);
   display: flex;
   flex-direction: row;
@@ -99,14 +110,20 @@
   float: right;
 }
 
+.padding-0 {
+  padding: 0px;
+}
+
 .list-header {
   min-height: inherit;
   max-height: 10vh;
+  cursor: move;
 }
 
 .list-content {
   overflow: auto;
-  max-height: 55vh;
+  max-height: 59vh;
+  border-radius: 4px;
 }
 
 td {
@@ -144,10 +161,15 @@ td {
 }
 
 .board-title {
-  margin-right: 20px;
-  padding: 15px;
+  margin-top: 10px;
+  //margin-right: 20px;
+  padding: 10px;
   background-color: whitesmoke;
   border-radius: 4px;
+  float: left;
+  max-width: 265px;
+  overflow: auto;
+  white-space: nowrap;
 }
 
 .menu-item-padding {
@@ -156,4 +178,26 @@ td {
 
 .center {
   text-align: center;
+}
+
+
+.example-list-lists {
+  display: flex;
+  flex-direction: row;
+  overflow: auto;
+  height: 100%;
+}
+
+.example-box-lists {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  box-sizing: border-box;
+  //cursor: move;
+  flex-grow: 1;
+  flex-basis: 0;
+}
+
+.example-list-lists.cdk-drop-list-dragging .example-box-lists:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }

@@ -29,26 +29,30 @@
           </div>
 
         </mat-menu>
-        <button mat-menu-item [matMenuTriggerFor]="changeBackgroundMenu" #changeBackgroundTrigger="matMenuTrigger">Change background</button>
+        <button mat-menu-item [matMenuTriggerFor]="changeBackgroundMenu"
+          #changeBackgroundTrigger="matMenuTrigger">Change background</button>
         <mat-menu #changeBackgroundMenu="matMenu">
           <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
             <mat-form-field>
               <mat-label class="white">Color</mat-label>
-              <input #changeBackgroundInput type="color" class="white" matInput [(ngModel)]="boardBackground" (change)="changeBackground()">
+              <input #changeBackgroundInput type="color" class="white" matInput [(ngModel)]="boardBackground"
+                (change)="changeBackground()">
             </mat-form-field>
           </div>
-
         </mat-menu>
 
         <mat-divider></mat-divider>
         <button mat-menu-item (click)="$event.stopPropagation();showAddList()">New list</button>
+        <button mat-menu-item (click)="deleteAllListsDialog()">Delete all lists</button>
         <mat-divider></mat-divider>
-        <button mat-menu-item [matMenuTriggerFor]="renameBoardMenu" #renameBoardTrigger="matMenuTrigger">Rename board</button>
+        <button mat-menu-item [matMenuTriggerFor]="renameBoardMenu" #renameBoardTrigger="matMenuTrigger">Rename
+          board</button>
         <mat-menu #renameBoardMenu="matMenu" (closed)="saveBoardTitleDialog()">
           <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
             <mat-form-field>
               <mat-label class="white">Title</mat-label>
-              <input #renameBoardInput placeholder="Enter board title" class="white" matInput [(ngModel)]="boardTitle" (keyup.enter)="renameBoard()">
+              <input #renameBoardInput placeholder="Enter board title" class="white" matInput [(ngModel)]="boardTitle"
+                (keyup.enter)="renameBoard()">
             </mat-form-field>
             <br>
             <button class="center white" mat-menu-item (click)="renameBoard()">Save</button>
@@ -68,7 +72,8 @@
     <span>
       <mat-form-field [ngClass]="lightBackground ? 'add-list-title-black' : 'add-list-title'">
         <mat-label [ngClass]="lightBackground ? 'black-important' : 'white'">Enter list title</mat-label>
-        <input #listTitleInput [ngClass]="lightBackground ? 'black-important' : 'white'" matInput [(ngModel)]="listTitle" (keyup.enter)="addList()">
+        <input #listTitleInput [ngClass]="lightBackground ? 'black-important' : 'white'" matInput
+          [(ngModel)]="listTitle" (keyup.enter)="addList()">
       </mat-form-field>
       &nbsp;
       <button class="black whitesmoke" mat-button (click)="addList()">
@@ -83,11 +88,12 @@
     </span>
   </div>
   <table cellspacing="0" class="lists" [ngStyle]="{'width': sharedDataService.contextViewOn ? '80vw' : '95vw'}">
-    <tr cdkDropListGroup>
-      <td class="example-container" *ngFor="let list of lists; index as i">
+    <tr class="example-list-lists" cdkDropList cdkDropListOrientation="horizontal"
+      (cdkDropListDropped)="dropList($event)">
+      <td class="example-container example-box-lists" *ngFor="let list of lists; index as i" cdkDrag>
         <div id="{{list.id}}" cdkDropList [cdkDropListData]="list.cards" [cdkDropListConnectedTo]="connectedTo"
           class="example-list" (cdkDropListDropped)="drop($event)">
-          <div class="list-header">
+          <div class="list-header" cdkDragHandle>
             <h3 class="list-title">{{list.title}}</h3>
             <button mat-icon-button class="list-more" #listMoreButton [matMenuTriggerFor]="listMoreMenu"
               #listMoreTrigger="matMenuTrigger" (click)="listTitleRename = list.title">
@@ -103,25 +109,89 @@
                 </div>
                 <mat-divider></mat-divider>
                 <button mat-menu-item (click)="$event.stopPropagation();showAddCard(i)">New card</button>
-                <button mat-menu-item>Copy list</button>
-                <button mat-menu-item>Move list</button>
-                <button mat-menu-item [matMenuTriggerFor]="renameListMenu" #renameListTrigger="matMenuTrigger">Rename list</button>
+                <!--<button mat-menu-item>Copy list</button>-->
+                <button mat-menu-item [disabled]="lists.length < 2" [matMenuTriggerFor]="moveListMenu"
+                  #moveListTrigger="matMenuTrigger">Move list</button>
+                <mat-menu #moveListMenu="matMenu"
+                  (closed)="moveListDialog(i, selectedMoveListPosition, selectedMoveList)">
+                  <div class="menu-item-padding" (click)="$event.stopPropagation()"
+                    (keydown)="$event.stopPropagation()">
+                    <mat-form-field>
+                      <mat-label>Select a position</mat-label>
+                      <mat-select [(value)]="selectedMoveListPosition">
+                        <mat-option value="before">Before</mat-option>
+                        <mat-option value="after">After</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    <mat-form-field>
+                      <mat-label>Select a list</mat-label>
+                      <mat-select [(value)]="selectedMoveList">
+                        <ng-container *ngFor="let list of lists; index as j">
+                          <mat-option *ngIf="i!=j" [value]="j">{{list.title}}</mat-option>
+                        </ng-container>
+                      </mat-select>
+                    </mat-form-field>
+                    <button class="center white" mat-menu-item
+                      (click)="moveList(i, selectedMoveListPosition, selectedMoveList)">Move</button>
+                  </div>
+                </mat-menu>
+
+                <button mat-menu-item [matMenuTriggerFor]="renameListMenu" #renameListTrigger="matMenuTrigger">Rename
+                  list</button>
                 <mat-menu #renameListMenu="matMenu" (closed)="saveListTitleDialog(i)">
-                  <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                  <div class="menu-item-padding" (click)="$event.stopPropagation()"
+                    (keydown)="$event.stopPropagation()">
                     <mat-form-field>
                       <mat-label class="white">Title</mat-label>
-                      <input #renameListInput placeholder="Enter list title" class="white" matInput [(ngModel)]="listTitleRename" (keyup.enter)="renameList(i)">
+                      <input #renameListInput placeholder="Enter list title" class="white" matInput
+                        [(ngModel)]="listTitleRename" (keyup.enter)="renameList(i)">
                     </mat-form-field>
                     <br>
                     <button class="center white" mat-menu-item (click)="renameList(i)">Save</button>
                   </div>
                 </mat-menu>
-                <button mat-menu-item>Delete board</button>
-                <button mat-menu-item>Delete list</button>
+                <button mat-menu-item (click)="deleteListDialog(i)">Delete list</button>
+
                 <mat-divider></mat-divider>
-                <button mat-menu-item>Copy all cards</button>
-                <button mat-menu-item>Move all cards</button>
-                <button mat-menu-item>Delete all cards</button>
+
+                <button mat-menu-item [disabled]="list.cards.length == 0" [matMenuTriggerFor]="copyAllCardsMenu"
+                  #copyAllCardsTrigger="matMenuTrigger">Copy
+                  all cards</button>
+                <mat-menu #copyAllCardsMenu="matMenu" (closed)="copyAllCardsDialog(i, selectedCopyAllCards)">
+                  <div class="menu-item-padding" (click)="$event.stopPropagation()"
+                    (keydown)="$event.stopPropagation()">
+                    <mat-form-field>
+                      <mat-label>Select a list</mat-label>
+                      <mat-select [(value)]="selectedCopyAllCards">
+                        <mat-option *ngFor="let list of lists; index as j" [value]="j">{{list.title}}</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    <button class="center white" mat-menu-item (click)="copyAllCards(i, selectedCopyAllCards)"
+                      [disabled]="selectedCopyAllCards == undefined">Copy</button>
+                  </div>
+                </mat-menu>
+
+                <button mat-menu-item [disabled]="list.cards.length == 0" [matMenuTriggerFor]="moveAllCardsMenu"
+                  #moveAllCardsTrigger="matMenuTrigger">Move
+                  all cards</button>
+                <mat-menu #moveAllCardsMenu="matMenu" (closed)="moveAllCardsDialog(i, selectedMoveAllCards)">
+                  <div class="menu-item-padding" (click)="$event.stopPropagation()"
+                    (keydown)="$event.stopPropagation()">
+                    <mat-form-field>
+                      <mat-label>Select a list</mat-label>
+                      <mat-select [(value)]="selectedMoveAllCards" [disabled]="lists.length < 2">
+                        <ng-container *ngFor="let list of lists; index as j">
+                          <mat-option *ngIf="i!=j" [value]="j">{{list.title}}</mat-option>
+                        </ng-container>
+
+                      </mat-select>
+                    </mat-form-field>
+                    <button class="center white" mat-menu-item (click)="moveAllCards(i, selectedMoveAllCards)"
+                      [disabled]="selectedMoveAllCards == undefined">Move</button>
+                  </div>
+                </mat-menu>
+                <button mat-menu-item [disabled]="list.cards.length == 0" (click)="deleteAllCardsDialog(i)">Delete all
+                  cards</button>
               </span>
             </mat-menu>
             <!--
@@ -130,18 +200,20 @@
             </button>
             -->
           </div>
-          <div class="example-box cursor-default list-header">
+          <div class="example-box cursor-default list-header"
+            [ngStyle]="{'background-color':lightBackground?'lightgray':'white'}">
             <mat-form-field class="add-card-title">
               <mat-label class="black">Enter card title</mat-label>
               <input matInput [(ngModel)]="cardTitle[i]" #cardTitleInput (keyup.enter)="addCard(i)">
             </mat-form-field>
             &nbsp;
-            <button mat-button (click)="addCard(i)" class="black whitesmoke">
+            <button mat-button (click)="addCard(i)" class="black whitesmoke padding-0">
               Add card
             </button>
           </div>
           <div class="list-content">
-            <div class="example-box" *ngFor="let item of list.cards" cdkDrag>{{item.title}}</div>
+            <div class="example-box" *ngFor="let item of list.cards"
+              [ngStyle]="{'background-color':lightBackground?'lightgray':'white'}" cdkDrag>{{item.title}}</div>
           </div>
 
         </div>

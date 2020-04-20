@@ -1,4 +1,4 @@
 export interface DialogSaveChangesData {
-    yes: boolean;
-    object: string;
+    title: string;
+    content: string;
 }
