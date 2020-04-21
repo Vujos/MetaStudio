@@ -1,4 +1,4 @@
-import { Task } from './task.model';
+import { Checklist } from './checklist.model';
 
 export class Card {
     id: string;
@@ -10,9 +10,9 @@ export class Card {
     endDate: Date;
     attachments: [];
     labels: string[];
-    checklist: Task[];
+    checklists: Checklist[];
 
-    constructor(id: string, title: string, date: Date, description: string, members: [], startDate: Date, endDate: Date, attachments: [], labels: string[], checklist: Task[]) {
+    constructor(id: string, title: string, date: Date, description: string, members: [], startDate: Date, endDate: Date, attachments: [], labels: string[], checklists: Checklist[]) {
         this.id = id;
         this.title = title;
         this.date = date;
@@ -22,6 +22,6 @@ export class Card {
         this.endDate = endDate;
         this.attachments = attachments;
         this.labels = labels;
-        this.checklist = checklist;
+        this.checklists = checklists;
     }
 }

@@ -1,8 +1,10 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material';
-import { CardDetailsDialogData } from '../hero-profile.component';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { DialogSaveChanges } from '../dialog/dialog-save-changes';
+import { Checklist } from '../checklist.model';
+import { Task } from '../task.model';
+import { Card } from '../card.model';
 
 @Component({
   selector: 'app-card-details',
@@ -18,7 +20,10 @@ export class CardDetailsComponent implements OnInit {
   label: string = "";
   labels: string[] = [];
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: CardDetailsDialogData, private fb: FormBuilder, private dialogRef: MatDialogRef<CardDetailsComponent>, public dialog: MatDialog) { }
+  checklistTitle: string = "";
+  itemTitle: string = "";
+
+  constructor(@Inject(MAT_DIALOG_DATA) public data: CardDetailsData, private fb: FormBuilder, private dialogRef: MatDialogRef<CardDetailsComponent>, public dialog: MatDialog) { }
 
   ngOnInit() {
     this.cardForm = this.fb.group({
@@ -50,6 +55,20 @@ export class CardDetailsComponent implements OnInit {
     });
   }
 
+  addChecklist(){
+    if(this.checklistTitle.trim()!=""){
+      this.data.card.checklists.push(new Checklist(this.data.card.checklists.length.toString(), this.checklistTitle, new Date(), []));
+    }
+    this.checklistTitle = "";
+  }
+
+  addItem(index){
+    if(this.itemTitle.trim()!=""){
+      this.data.card.checklists[index].tasks.push(new Task(this.data.card.checklists[index].tasks.length.toString(), this.itemTitle, false, new Date()));
+    }
+    this.itemTitle = "";
+  }
+
   private toDateString(date: Date): string {
     return (date.getFullYear().toString() + '-'
       + ("0" + (date.getMonth() + 1)).slice(-2) + '-'
@@ -57,4 +76,8 @@ export class CardDetailsComponent implements OnInit {
       + 'T' + date.toTimeString().slice(0, 5);
   }
 
+}
+
+export interface CardDetailsData {
+  card: Card;
 }

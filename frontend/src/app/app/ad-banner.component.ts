@@ -4,7 +4,7 @@ import { AdDirective } from './ad.directive';
 import { AdItem }      from './ad-item';
 import { AdComponent } from './ad.component';
 import { AdService } from './ad.service';
-import { HeroProfileComponent } from './hero-profile.component';
+import { ProjectManagerComponent } from './project-manager.component';
 
 @Component({
   selector: 'app-ad-banner',
@@ -29,7 +29,7 @@ export class AdBannerComponent implements OnInit, OnDestroy {
   }
 
   addList(){
-    const adItem = new AdItem(HeroProfileComponent, {})
+    const adItem = new AdItem(ProjectManagerComponent, {})
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(adItem.component);
 
     const viewContainerRef = this.adHost.viewContainerRef;

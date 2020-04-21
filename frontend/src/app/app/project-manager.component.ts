@@ -1,4 +1,4 @@
-import { Component, Input, ViewEncapsulation, ViewChild, ElementRef, ViewChildren, Inject } from '@angular/core';
+import { Component, Input, ViewEncapsulation, ViewChild, ElementRef, ViewChildren } from '@angular/core';
 
 import { AdComponent } from './ad.component';
 
@@ -6,17 +6,17 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/dr
 import { SharedDataService } from '../shared/shared-data.service';
 import { Board } from './board.model';
 import { Card } from './card.model';
-import { MatMenuTrigger, MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { MatMenuTrigger, MatDialog } from '@angular/material';
 import { DialogSaveChanges } from './dialog/dialog-save-changes';
-import { List } from './list.model';
+import { CardDetailsComponent } from './card-details/card-details.component';
 
 @Component({
-  selector: 'app-hero-profile',
-  templateUrl: './hero-profile.component.html',
-  styleUrls: ['./hero-profile.component.scss'],
+  selector: 'app-project-manager',
+  templateUrl: './project-manager.component.html',
+  styleUrls: ['./project-manager.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class HeroProfileComponent implements AdComponent {
+export class ProjectManagerComponent implements AdComponent {
   @ViewChildren('cardTitleInput') cardTitleElements: ElementRef;
   @ViewChild('listTitleInput', { static: false }) listTitleElement: ElementRef;
   @ViewChild('boardMoreTrigger', { static: false }) boardMoreTrigger: MatMenuTrigger;
@@ -46,7 +46,7 @@ export class HeroProfileComponent implements AdComponent {
   showAddCardBool = false;
   cardTitle = {};
 
-  constructor(private sharedDataService: SharedDataService, public dialog: MatDialog) {
+  constructor(public dialog: MatDialog, public sharedDataService: SharedDataService) {
 
     this.lists = [
       {
@@ -150,7 +150,7 @@ export class HeroProfileComponent implements AdComponent {
       endDate: new Date(),
       attachments: [],
       labels: [],
-      checklist: []
+      checklists: []
     });
     this.cardTitle[index] = "";
   }
@@ -375,25 +375,6 @@ export class HeroProfileComponent implements AdComponent {
   }
 
   openCardDetailsDialog(card) {
-    this.dialog.open(CardDetailsDialog, { panelClass: 'myapp-no-padding-dialog', data: {card} });
+    this.dialog.open(CardDetailsComponent, { data: {card} });
   }
 }
-
-export interface CardDetailsDialogData {
-  card: Card;
-}
-
-@Component({
-  selector: 'card-details-dialog',
-  templateUrl: 'card-details/card-details-dialog.html',
-  styleUrls: ['card-details/card-details-dialog.scss']
-})
-export class CardDetailsDialog {
-  constructor(public dialog: MatDialogRef<CardDetailsDialog>,
-    @Inject(MAT_DIALOG_DATA) public data: CardDetailsDialogData) { }
-
-  onClose(): void {
-    this.dialog.close();
-  }
-}
-

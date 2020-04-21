@@ -19,7 +19,7 @@ import { VisionComponent } from './vision/vision.component';
 
 
 import { AdBannerComponent }    from './app/ad-banner.component';
-import { HeroProfileComponent, CardDetailsDialog } from './app/hero-profile.component';
+import { ProjectManagerComponent } from './app/project-manager.component';
 import { AdDirective }          from './app/ad.directive';
 import { AdService }            from './app/ad.service';
 import { DialogSaveChanges } from './app/dialog/dialog-save-changes';
@@ -39,11 +39,10 @@ window['$'] = $;
     PluginManagerComponent,
     VisionComponent,
     AdBannerComponent,
-    HeroProfileComponent,
+    ProjectManagerComponent,
     AdDirective,
     DialogSaveChanges,
-    CardDetailsComponent,
-    CardDetailsDialog
+    CardDetailsComponent
   ],
   imports: [
     BrowserModule,
@@ -56,11 +55,10 @@ window['$'] = $;
     LoginComponent,
     LifeCyclesComponent,
     PluginManagerComponent,  
-    HeroProfileComponent,
+    ProjectManagerComponent,
     LoginDialog,
     DialogSaveChanges,
-    CardDetailsComponent,
-    CardDetailsDialog
+    CardDetailsComponent
   ],
   providers: [AdService],
   bootstrap: [AppComponent]

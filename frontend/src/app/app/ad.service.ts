@@ -1,12 +1,12 @@
 import { Injectable }           from '@angular/core';
-import { HeroProfileComponent } from './hero-profile.component';
+import { ProjectManagerComponent } from './project-manager.component';
 import { AdItem }               from './ad-item';
 
 @Injectable()
 export class AdService {
   getAds() {
     return [
-      new AdItem(HeroProfileComponent, {})
+      new AdItem(ProjectManagerComponent, {})
     ];
   }
 }
