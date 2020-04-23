@@ -114,23 +114,24 @@ export class ProjectManagerComponent implements AdComponent {
   showAddList() {
     this.boardMoreTrigger.closeMenu();
     this.listTitle = "";
-    //this.showAddListBool = !this.showAddListBool
-    //this.ref.detectChanges();
     if (this.listTitleElement) {
       this.listTitleElement.nativeElement.focus();
     }
   }
 
   addList() {
-    this.lists.push({
-      id: 'list-'.concat((this.lists.length + 1).toString()),
-      title: this.listTitle.trim() == "" ? "Untitled list" : this.listTitle.trim(),
-      cards: [],
-      priority: 1,
-      date: new Date()
-    });
+    if (this.listTitle.trim() != "") {
+      this.lists.push({
+        id: 'list-'.concat((this.lists.length + 1).toString()),
+        title: this.listTitle.trim(),
+        cards: [],
+        priority: 1,
+        date: new Date()
+      });
+      this.connectedTo.push('list-'.concat((this.lists.length).toString()));
+    }
     this.listTitle = "";
-    this.connectedTo.push('list-'.concat((this.lists.length).toString()));
+    this.listTitleElement.nativeElement.focus();
   }
 
   showAddCard(index) {
@@ -140,19 +141,22 @@ export class ProjectManagerComponent implements AdComponent {
   }
 
   addCard(index) {
-    this.lists[index]['cards'].push({
-      id: 'list-'.concat(index.toString(), this.lists[index]['cards'].length),
-      title: !this.cardTitle[index] || this.cardTitle[index].trim() == "" ? "Untitled card" : this.cardTitle[index].trim(),
-      date: new Date(),
-      description: "",
-      members: [],
-      startDate: new Date(),
-      endDate: new Date(),
-      attachments: [],
-      labels: [],
-      checklists: []
-    });
+    if (this.cardTitle[index] && this.cardTitle[index].trim() != "") {
+      this.lists[index]['cards'].push({
+        id: 'list-'.concat(index.toString(), this.lists[index]['cards'].length),
+        title: this.cardTitle[index].trim(),
+        date: new Date(),
+        description: "",
+        members: [],
+        startDate: new Date(),
+        endDate: new Date(),
+        attachments: [],
+        labels: [],
+        checklists: []
+      });
+    }
     this.cardTitle[index] = "";
+    this.cardTitleElements['_results'][index].nativeElement.focus();
   }
 
   saveBoardDescription() {
@@ -368,13 +372,13 @@ export class ProjectManagerComponent implements AdComponent {
         }
       });
     }
-    else{
+    else {
       this.selectedMoveList = undefined;
       this.selectedMoveListPosition = undefined;
     }
   }
 
   openCardDetailsDialog(card) {
-    this.dialog.open(CardDetailsComponent, { data: {card} });
+    this.dialog.open(CardDetailsComponent, { data: { card } });
   }
 }

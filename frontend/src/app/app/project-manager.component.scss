@@ -222,7 +222,7 @@ td {
 .label {
   display: inline-block;
   border-radius: 50%;
-  padding: 10px;
+  padding: 5px;
   border: 1px solid black;
   //box-shadow: #000 0px 0px 1px, #000 0px 0px 1px,#000 0px 0px 1px,#000 0px 0px 1px,#000 0px 0px 1px,#000 0px 0px 1px;
 }
@@ -233,6 +233,18 @@ td {
 
 .mat-primary .mat-option.mat-selected:not(.mat-option-disabled) {
   color: #00d000;
+}
+
+.menu-header{
+  text-align: right;
+}
+
+.float-left{
+  float: left;
+}
+
+.close:hover{
+  background-color: red;
 }
 /*
 .mat-input-element {

@@ -28,8 +28,24 @@
     float: right;
 }
 
+.float-left{
+    float: left;
+}
+
+.text-align-right{
+    text-align: right;
+}
+
 .close{
     float: right;
     top:-24px;
     right:-24px;
+}
+
+.close:hover{
+    background-color: red;
+}
+
+.title{
+    margin: 0;
 }
