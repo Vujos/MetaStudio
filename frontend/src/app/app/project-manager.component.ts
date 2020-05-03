@@ -1,14 +1,14 @@
-import { Component, Input, ViewEncapsulation, ViewChild, ElementRef, ViewChildren } from '@angular/core';
-
-import { AdComponent } from './ad.component';
-
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { Component, ElementRef, Input, ViewChild, ViewChildren, ViewEncapsulation } from '@angular/core';
+import { MatDialog, MatDialogRef, MatMenuTrigger } from '@angular/material';
+import { ActivatedRoute } from '@angular/router';
 import { SharedDataService } from '../shared/shared-data.service';
+import { AdComponent } from './ad.component';
 import { Board } from './board.model';
-import { Card } from './card.model';
-import { MatMenuTrigger, MatDialog } from '@angular/material';
-import { DialogSaveChanges } from './dialog/dialog-save-changes';
+import { BoardService } from './boards/board.service';
 import { CardDetailsComponent } from './card-details/card-details.component';
+import { DialogSaveChanges } from './dialog/dialog-save-changes';
+import { WebSocketService } from './web-socket/web-socket.service';
 
 @Component({
   selector: 'app-project-manager',
@@ -22,6 +22,9 @@ export class ProjectManagerComponent implements AdComponent {
   @ViewChild('boardMoreTrigger', { static: false }) boardMoreTrigger: MatMenuTrigger;
   @ViewChild('listMoreTrigger', { static: false }) listMoreTrigger: MatMenuTrigger;
   @Input() data: any;
+
+  private dialogRef: MatDialogRef<CardDetailsComponent>;
+
   lists = [];
   connectedTo = [];
 
@@ -40,75 +43,73 @@ export class ProjectManagerComponent implements AdComponent {
 
   lightBackground = false;
 
-  //showAddListBool = false;
   listTitle = "";
 
   showAddCardBool = false;
   cardTitle = {};
 
-  constructor(public dialog: MatDialog, public sharedDataService: SharedDataService) {
+  private wc;
 
-    this.lists = [
-      {
-        id: 'list-1',
-        title: 'List',
-        cards: [
-          new Card("1", "Card 1", new Date(), "This is description", [], new Date(), new Date(), [], ["#000000", "#ffffff", "#ff0000"], []),
-          new Card("2", "Card 2", new Date(), "", [], new Date(), new Date(), [], [], []),
-          new Card("3", "Card 3", new Date(), "", [], new Date(), new Date(), [], [], []),
-          new Card("4", "Card 4", new Date(), "", [], new Date(), new Date(), [], [], []),
-          new Card("5", "Card 5", new Date(), "", [], new Date(), new Date(), [], [], []),
-          new Card("6", "Card 6", new Date(), "", [], new Date(), new Date(), [], [], []),
-          new Card("7", "Card 7", new Date(), "", [], new Date(), new Date(), [], [], []),
-          new Card("8", "Card 8", new Date(), "", [], new Date(), new Date(), [], [], []),
-        ],
-        priority: 1,
-        date: new Date()
-      }, {
-        id: 'list-2',
-        title: 'Random list',
-        cards: [
-          new Card("9", "Card 9", new Date(), "", [], new Date(), new Date(), [], [], []),
-          new Card("10", "Card 10", new Date(), "", [], new Date(), new Date(), [], [], []),
-          new Card("11", "Card 11", new Date(), "", [], new Date(), new Date(), [], [], [])
-        ],
-        priority: 1,
-        date: new Date()
-      }, {
-        id: 'list-3',
-        title: 'Done',
-        cards: [
-          new Card("12", "Card 12", new Date(), "", [], new Date(), new Date(), [], [], []),
-          new Card("13", "Card 13", new Date(), "", [], new Date(), new Date(), [], [], [])
-        ],
-        priority: 1,
-        date: new Date()
-      }
-    ];
-    for (let list of this.lists) {
-      this.connectedTo.push(list.id);
-    };
+  constructor(public dialog: MatDialog, public sharedDataService: SharedDataService, private route: ActivatedRoute, private boardService: BoardService, private webSocketService: WebSocketService) {
 
-    this.board = new Board('1', 'Board 1', new Date(), "This is description", "#55aa55", [], this.lists, 1);
+  }
 
-    this.boardDescription = this.board.description;
-    this.boardTitle = this.board.title;
-    this.boardBackground = this.board.background;
+  ngOnInit() {
+    let id = this.route.snapshot.paramMap.get("id");
+
+    this.boardService.getOne(id).subscribe(data => {
+      this.board = data;
+      for (let list of this.board.lists) {
+        this.connectedTo.push(list.id);
+      };
+
+      this.boardDescription = this.board.description;
+      this.boardTitle = this.board.title;
+      this.boardBackground = this.board.background;
+    });
+
+    this.wc = this.webSocketService.getClient();
+    this.wc.connect({}, () => {
+      this.wc.subscribe("/topic/boards/update/" + id, (msg) => {
+        let data = JSON.parse(msg.body).body;
+        this.board = data;
+        if (this.dialogRef && this.dialogRef.componentInstance) {
+          if (this.board.lists[this.dialogRef.componentInstance.data.listIndex].cards[this.dialogRef.componentInstance.data.cardIndex] == undefined || this.board.lists[this.dialogRef.componentInstance.data.listIndex].cards[this.dialogRef.componentInstance.data.cardIndex].id != this.dialogRef.componentInstance.data.board.lists[this.dialogRef.componentInstance.data.listIndex].cards[this.dialogRef.componentInstance.data.cardIndex].id) {
+            this.dialogRef.close();
+          }
+          this.dialogRef.componentInstance.data.board = data;
+        }
+        this.connectedTo = [];
+        for (let list of this.board.lists) {
+          this.connectedTo.push(list.id);
+        };
+        this.boardDescription = this.board.description;
+        this.boardTitle = this.board.title;
+        this.boardBackground = this.board.background;
+      })
+    })
+  }
+
+  ngOnDestroy() {
+    this.wc.disconnect();
   }
 
   drop(event: CdkDragDrop<string[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      this.updateBoard();
     } else {
       transferArrayItem(event.previousContainer.data,
         event.container.data,
         event.previousIndex,
         event.currentIndex);
+      this.updateBoard();
     }
   }
 
   dropList(event: CdkDragDrop<string[]>) {
-    moveItemInArray(this.lists, event.previousIndex, event.currentIndex);
+    moveItemInArray(this.board.lists, event.previousIndex, event.currentIndex);
+    this.updateBoard();
   }
 
   showAddList() {
@@ -121,14 +122,16 @@ export class ProjectManagerComponent implements AdComponent {
 
   addList() {
     if (this.listTitle.trim() != "") {
-      this.lists.push({
-        id: 'list-'.concat((this.lists.length + 1).toString()),
-        title: this.listTitle.trim(),
-        cards: [],
-        priority: 1,
-        date: new Date()
-      });
-      this.connectedTo.push('list-'.concat((this.lists.length).toString()));
+      this.board.lists.push(
+        {
+          id: null,
+          title: this.listTitle.trim(),
+          cards: [],
+          priority: 1,
+          date: new Date()
+        }
+      );
+      this.updateBoard();
     }
     this.listTitle = "";
     this.listTitleElement.nativeElement.focus();
@@ -142,8 +145,8 @@ export class ProjectManagerComponent implements AdComponent {
 
   addCard(index) {
     if (this.cardTitle[index] && this.cardTitle[index].trim() != "") {
-      this.lists[index]['cards'].push({
-        id: 'list-'.concat(index.toString(), this.lists[index]['cards'].length),
+      this.board.lists[index]['cards'].push({
+        id: null,
         title: this.cardTitle[index].trim(),
         date: new Date(),
         description: "",
@@ -154,6 +157,7 @@ export class ProjectManagerComponent implements AdComponent {
         labels: [],
         checklists: []
       });
+      this.updateBoard();
     }
     this.cardTitle[index] = "";
     this.cardTitleElements['_results'][index].nativeElement.focus();
@@ -162,6 +166,7 @@ export class ProjectManagerComponent implements AdComponent {
   saveBoardDescription() {
     this.board.description = this.boardDescription.trim();
     this.boardDescription = this.board.description;
+    this.updateBoard();
   }
 
   deleteAllListsDialog() {
@@ -171,7 +176,8 @@ export class ProjectManagerComponent implements AdComponent {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.lists = [];
+        this.board.lists = [];
+        this.updateBoard();
       }
     });
   }
@@ -180,6 +186,7 @@ export class ProjectManagerComponent implements AdComponent {
     if (this.boardTitle.trim() != "") {
       this.board.title = this.boardTitle.trim();
       this.boardTitle = this.board.title;
+      this.updateBoard();
     }
     else {
       this.boardTitle = this.board.title;
@@ -225,6 +232,7 @@ export class ProjectManagerComponent implements AdComponent {
 
   changeBackground() {
     this.board.background = this.boardBackground;
+    this.updateBoard();
     this.checkBoardBackground();
   }
 
@@ -241,16 +249,17 @@ export class ProjectManagerComponent implements AdComponent {
 
   renameList(index) {
     if (this.listTitleRename.trim() != "") {
-      this.lists[index].title = this.listTitleRename.trim();
-      this.listTitleRename = this.lists[index].title;
+      this.board.lists[index].title = this.listTitleRename.trim();
+      this.updateBoard();
+      this.listTitleRename = this.board.lists[index].title;
     }
     else {
-      this.listTitleRename = this.lists[index].title;
+      this.listTitleRename = this.board.lists[index].title;
     }
   }
 
   saveListTitleDialog(index) {
-    if (this.listTitleRename.trim() != this.lists[index].title && this.listTitleRename.trim() != "") {
+    if (this.listTitleRename.trim() != this.board.lists[index].title && this.listTitleRename.trim() != "") {
       const dialogRef = this.dialog.open(DialogSaveChanges, {
         data: { title: "Unsaved Changes", content: "Save Changes to List Title" }
       });
@@ -260,18 +269,19 @@ export class ProjectManagerComponent implements AdComponent {
           this.renameList(index);
         }
         else {
-          this.listTitleRename = this.lists[index].title;
+          this.listTitleRename = this.board.lists[index].title;
         }
       });
     }
     else {
-      this.listTitleRename = this.lists[index].title;
+      this.listTitleRename = this.board.lists[index].title;
     }
   }
 
   copyAllCards(indexFromList, indexToList) {
     if (indexFromList != undefined && indexToList != undefined) {
-      this.lists[indexToList].cards = this.lists[indexToList].cards.concat(this.lists[indexFromList].cards);
+      this.board.lists[indexToList].cards = this.board.lists[indexToList].cards.concat(this.board.lists[indexFromList].cards);
+      this.updateBoard();
       this.selectedCopyAllCards = undefined;
     }
   }
@@ -279,7 +289,7 @@ export class ProjectManagerComponent implements AdComponent {
   copyAllCardsDialog(indexFromList, indexToList) {
     if (indexToList != undefined) {
       const dialogRef = this.dialog.open(DialogSaveChanges, {
-        data: { title: "Unsaved Changes", content: "Copy All Cards from " + this.lists[indexFromList].title + " to " + this.lists[indexToList].title }
+        data: { title: "Unsaved Changes", content: "Copy All Cards from " + this.board.lists[indexFromList].title + " to " + this.board.lists[indexToList].title }
       });
 
       dialogRef.afterClosed().subscribe(result => {
@@ -295,8 +305,9 @@ export class ProjectManagerComponent implements AdComponent {
 
   moveAllCards(indexFromList, indexToList) {
     if (indexFromList != undefined && indexToList != undefined) {
-      this.lists[indexToList].cards = this.lists[indexToList].cards.concat(this.lists[indexFromList].cards);
-      this.lists[indexFromList].cards = [];
+      this.board.lists[indexToList].cards = this.board.lists[indexToList].cards.concat(this.board.lists[indexFromList].cards);
+      this.board.lists[indexFromList].cards = [];
+      this.updateBoard();
       this.selectedMoveAllCards = undefined;
     }
 
@@ -305,7 +316,7 @@ export class ProjectManagerComponent implements AdComponent {
   moveAllCardsDialog(indexFromList, indexToList) {
     if (indexToList != undefined) {
       const dialogRef = this.dialog.open(DialogSaveChanges, {
-        data: { title: "Unsaved Changes", content: "Move All Cards from " + this.lists[indexFromList].title + " to " + this.lists[indexToList].title }
+        data: { title: "Unsaved Changes", content: "Move All Cards from " + this.board.lists[indexFromList].title + " to " + this.board.lists[indexToList].title }
       });
 
       dialogRef.afterClosed().subscribe(result => {
@@ -321,12 +332,13 @@ export class ProjectManagerComponent implements AdComponent {
 
   deleteAllCardsDialog(index) {
     const dialogRef = this.dialog.open(DialogSaveChanges, {
-      data: { title: "Confirmation", content: "Delete All Cards from " + this.lists[index].title }
+      data: { title: "Confirmation", content: "Delete All Cards from " + this.board.lists[index].title }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.lists[index].cards = [];
+        this.board.lists[index].cards = [];
+        this.updateBoard();
       }
     });
   }
@@ -338,7 +350,8 @@ export class ProjectManagerComponent implements AdComponent {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.lists.splice(index, 1);
+        this.board.lists.splice(index, 1);
+        this.updateBoard();
       }
     });
   }
@@ -349,7 +362,8 @@ export class ProjectManagerComponent implements AdComponent {
       if (position == "before") {
         index--;
       }
-      this.lists.splice(index, 0, this.lists.splice(indexFromList, 1)[0]);
+      this.board.lists.splice(index, 0, this.board.lists.splice(indexFromList, 1)[0]);
+      this.updateBoard();
       this.selectedMoveList = undefined;
       this.selectedMoveListPosition = undefined;
     }
@@ -359,7 +373,7 @@ export class ProjectManagerComponent implements AdComponent {
   moveListDialog(indexFromList, position, indexToList) {
     if (indexToList != undefined && position != undefined) {
       const dialogRef = this.dialog.open(DialogSaveChanges, {
-        data: { title: "Unsaved Changes", content: "Move List " + position + " " + this.lists[indexToList].title }
+        data: { title: "Unsaved Changes", content: "Move List " + position + " " + this.board.lists[indexToList].title }
       });
 
       dialogRef.afterClosed().subscribe(result => {
@@ -378,7 +392,11 @@ export class ProjectManagerComponent implements AdComponent {
     }
   }
 
-  openCardDetailsDialog(card) {
-    this.dialog.open(CardDetailsComponent, { data: { card } });
+  openCardDetailsDialog(listIndex, cardIndex) {
+    this.dialogRef = this.dialog.open(CardDetailsComponent, { data: { board: this.board, listIndex: listIndex, cardIndex: cardIndex } });
+  }
+
+  updateBoard() {
+    this.wc.send("/app/boards/update/" + this.board.id, {}, JSON.stringify(this.board));
   }
 }

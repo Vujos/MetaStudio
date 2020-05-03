@@ -1,6 +1,6 @@
 <div class="project-manager" [ngStyle]="{'background-color':boardBackground}">
   <div class="project-manager-menu">
-    <span class="board-title"><b>{{board.title}}</b></span>
+    <span class="board-title"><b>{{board?.title}}</b></span>
     <button mat-icon-button class="board-more" #boardMoreButton [matMenuTriggerFor]="boardMoreMenu"
       #boardMoreTrigger="matMenuTrigger" [ngStyle]="{'color': lightBackground ? 'black' : 'white'}">
       <mat-icon>more_vert</mat-icon>
@@ -25,7 +25,8 @@
                 #boardDescriptionInput class="white"></textarea>
             </mat-form-field>
             <br>
-            <button class="center white background-color-gray save" mat-button (click)="saveBoardDescription()">Save</button>
+            <button class="center white background-color-gray save" mat-button
+              (click)="saveBoardDescription()">Save</button>
           </div>
 
         </mat-menu>
@@ -90,7 +91,7 @@
   <table cellspacing="0" class="lists" [ngStyle]="{'width': sharedDataService.contextViewOn ? '80vw' : '95vw'}">
     <tr class="example-list-lists" cdkDropList cdkDropListOrientation="horizontal"
       (cdkDropListDropped)="dropList($event)">
-      <td class="example-container example-box-lists" *ngFor="let list of lists; index as i" cdkDrag>
+      <td class="example-container example-box-lists" *ngFor="let list of board?.lists; index as i" cdkDrag>
         <div id="{{list.id}}" cdkDropList [cdkDropListData]="list.cards" [cdkDropListConnectedTo]="connectedTo"
           class="example-list" (cdkDropListDropped)="drop($event)">
           <div class="list-header" cdkDragHandle>
@@ -110,7 +111,7 @@
                 <mat-divider></mat-divider>
                 <button mat-menu-item (click)="$event.stopPropagation();showAddCard(i)">New card</button>
                 <!--<button mat-menu-item>Copy list</button>-->
-                <button mat-menu-item [disabled]="lists.length < 2" [matMenuTriggerFor]="moveListMenu"
+                <button mat-menu-item [disabled]="board?.lists.length < 2" [matMenuTriggerFor]="moveListMenu"
                   #moveListTrigger="matMenuTrigger">Move list</button>
                 <mat-menu #moveListMenu="matMenu"
                   (closed)="moveListDialog(i, selectedMoveListPosition, selectedMoveList)">
@@ -126,14 +127,15 @@
                     <mat-form-field>
                       <mat-label class="white">Select a list</mat-label>
                       <mat-select [(value)]="selectedMoveList">
-                        <ng-container *ngFor="let list of lists; index as j">
+                        <ng-container *ngFor="let list of board?.lists; index as j">
                           <mat-option *ngIf="i!=j" [value]="j">{{list.title}}</mat-option>
                         </ng-container>
                       </mat-select>
                     </mat-form-field>
                     <br>
                     <button class="center white background-color-gray save" mat-button
-                      (click)="moveList(i, selectedMoveListPosition, selectedMoveList)" [disabled]="selectedMoveListPosition==undefined || selectedMoveList==undefined">Move</button>
+                      (click)="moveList(i, selectedMoveListPosition, selectedMoveList)"
+                      [disabled]="selectedMoveListPosition==undefined || selectedMoveList==undefined">Move</button>
                   </div>
                 </mat-menu>
 
@@ -148,7 +150,8 @@
                         [(ngModel)]="listTitleRename" (keyup.enter)="renameList(i)">
                     </mat-form-field>
                     <br>
-                    <button class="center white background-color-gray save" mat-button (click)="renameList(i)">Save</button>
+                    <button class="center white background-color-gray save" mat-button
+                      (click)="renameList(i)">Save</button>
                   </div>
                 </mat-menu>
                 <button class="delete" mat-menu-item (click)="deleteListDialog(i)">Delete list</button>
@@ -164,11 +167,13 @@
                     <mat-form-field>
                       <mat-label class="white">Select a list</mat-label>
                       <mat-select [(value)]="selectedCopyAllCards">
-                        <mat-option *ngFor="let list of lists; index as j" [value]="j">{{list.title}}</mat-option>
+                        <mat-option *ngFor="let list of board?.lists; index as j" [value]="j">{{list.title}}
+                        </mat-option>
                       </mat-select>
                     </mat-form-field>
                     <br>
-                    <button class="center white background-color-gray save" mat-button (click)="copyAllCards(i, selectedCopyAllCards)"
+                    <button class="center white background-color-gray save" mat-button
+                      (click)="copyAllCards(i, selectedCopyAllCards)"
                       [disabled]="selectedCopyAllCards == undefined">Copy</button>
                   </div>
                 </mat-menu>
@@ -181,19 +186,21 @@
                     (keydown)="$event.stopPropagation()">
                     <mat-form-field>
                       <mat-label class="white">Select a list</mat-label>
-                      <mat-select [(value)]="selectedMoveAllCards" [disabled]="lists.length < 2">
-                        <ng-container *ngFor="let list of lists; index as j">
+                      <mat-select [(value)]="selectedMoveAllCards" [disabled]="board?.lists.length < 2">
+                        <ng-container *ngFor="let list of board?.lists; index as j">
                           <mat-option *ngIf="i!=j" [value]="j">{{list.title}}</mat-option>
                         </ng-container>
 
                       </mat-select>
                     </mat-form-field>
                     <br>
-                    <button class="center white background-color-gray save" mat-button (click)="moveAllCards(i, selectedMoveAllCards)"
+                    <button class="center white background-color-gray save" mat-button
+                      (click)="moveAllCards(i, selectedMoveAllCards)"
                       [disabled]="selectedMoveAllCards == undefined">Move</button>
                   </div>
                 </mat-menu>
-                <button class="delete" mat-menu-item [disabled]="list.cards.length == 0" (click)="deleteAllCardsDialog(i)">Delete all
+                <button class="delete" mat-menu-item [disabled]="list.cards.length == 0"
+                  (click)="deleteAllCardsDialog(i)">Delete all
                   cards</button>
               </span>
             </mat-menu>
@@ -215,14 +222,14 @@
             </button>
           </div>
           <div class="list-content">
-            <div class="example-box" *ngFor="let item of list.cards" (click)="openCardDetailsDialog(item)"
+            <div class="example-box" *ngFor="let item of list.cards; index as j" (click)="openCardDetailsDialog(i, j)"
               [ngStyle]="{'background-color':lightBackground?'lightgray':'white'}" cdkDrag>
-              <span *ngFor="let label of item.labels">
+              <span *ngFor="let label of item?.labels">
                 <span class="label" [ngStyle]="{'background-color':label}"></span>
                 &nbsp;
               </span>
-              
-              <div>{{item.title}}</div>
+
+              <div>{{item?.title}}</div>
             </div>
           </div>
 

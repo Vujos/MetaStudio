@@ -1,10 +1,11 @@
-import { Component, OnInit, Inject, ViewChild } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialog, MatMenuTrigger, ThemePalette } from '@angular/material';
-import { FormGroup, FormBuilder } from '@angular/forms';
-import { DialogSaveChanges } from '../dialog/dialog-save-changes';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { MatDialog, MatDialogRef, MatMenuTrigger, MAT_DIALOG_DATA, ThemePalette } from '@angular/material';
+import { Board } from '../board.model';
 import { Checklist } from '../checklist.model';
+import { DialogSaveChanges } from '../dialog/dialog-save-changes';
 import { Task } from '../task.model';
-import { Card } from '../card.model';
+import { WebSocketService } from '../web-socket/web-socket.service';
 
 @Component({
   selector: 'app-card-details',
@@ -36,19 +37,20 @@ export class CardDetailsComponent implements OnInit {
   checked: number[] = [];
   checkboxChecked = {};
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: CardDetailsData, private fb: FormBuilder, private dialogRef: MatDialogRef<CardDetailsComponent>, public dialog: MatDialog) { }
+  private wc;
+
+  constructor(@Inject(MAT_DIALOG_DATA) public data: CardDetailsData, private fb: FormBuilder, private dialogRef: MatDialogRef<CardDetailsComponent>, public dialog: MatDialog, private webSocketService: WebSocketService) { }
 
   ngOnInit() {
     this.cardForm = this.fb.group({
       description: [],
-      startDate: [this.toDateString(this.data.card.startDate)],
-      endDate: [this.toDateString(this.data.card.endDate)]
+      startDate: [this.toDateString(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].startDate)],
+      endDate: [this.toDateString(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].endDate)]
     });
-    this.cardForm.patchValue({ description: this.data.card.description });
-    this.labels = this.labels.concat(this.data.card.labels);
-    this.checklists = this.checklists.concat(this.data.card.checklists);
+    this.cardForm.patchValue({ description: this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].description });
+
     let sum = 0;
-    this.checklists.forEach(checklist => {
+    this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists.forEach(checklist => {
       checklist.tasks.forEach(task => {
         if (task.done) {
           sum += 1;
@@ -57,20 +59,25 @@ export class CardDetailsComponent implements OnInit {
       this.checked.push(sum);
       sum = 0;
     })
+
+    this.wc = this.webSocketService.getClient();
   }
 
   addLabel() {
-    this.labels.push(this.label);
+    this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].labels.push(this.label);
+    this.updateBoard();
     this.labelsTrigger.closeMenu();
   }
 
   updateLabel(index) {
-    this.labels[index] = this.labelUpdate;
+    this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].labels[index] = this.labelUpdate;
+    this.updateBoard();
     this.labelUpdateTrigger.closeMenu();
   }
 
   deleteLabel(index) {
-    this.labels.splice(index, 1);
+    this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].labels.splice(index, 1);
+    this.updateBoard();
   }
 
   deleteCard() {
@@ -81,23 +88,26 @@ export class CardDetailsComponent implements OnInit {
     dialogSaveChanges.afterClosed().subscribe(result => {
       if (result) {
         this.dialogRef.close();
+        this.data.board.lists[this.data.listIndex].cards.splice(this.data.cardIndex, 1);
+        this.updateBoard();
       }
     });
   }
 
   addChecklist() {
     if (this.checklistTitle.trim() != "") {
-      //this.data.card.checklists.push(new Checklist(this.data.card.checklists.length.toString(), this.checklistTitle, new Date(), []));
-      this.checklists.push(new Checklist(this.checklists.length.toString(), this.checklistTitle, new Date(), []));
+      this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists.push(new Checklist(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists.length.toString(), this.checklistTitle, new Date(), []));
+      this.updateBoard();
       this.checklistTrigger.closeMenu();
-      this.checked[this.checked.length]=0;
+      this.checked[this.checked.length] = 0;
     }
     this.checklistTitle = "";
   }
 
   addItem(index) {
     if (this.itemTitle.trim() != "") {
-      this.checklists[index].tasks.push(new Task(this.checklists[index].tasks.length.toString(), this.itemTitle, false, new Date()));
+      this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].tasks.push(new Task(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].tasks.length.toString(), this.itemTitle, false, new Date()));
+      this.updateBoard();
     }
     this.itemTitle = "";
   }
@@ -109,7 +119,8 @@ export class CardDetailsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.checklists[checklistIndex].tasks.splice(taskIndex, 1);
+        this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[checklistIndex].tasks.splice(taskIndex, 1);
+        this.updateBoard();
       }
     });
   }
@@ -121,28 +132,35 @@ export class CardDetailsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.checklists.splice(index, 1);
+        this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists.splice(index, 1);
+        this.updateBoard();
       }
     });
   }
 
   private toDateString(date: Date): string {
+    date = new Date(date);
     return (date.getFullYear().toString() + '-'
       + ("0" + (date.getMonth() + 1)).slice(-2) + '-'
       + ("0" + (date.getDate())).slice(-2))
       + 'T' + date.toTimeString().slice(0, 5);
   }
 
-  checkedPlus(index){
+  checkedPlus(index) {
     this.checked[index]++;
   }
 
-  checkedMinus(index){
+  checkedMinus(index) {
     this.checked[index]--;
   }
 
+  updateBoard() {
+    this.wc.send("/app/boards/update/" + this.data.board.id, {}, JSON.stringify(this.data.board));
+  }
 }
 
 export interface CardDetailsData {
-  card: Card;
+  board: Board;
+  listIndex: string;
+  cardIndex: string;
 }

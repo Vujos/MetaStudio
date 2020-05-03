@@ -3,8 +3,8 @@
     <mat-icon>close</mat-icon>
   </button>
   <div mat-dialog-title>
-    <h3 class="title">{{data.card.title}}</h3>
-    <span *ngFor="let label of labels; index as i">
+    <h3 class="title">{{data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.title}}</h3>
+    <span *ngFor="let label of data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.labels; index as i">
       <span class="label" [ngStyle]="{'background-color':label}" [matMenuTriggerFor]="labelUpdateMenu"
         #labelUpdateTrigger="matMenuTrigger" [matTooltip]="editLabels ? 'Click to delete': 'Click to change'"
         (click)="editLabels ? deleteLabel(i) : labelUpdate = label"><span *ngIf="editLabels">X</span></span>&nbsp;
@@ -34,7 +34,9 @@
           </div>
         </mat-menu>
         &nbsp;
-        <mat-slide-toggle [color]="deleteLabelsColor" *ngIf="labels.length>0" (toggleChange)="editLabels=!editLabels">
+        <mat-slide-toggle [checked]="editLabels" [color]="deleteLabelsColor"
+          *ngIf="data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.labels.length>0"
+          (toggleChange)="editLabels=!editLabels">
           Delete labels</mat-slide-toggle>
         <br><br>
         <div [formGroup]="cardForm">
@@ -73,7 +75,8 @@
               (click)="addChecklist();checklistInput.focus()">Save</button>
           </div>
         </mat-menu>
-        <div *ngFor="let checklist of checklists; index as i">
+        <div
+          *ngFor="let checklist of data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.checklists; index as i">
           <br><br>
           <div class="text-align-right">
             <h3 class="float-left">{{checklist.title}}</h3>
@@ -86,7 +89,8 @@
             </button>
           </div>
           <br>
-          <span class="float-right">{{checklist.tasks.length>0 ? (checked[i]/checklist.tasks.length*100 | number:'1.0-0') : 0}}%</span>
+          <span
+            class="float-right">{{checklist.tasks.length>0 ? (checked[i]/checklist.tasks.length*100 | number:'1.0-0') : 0}}%</span>
           <mat-progress-bar mode="determinate" [value]="checked[i]/checklist.tasks.length*100"></mat-progress-bar>
           <div *ngFor="let task of checklist.tasks; index as j">
             <br>

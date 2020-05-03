@@ -124,7 +124,7 @@ export class AppComponent {
     this.sharedDataService.contextViewOn = this.contextViewOn;
     this.TREE_DATA=[
       {name: 'Vision', route: '/vision'},
-      {name: 'Project Manager', route: '/projectManager'},
+      {name: 'Project Manager', route: '/boards'},
       {name: 'Tool 3'}
     ];
     this.contextViewComponent.update(this.TREE_DATA);
