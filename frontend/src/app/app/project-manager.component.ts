@@ -183,7 +183,7 @@ export class ProjectManagerComponent implements AdComponent {
   }
 
   renameBoard() {
-    if (this.boardTitle.trim() != "") {
+    if (this.boardTitle.trim() != this.board.title && this.boardTitle.trim() != "") {
       this.board.title = this.boardTitle.trim();
       this.boardTitle = this.board.title;
       this.updateBoard();
@@ -248,7 +248,7 @@ export class ProjectManagerComponent implements AdComponent {
   }
 
   renameList(index) {
-    if (this.listTitleRename.trim() != "") {
+    if (this.listTitleRename.trim() != this.board.lists[index].title && this.listTitleRename.trim() != "") {
       this.board.lists[index].title = this.listTitleRename.trim();
       this.updateBoard();
       this.listTitleRename = this.board.lists[index].title;
@@ -393,7 +393,7 @@ export class ProjectManagerComponent implements AdComponent {
   }
 
   openCardDetailsDialog(listIndex, cardIndex) {
-    this.dialogRef = this.dialog.open(CardDetailsComponent, { data: { board: this.board, listIndex: listIndex, cardIndex: cardIndex } });
+    this.dialogRef = this.dialog.open(CardDetailsComponent, { data: { board: this.board, listIndex: listIndex, cardIndex: cardIndex }, autoFocus: false });
   }
 
   updateBoard() {

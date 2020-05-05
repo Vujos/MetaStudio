@@ -1,9 +1,22 @@
 <div>
-  <button mat-icon-button class="close" mat-dialog-close>
+  <button mat-icon-button class="close" mat-dialog-close [autofocus]="false">
     <mat-icon>close</mat-icon>
   </button>
   <div mat-dialog-title>
-    <h3 class="title">{{data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.title}}</h3>
+    <h3 class="title" matTooltip="Click to rename" [matMenuTriggerFor]="cardRenameMenu"
+    #cardRenameTrigger="matMenuTrigger" (menuOpened)="cardRenameInput.focus()">{{data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.title}}</h3>
+    <mat-menu #cardRenameMenu="matMenu" (closed)="saveCardTitleDialog()">
+      <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+        <mat-form-field>
+          <mat-label class="white">Title</mat-label>
+          <input #cardRenameInput placeholder="Enter card title" class="white" matInput
+            [(ngModel)]="cardTitle" (keyup.enter)="renameCard()">
+        </mat-form-field>
+        <br>
+        <button class="center white background-color-gray save" mat-button
+          (click)="renameCard();cardRenameInput.focus()">Save</button>
+      </div>
+    </mat-menu>
     <span *ngFor="let label of data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.labels; index as i">
       <span class="label" [ngStyle]="{'background-color':label}" [matMenuTriggerFor]="labelUpdateMenu"
         #labelUpdateTrigger="matMenuTrigger" [matTooltip]="editLabels ? 'Click to delete': 'Click to change'"
@@ -44,17 +57,17 @@
             <mat-label class="white">Description</mat-label>
             <textarea cdkTextareaAutosize #cardDescriptionAutosize="cdkTextareaAutosize" cdkAutosizeMinRows="1"
               cdkAutosizeMaxRows="5" matInput placeholder="Enter card description" #cardDescriptionInput
-              formControlName="description" class="white"></textarea>
+              formControlName="description" class="white" (focusout)="saveCardDescription()"></textarea>
           </mat-form-field>
           <br>
           <mat-form-field>
             <mat-label>Start date</mat-label>
-            <input formControlName="startDate" matInput type="datetime-local">
+            <input formControlName="startDate" matInput type="datetime-local" (focusout)="saveStartDate()">
           </mat-form-field>
           &nbsp;
           <mat-form-field>
             <mat-label>Due date</mat-label>
-            <input formControlName="endDate" matInput type="datetime-local">
+            <input formControlName="endDate" matInput type="datetime-local" (focusout)="saveEndDate()">
           </mat-form-field>
         </div>
         <br>
@@ -79,7 +92,20 @@
           *ngFor="let checklist of data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.checklists; index as i">
           <br><br>
           <div class="text-align-right">
-            <h3 class="float-left">{{checklist.title}}</h3>
+            <h3 class="float-left cursor-pointer" matTooltip="Click to rename" [matMenuTriggerFor]="checklistRenameMenu"
+            #checklistRenameTrigger="matMenuTrigger" (menuOpened)="checklistRenameTitle = checklist.title; checklistRenameInput.focus()">{{checklist.title}}</h3>
+            <mat-menu #checklistRenameMenu="matMenu" (closed)="saveChecklistTitleDialog(i)">
+              <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                <mat-form-field>
+                  <mat-label class="white">Title</mat-label>
+                  <input #checklistRenameInput placeholder="Enter checklist title" class="white" matInput
+                    [(ngModel)]="checklistRenameTitle" (keyup.enter)="renameChecklist(i)">
+                </mat-form-field>
+                <br>
+                <button class="center white background-color-gray save" mat-button
+                  (click)="renameChecklist(i);checklistRenameInput.focus()">Save</button>
+              </div>
+            </mat-menu>
             <button *ngIf="checklist.tasks.length>0" mat-icon-button matTooltip="Edit checklist"
               (click)="editChecklist=!editChecklist">
               <mat-icon>edit</mat-icon>
@@ -94,8 +120,8 @@
           <mat-progress-bar mode="determinate" [value]="checked[i]/checklist.tasks.length*100"></mat-progress-bar>
           <div *ngFor="let task of checklist.tasks; index as j">
             <br>
-            <mat-checkbox [color]="checkboxColor" [(ngModel)]="checkboxChecked[i.toString()+j.toString()]"
-              (change)="checkboxChecked[i.toString()+j.toString()] ? checkedPlus(i):checkedMinus(i)">{{task.title}}
+            <mat-checkbox [color]="checkboxColor" [(ngModel)]="data.board.lists[data.listIndex].cards[data.cardIndex].checklists[i].tasks[j].done"
+              (change)="data.board.lists[data.listIndex].cards[data.cardIndex].checklists[i].tasks[j].done ? checkedPlus(i):checkedMinus(i); updateBoard()">{{task.title}}
             </mat-checkbox>
             <button class="delete" mat-icon-button matTooltip="Delete checkbox" (click)="deleteTask(i, j)"
               *ngIf="editChecklist">
@@ -125,7 +151,7 @@
     </mat-tab-group>
   </div>
   <div mat-dialog-actions>
-    <button class="background-color-gray save" mat-button (click)="saveCardDetails()">Save</button>
+    <!--<button class="background-color-gray save" mat-button (click)="saveCardDetails()">Save</button>-->
     <button class="background-color-gray delete" mat-button (click)="deleteCard()">Delete card</button>
   </div>
 </div>

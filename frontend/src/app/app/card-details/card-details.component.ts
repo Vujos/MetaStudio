@@ -17,6 +17,8 @@ export class CardDetailsComponent implements OnInit {
   @ViewChild('checklistTrigger', { static: false }) checklistTrigger: MatMenuTrigger;
   @ViewChild('labelsTrigger', { static: false }) labelsTrigger: MatMenuTrigger;
   @ViewChild('labelUpdateTrigger', { static: false }) labelUpdateTrigger: MatMenuTrigger;
+  @ViewChild('cardRenameTrigger', { static: false }) cardRenameTrigger: MatMenuTrigger;
+  @ViewChild('checklistRenameTrigger', { static: false }) checklistRenameTrigger: MatMenuTrigger;
 
   public cardForm: FormGroup;
 
@@ -37,13 +39,16 @@ export class CardDetailsComponent implements OnInit {
   checked: number[] = [];
   checkboxChecked = {};
 
+  cardTitle: string = "";
+  checklistRenameTitle: string = "";
+
   private wc;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: CardDetailsData, private fb: FormBuilder, private dialogRef: MatDialogRef<CardDetailsComponent>, public dialog: MatDialog, private webSocketService: WebSocketService) { }
 
   ngOnInit() {
     this.cardForm = this.fb.group({
-      description: [],
+      description: [this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].description],
       startDate: [this.toDateString(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].startDate)],
       endDate: [this.toDateString(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].endDate)]
     });
@@ -59,6 +64,8 @@ export class CardDetailsComponent implements OnInit {
       this.checked.push(sum);
       sum = 0;
     })
+
+    this.cardTitle = this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title;
 
     this.wc = this.webSocketService.getClient();
   }
@@ -94,9 +101,73 @@ export class CardDetailsComponent implements OnInit {
     });
   }
 
+  renameCard(){
+    if (this.cardTitle.trim() != this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title && this.cardTitle.trim() != "") {
+      this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title = this.cardTitle.trim();
+      this.cardTitle = this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title;
+      this.updateBoard();
+      this.cardRenameTrigger.closeMenu();
+    }
+    else{
+      this.cardTitle = this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title;
+    }
+  }
+
+  saveCardTitleDialog() {
+    if (this.cardTitle.trim() != this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title && this.cardTitle.trim() != "") {
+      const dialogRef = this.dialog.open(DialogSaveChanges, {
+        data: { title: "Unsaved Changes", content: "Save Changes to Card Title" }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.renameCard()
+        }
+        else {
+          this.cardTitle = this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title;
+        }
+      });
+    }
+    else {
+      this.cardTitle = this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title;
+    }
+  }
+
+  renameChecklist(index){
+    if (this.checklistRenameTitle.trim() != this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].title && this.checklistRenameTitle.trim() != "") {
+      this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].title = this.checklistRenameTitle.trim();
+      this.checklistRenameTitle = this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].title;
+      this.updateBoard();
+      this.checklistRenameTrigger.closeMenu();
+    }
+    else{
+      this.checklistRenameTitle = this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].title;
+    }
+  }
+
+  saveChecklistTitleDialog(index) {
+    if (this.checklistRenameTitle.trim() != this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].title && this.checklistRenameTitle.trim() != "") {
+      const dialogRef = this.dialog.open(DialogSaveChanges, {
+        data: { title: "Unsaved Changes", content: "Save Changes to Checklist Title" }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.renameChecklist(index)
+        }
+        else {
+          this.checklistRenameTitle = this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].title;
+        }
+      });
+    }
+    else {
+      this.checklistRenameTitle = this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].title;
+    }
+  }
+
   addChecklist() {
     if (this.checklistTitle.trim() != "") {
-      this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists.push(new Checklist(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists.length.toString(), this.checklistTitle, new Date(), []));
+      this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists.push(new Checklist(null, this.checklistTitle, new Date(), []));
       this.updateBoard();
       this.checklistTrigger.closeMenu();
       this.checked[this.checked.length] = 0;
@@ -106,7 +177,7 @@ export class CardDetailsComponent implements OnInit {
 
   addItem(index) {
     if (this.itemTitle.trim() != "") {
-      this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].tasks.push(new Task(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].tasks.length.toString(), this.itemTitle, false, new Date()));
+      this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].tasks.push(new Task(null, this.itemTitle, false, new Date()));
       this.updateBoard();
     }
     this.itemTitle = "";
@@ -138,12 +209,26 @@ export class CardDetailsComponent implements OnInit {
     });
   }
 
-  private toDateString(date: Date): string {
-    date = new Date(date);
-    return (date.getFullYear().toString() + '-'
-      + ("0" + (date.getMonth() + 1)).slice(-2) + '-'
-      + ("0" + (date.getDate())).slice(-2))
-      + 'T' + date.toTimeString().slice(0, 5);
+  saveCardDescription(){
+    this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].description = this.cardForm.get("description").value.trim();
+    this.cardForm.patchValue({"description":this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].description});
+    this.updateBoard();
+  }
+
+  saveStartDate(){
+    this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].startDate = this.cardForm.get("startDate").value.trim();
+    this.cardForm.patchValue({"startDate":this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].startDate});
+    this.updateBoard();
+  }
+
+  saveEndDate(){
+    this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].endDate = this.cardForm.get("endDate").value.trim();
+    this.cardForm.patchValue({"endDate":this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].endDate});
+    this.updateBoard();
+  }
+
+  private toDateString(date: string): string {
+    return date.slice(0, -12);
   }
 
   checkedPlus(index) {

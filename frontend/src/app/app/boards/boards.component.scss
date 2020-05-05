@@ -1,4 +1,43 @@
 .board{
     width: fit-content;
     margin: 10px;
+    cursor: pointer;
+}
+
+.black {
+    color:black;
+}
+  
+.whitesmoke {
+    background-color: whitesmoke;
+}
+
+.add-list-title .mat-form-field-wrapper .mat-form-field-underline {
+  background-color: white;
+}
+
+.add-list-title-black .mat-form-field-wrapper .mat-form-field-underline {
+  background-color: black;
+}
+
+.white {
+  color: white !important;
+}
+
+.black-important {
+  color: black !important;
+}
+
+.boards-menu{
+  text-align:center;
+  height: 11vh;
+  overflow: auto;
+  min-height: 4em;
+  background-color: #407040;
+}
+
+.boards{
+  height: 84vh;
+  overflow: auto;
+  background-color: #407040;
 }

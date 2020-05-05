@@ -1,5 +1,6 @@
 <div class="project-manager" [ngStyle]="{'background-color':boardBackground}">
   <div class="project-manager-menu">
+    <button mat-icon-button class="home" [routerLink]="['/boards']" matTooltip="Home"><mat-icon>home</mat-icon></button>
     <span class="board-title"><b>{{board?.title}}</b></span>
     <button mat-icon-button class="board-more" #boardMoreButton [matMenuTriggerFor]="boardMoreMenu"
       #boardMoreTrigger="matMenuTrigger" [ngStyle]="{'color': lightBackground ? 'black' : 'white'}">
@@ -44,7 +45,7 @@
 
         <mat-divider></mat-divider>
         <button mat-menu-item (click)="$event.stopPropagation();showAddList()">New list</button>
-        <button class="delete" mat-menu-item (click)="deleteAllListsDialog()">Delete all lists</button>
+        <button [disabled]="board?.lists.length < 1" class="delete" mat-menu-item (click)="deleteAllListsDialog()">Delete all lists</button>
         <mat-divider></mat-divider>
         <button mat-menu-item [matMenuTriggerFor]="renameBoardMenu" #renameBoardTrigger="matMenuTrigger">Rename
           board</button>
@@ -178,7 +179,7 @@
                   </div>
                 </mat-menu>
 
-                <button mat-menu-item [disabled]="list.cards.length == 0" [matMenuTriggerFor]="moveAllCardsMenu"
+                <button mat-menu-item [disabled]="list.cards.length == 0 || board?.lists.length < 2" [matMenuTriggerFor]="moveAllCardsMenu"
                   #moveAllCardsTrigger="matMenuTrigger">Move
                   all cards</button>
                 <mat-menu #moveAllCardsMenu="matMenu" (closed)="moveAllCardsDialog(i, selectedMoveAllCards)">
@@ -186,7 +187,7 @@
                     (keydown)="$event.stopPropagation()">
                     <mat-form-field>
                       <mat-label class="white">Select a list</mat-label>
-                      <mat-select [(value)]="selectedMoveAllCards" [disabled]="board?.lists.length < 2">
+                      <mat-select [(value)]="selectedMoveAllCards">
                         <ng-container *ngFor="let list of board?.lists; index as j">
                           <mat-option *ngIf="i!=j" [value]="j">{{list.title}}</mat-option>
                         </ng-container>

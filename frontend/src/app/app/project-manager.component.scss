@@ -175,6 +175,7 @@ td {
 .board-more {
   float: right;
   color: white;
+  margin-top: 10px;
 }
 
 .board-title {
@@ -187,6 +188,13 @@ td {
   max-width: 265px;
   overflow: auto;
   white-space: nowrap;
+}
+
+.home{
+  margin-right: 10px;
+  margin-top: 10px;
+  background-color: whitesmoke;
+  float: left;
 }
 
 .menu-item-padding {

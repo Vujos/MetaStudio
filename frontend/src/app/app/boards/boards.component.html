@@ -1,11 +1,33 @@
-<mat-card *ngFor="let board of boards" class="board" [routerLink]="['/projectManager', board.id]">
-    <mat-card-header>
-        <mat-card-title>{{board.title}}</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-    </mat-card-content>
-    <mat-card-actions>
-        <button mat-button>LIKE</button>
-        <button mat-button>SHARE</button>
-    </mat-card-actions>
-</mat-card>
+<div class="boards-menu">
+    <mat-form-field [ngClass]="lightBackground ? 'add-list-title-black' : 'add-list-title'">
+        <mat-label [ngClass]="lightBackground ? 'black-important' : 'white'">Enter list title</mat-label>
+        <input #boardTitleInput [ngClass]="lightBackground ? 'black-important' : 'white'" matInput
+            [(ngModel)]="boardTitle" (keyup.enter)="addBoard()">
+    </mat-form-field>
+    &nbsp;
+    <button class="black whitesmoke" mat-button (click)="addBoard()">
+        Add board
+    </button>
+    <!--
+    &nbsp;
+    <button class="black whitesmoke" mat-button (click)="showAddList()">
+      Cancel
+    </button>
+    -->
+</div>
+
+<div class="boards">
+    <div *ngFor="let board of boards">
+        <mat-card class="board" [routerLink]="['/projectManager', board.id]" [ngStyle]="{'background-color':board.background}">
+            <mat-card-header>
+                <mat-card-title>{{board.title}}</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+            </mat-card-content>
+            <mat-card-actions>
+                <button mat-button>ACTION 1</button>
+                <button mat-button>ACTION 2</button>
+            </mat-card-actions>
+        </mat-card>
+    </div>
+</div>
