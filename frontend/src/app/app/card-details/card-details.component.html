@@ -121,7 +121,7 @@
           <div *ngFor="let task of checklist.tasks; index as j">
             <br>
             <mat-checkbox [color]="checkboxColor" [(ngModel)]="data.board.lists[data.listIndex].cards[data.cardIndex].checklists[i].tasks[j].done"
-              (change)="data.board.lists[data.listIndex].cards[data.cardIndex].checklists[i].tasks[j].done ? checkedPlus(i):checkedMinus(i); updateBoard()">{{task.title}}
+              (change)="updateTask(i, j)">{{task.title}}
             </mat-checkbox>
             <button class="delete" mat-icon-button matTooltip="Delete checkbox" (click)="deleteTask(i, j)"
               *ngIf="editChecklist">

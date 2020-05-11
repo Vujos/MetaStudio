@@ -25,8 +25,7 @@ public class TokenUtils {
 
 		try {
 			claims = Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token).getBody();
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			claims = null;
 		}
 
@@ -44,8 +43,7 @@ public class TokenUtils {
 		try {
 			Claims claims = this.getClaims(token);
 			username = claims.getSubject();
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			username = null;
 		}
 
@@ -58,8 +56,7 @@ public class TokenUtils {
 		try {
 			final Claims claims = this.getClaims(token);
 			expiration = claims.getExpiration();
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			expiration = null;
 		}
 

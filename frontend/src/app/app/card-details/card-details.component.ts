@@ -177,10 +177,21 @@ export class CardDetailsComponent implements OnInit {
 
   addItem(index) {
     if (this.itemTitle.trim() != "") {
-      this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].tasks.push(new Task(null, this.itemTitle, false, new Date()));
+      this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].tasks.push(new Task(null, this.itemTitle, false, new Date(), null));
       this.updateBoard();
     }
     this.itemTitle = "";
+  }
+
+  updateTask(checklistIndex, taskIndex){
+    if(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[checklistIndex].tasks[taskIndex].done){
+      this.checkedPlus(checklistIndex);
+      this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[checklistIndex].tasks[taskIndex].doneDate = new Date();
+    }
+    else{
+      this.checkedMinus(checklistIndex);
+    } 
+    this.updateBoard();
   }
 
   deleteTask(checklistIndex, taskIndex) {

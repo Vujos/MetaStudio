@@ -254,6 +254,12 @@ td {
 .close:hover{
   background-color: red;
 }
+
+.error-message {
+  padding: 10px;
+  border-radius: 5px;
+  background-color: red;
+}
 /*
 .mat-input-element {
   caret-color: black;

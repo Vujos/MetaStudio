@@ -1,0 +1,29 @@
+<div class="login-div">
+    <div class="mat-elevation-z8">
+        <!--<img class="logo" src="" alt="logo">-->
+        <br>
+        <p class="white">LOGIN</p>
+        <form (submit)="onLogin()" [formGroup]="loginForm">
+            <mat-form-field appearance="">
+                <input class="white" matInput name="email" type="text" placeholder="Email address"
+                    formControlName="emailInput">
+                <mat-error>{{formError.mapErrors(loginForm.get('emailInput'), 'Email address')}}</mat-error>
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <input class="white" matInput name="password" formControlName="passwordInput" placeholder="Password"
+                    [type]="hide ? 'password' : 'text'">
+                <mat-icon class="password-toggle white" matSuffix (click)="hide = !hide">
+                    {{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                <mat-error>{{formError.mapErrors(loginForm.get('passwordInput'), 'Password')}}</mat-error>
+            </mat-form-field>
+            <br>
+            <p class="message">{{message}}</p>
+            <button class="login-button" mat-raised-button type="submit" [disabled]="loading ? true : false">LOGIN &nbsp;
+                <mat-icon aria-hidden="false" aria-label="Example home icon">input</mat-icon>
+            </button>
+            <br>
+            <p class="white">New here? &nbsp; <a class="white" href="" [routerLink]="['/register']">Register</a></p>
+        </form>
+    </div>
+</div>

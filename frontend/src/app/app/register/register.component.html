@@ -1,0 +1,32 @@
+<div class="register-div">
+    <div class="mat-elevation-z8">
+        <!--<img src="" alt="logo">-->
+        <br>
+        <p class="white">REGISTER</p>
+        <div [formGroup]="form">
+            <mat-form-field>
+                <input class="white" matInput name="fullName" formControlName="fullName" type="text" placeholder="Full Name">
+                <mat-error>{{formError.mapErrors(form.get('fullName'), 'Full Name')}}</mat-error>
+            </mat-form-field>&nbsp;
+            <mat-form-field>
+                <input class="white" matInput name="username" formControlName="username" type="text" placeholder="Username">
+                <mat-error>{{formError.mapErrors(form.get('username'), 'Username')}}</mat-error>
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <input class="white" matInput name="email" formControlName="email" type="text" placeholder="Email address">
+                <mat-error>{{formError.mapErrors(form.get('email'), 'Email address')}}</mat-error>
+            </mat-form-field>&nbsp;
+            <mat-form-field>
+                <input class="white" matInput name="password" formControlName="password" placeholder="Password"
+                    [type]="hide ? 'password' : 'text'">
+                <mat-icon class="password-toggle white" matSuffix (click)="hide = !hide">
+                    {{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                <mat-error>{{formError.mapErrors(form.get('password'), 'Password')}}</mat-error>
+            </mat-form-field>
+            <p class="message">{{message}}</p>
+            <button [disabled]="loading ? true : false" class="register-button" mat-raised-button
+                (click)="onRegister()">REGISTER</button>
+        </div>
+    </div>
+</div>

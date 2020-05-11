@@ -11,20 +11,37 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import app.models.User;
+import app.project_manager.services.UserService2;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 	@Autowired
 	UserService userService;
-	
-	@Transactional
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Optional<User> user = userService.getUserByUsername(username);
 
-		if(user.isPresent()) {
+	@Autowired
+	UserService2 userService2;
+
+	/*
+	 * @Transactional public UserDetails loadUserByUsername(String username) throws
+	 * UsernameNotFoundException { Optional<User> user =
+	 * userService.getUserByUsername(username);
+	 * 
+	 * if(user.isPresent()) { ArrayList<GrantedAuthority> grantedAuthorities = new
+	 * ArrayList<GrantedAuthority>(); return new
+	 * org.springframework.security.core.userdetails.User(user.get().getUsername(),
+	 * user.get().getPassword(), grantedAuthorities); }
+	 * 
+	 * return null; }
+	 */
+
+	@Transactional
+	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+		Optional<app.project_manager.models.User> user = userService2.getUserByEmail(email);
+
+		if (user.isPresent()) {
 			ArrayList<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
-			return new org.springframework.security.core.userdetails.User(user.get().getUsername(), user.get().getPassword(), grantedAuthorities);
+			return new org.springframework.security.core.userdetails.User(user.get().getEmail(),
+					user.get().getPassword(), grantedAuthorities);
 		}
 
 		return null;

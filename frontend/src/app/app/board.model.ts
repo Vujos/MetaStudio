@@ -1,4 +1,5 @@
 import { List } from './list.model';
+import { User } from './user.model';
 
 export class Board {
     id: string;
@@ -6,11 +7,11 @@ export class Board {
     date: Date;
     description: string;
     background: string;
-    users: [];
+    users: User[];
     lists: List[];
     priority: number;
 
-    constructor(id: string, title: string, date: Date, description: string, background: string, users: [], lists: List[], priority: number) {
+    constructor(id: string, title: string, date: Date, description: string, background: string, users: User[], lists: List[], priority: number) {
         this.id = id;
         this.title = title;
         this.date = date;

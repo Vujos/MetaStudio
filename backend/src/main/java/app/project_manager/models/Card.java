@@ -17,7 +17,8 @@ public class Card {
     private Date date;
     private String description;
 
-    private ArrayList<String> members;
+    @DBRef
+    private ArrayList<User> members;
 
     private Date startDate;
     private Date endDate;
@@ -32,7 +33,7 @@ public class Card {
     public Card() {
     }
 
-    public Card(String id, String title, Date date, String description, ArrayList<String> members, Date startDate,
+    public Card(String id, String title, Date date, String description, ArrayList<User> members, Date startDate,
             Date endDate, ArrayList<String> attachments, ArrayList<String> labels, ArrayList<Checklist> checklists) {
         this.id = id;
         this.title = title;
@@ -78,11 +79,11 @@ public class Card {
         this.description = description;
     }
 
-    public ArrayList<String> getMembers() {
+    public ArrayList<User> getMembers() {
         return members;
     }
 
-    public void setMembers(ArrayList<String> members) {
+    public void setMembers(ArrayList<User> members) {
         this.members = members;
     }
 

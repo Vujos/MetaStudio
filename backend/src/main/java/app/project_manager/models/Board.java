@@ -18,7 +18,8 @@ public class Board {
     private String description;
     private String background;
 
-    private ArrayList<String> users;
+    @DBRef
+    private ArrayList<User> users;
 
     @DBRef
     private ArrayList<List> lists;
@@ -28,7 +29,7 @@ public class Board {
     public Board() {
     }
 
-    public Board(String id, String title, Date date, String description, String background, ArrayList<String> users,
+    public Board(String id, String title, Date date, String description, String background, ArrayList<User> users,
     ArrayList<List> lists, Integer priority) {
         this.id = id;
         this.title = title;
@@ -80,11 +81,11 @@ public class Board {
         this.background = background;
     }
 
-    public ArrayList<String> getUsers() {
+    public ArrayList<User> getUsers() {
         return users;
     }
 
-    public void setUsers(ArrayList<String> users) {
+    public void setUsers(ArrayList<User> users) {
         this.users = users;
     }
 

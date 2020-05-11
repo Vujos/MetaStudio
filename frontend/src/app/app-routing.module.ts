@@ -4,11 +4,15 @@ import { BoardsComponent } from './app/boards/boards.component';
 import { LifeCyclesComponent } from './life-cycles/life-cycles.component';
 import { VisionComponent } from './vision/vision.component';
 import { ProjectManagerComponent } from './app/project-manager.component';
+import { LoginRegisterComponent } from './app/login-register/login-register.component';
+import { RegisterComponent } from './app/register/register.component';
 
 
 const routes: Routes = [
   { path: '', component: LifeCyclesComponent },
   { path: 'vision', component: VisionComponent },
+  { path: 'login', component: LoginRegisterComponent },
+  { path: 'register', component: RegisterComponent },
   { path: 'boards', component: BoardsComponent },
   { path: 'projectManager/:id', component: ProjectManagerComponent }
 ];

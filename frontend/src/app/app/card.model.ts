@@ -1,18 +1,19 @@
 import { Checklist } from './checklist.model';
+import { User } from './user.model';
 
 export class Card {
     id: string;
     title: string;
     date: Date;
     description: string;
-    members: [];
+    members: User[];
     startDate: Date;
     endDate: Date;
     attachments: [];
     labels: string[];
     checklists: Checklist[];
 
-    constructor(id: string, title: string, date: Date, description: string, members: [], startDate: Date, endDate: Date, attachments: [], labels: string[], checklists: Checklist[]) {
+    constructor(id: string, title: string, date: Date, description: string, members: User[], startDate: Date, endDate: Date, attachments: [], labels: string[], checklists: Checklist[]) {
         this.id = id;
         this.title = title;
         this.date = date;

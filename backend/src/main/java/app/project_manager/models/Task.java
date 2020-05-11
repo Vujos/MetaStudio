@@ -14,15 +14,17 @@ public class Task {
     private String title;
     private Boolean done;
     private Date date;
+    private Date doneDate;
 
     public Task() {
     }
 
-    public Task(String id, String title, Boolean done, Date date) {
+    public Task(String id, String title, Boolean done, Date date, Date doneDate) {
         this.id = id;
         this.title = title;
         this.done = done;
         this.date = date;
+        this.doneDate = doneDate;
     }
 
     public String getId() {
@@ -55,6 +57,14 @@ public class Task {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public Date getDoneDate() {
+        return doneDate;
+    }
+
+    public void setDoneDate(Date doneDate) {
+        this.doneDate = doneDate;
     }
 
 }

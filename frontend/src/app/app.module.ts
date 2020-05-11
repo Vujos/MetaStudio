@@ -25,6 +25,8 @@ import { AdService }            from './app/ad.service';
 import { DialogSaveChanges } from './app/dialog/dialog-save-changes';
 import { CardDetailsComponent } from './app/card-details/card-details.component';
 import { BoardsComponent } from './app/boards/boards.component';
+import { LoginRegisterComponent } from './app/login-register/login-register.component';
+import { RegisterComponent } from './app/register/register.component';
 
 
 window['$'] = $;
@@ -44,7 +46,9 @@ window['$'] = $;
     AdDirective,
     DialogSaveChanges,
     CardDetailsComponent,
-    BoardsComponent
+    BoardsComponent,
+    LoginRegisterComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,

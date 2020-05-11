@@ -8,6 +8,22 @@
     <button class="black whitesmoke" mat-button (click)="addBoard()">
         Add board
     </button>
+    <button mat-icon-button class="boards-more" #boardsMoreButton [matMenuTriggerFor]="boardsMoreMenu"
+      #boardsMoreTrigger="matMenuTrigger" [ngStyle]="{'color': lightBackground ? 'black' : 'white'}">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #boardsMoreMenu="matMenu">
+        <span>
+          <div class="menu-header">
+            <button mat-button disabled class="float-left"></button>
+            <button mat-icon-button class="white close">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="logout()">Logout</button>
+        </span>
+      </mat-menu>
     <!--
     &nbsp;
     <button class="black whitesmoke" mat-button (click)="showAddList()">

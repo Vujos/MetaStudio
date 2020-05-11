@@ -9,6 +9,7 @@ import { BoardService } from './boards/board.service';
 import { CardDetailsComponent } from './card-details/card-details.component';
 import { DialogSaveChanges } from './dialog/dialog-save-changes';
 import { WebSocketService } from './web-socket/web-socket.service';
+import { UserService } from './users/user.service';
 
 @Component({
   selector: 'app-project-manager',
@@ -34,6 +35,9 @@ export class ProjectManagerComponent implements AdComponent {
   boardTitle = "";
   boardBackground = "";
 
+  newUser = "";
+  errorMessageNewUser = undefined;
+
   listTitleRename = "";
 
   selectedCopyAllCards;
@@ -50,7 +54,7 @@ export class ProjectManagerComponent implements AdComponent {
 
   private wc;
 
-  constructor(public dialog: MatDialog, public sharedDataService: SharedDataService, private route: ActivatedRoute, private boardService: BoardService, private webSocketService: WebSocketService) {
+  constructor(public dialog: MatDialog, public sharedDataService: SharedDataService, private route: ActivatedRoute, private boardService: BoardService, private webSocketService: WebSocketService, private userService: UserService) {
 
   }
 
@@ -244,7 +248,34 @@ export class ProjectManagerComponent implements AdComponent {
     else {
       this.lightBackground = false;
     }
+  }
 
+  addUser() {
+    if (this.newUser.trim() != "") {
+      this.userService.getByQuery(this.newUser).subscribe(data => {
+        if(data){
+          this.errorMessageNewUser = undefined;
+          /* this.board.users.push(data);
+          this.updateBoard(); */
+          data.boards.push(this.board);
+          this.wc.send("/app/users/update/" + data.email, {}, JSON.stringify(data));
+          this.resetAddUser();
+          /* this.userService.update(data.id, data).subscribe(_ => {
+            this.resetAddUser();
+          }); */
+        }
+      }, error => {
+        this.errorMessageNewUser = "That user does not exist"
+      });
+    }
+    else {
+      this.resetAddUser();
+    }
+  }
+
+  resetAddUser(){
+    this.newUser = "";
+    this.errorMessageNewUser = undefined;
   }
 
   renameList(index) {
