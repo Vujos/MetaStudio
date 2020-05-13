@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,12 +17,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.project_manager.models.Board;
+import app.project_manager.models.User;
 import app.project_manager.services.BoardService;
 
 @CrossOrigin(origins = { "http://localhost:4200" })
 @RestController
 @RequestMapping("/api/boards")
 public class BoardController {
+
+    @Autowired
+    private SimpMessagingTemplate template;
+
+    @Autowired
+    UserController2 userController;
 
     @Autowired
     BoardService boardService;
@@ -31,9 +39,9 @@ public class BoardController {
         return new ResponseEntity<Iterable<Board>>(boardService.getBoards(), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity<Board> getBoardById(@PathVariable String id) {
-        Optional<Board> board = boardService.getBoardById(id);
+    @RequestMapping(value = "/{id}/{email}", method = RequestMethod.GET)
+    public ResponseEntity<Board> getBoardById(@PathVariable String id, @PathVariable String email) {
+        Optional<Board> board = boardService.getBoardById(id, email);
         if (board.isPresent()) {
             return new ResponseEntity<Board>(board.get(), HttpStatus.OK);
         }
@@ -55,6 +63,12 @@ public class BoardController {
     public ResponseEntity<Board> updateBoardWebSocket(@DestinationVariable String id, @Payload Board board)
             throws Exception {
         boardService.updateBoard(id, board);
+        if (board.getDeleted() == true) {
+            for (User user : board.getUsers()) {
+                this.template.convertAndSend("/topic/users/update/"+user.getEmail(), new ResponseEntity<>(HttpStatus.NO_CONTENT));
+            }
+            return new ResponseEntity<Board>(HttpStatus.NO_CONTENT);
+        }
         return new ResponseEntity<Board>(board, HttpStatus.CREATED);
     }
 
@@ -62,6 +76,7 @@ public class BoardController {
     public ResponseEntity<Board> removeBoard(@PathVariable String id) {
         try {
             boardService.removeBoard(id);
+
         } catch (Exception e) {
             return new ResponseEntity<Board>(HttpStatus.NOT_FOUND);
         }

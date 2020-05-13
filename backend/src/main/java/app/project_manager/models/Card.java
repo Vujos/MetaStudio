@@ -3,6 +3,8 @@ package app.project_manager.models;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -17,7 +19,8 @@ public class Card {
     private Date date;
     private String description;
 
-    @DBRef
+    @DBRef(lazy = true)
+    @JsonSerialize(using = CustomUsersSerializer.class)
     private ArrayList<User> members;
 
     private Date startDate;

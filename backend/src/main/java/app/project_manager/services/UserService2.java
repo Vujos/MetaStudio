@@ -28,15 +28,27 @@ public class UserService2 {
     }
 
     public Optional<User> getUserById(String id) {
-        return userRepo.findById(id);
+        Optional<User> user = userRepo.findById(id);
+        if(user.isPresent()){
+            user.get().getBoards().removeIf(obj -> obj.getDeleted() == true);
+        }
+        return user;
     }
 
     public Optional<User> getUserByUsername(String username) {
-        return userRepo.findByUsername(username);
+        Optional<User> user = userRepo.findByUsername(username);
+        if(user.isPresent()){
+            user.get().getBoards().removeIf(obj -> obj.getDeleted() == true);
+        }
+        return user;
     }
 
     public Optional<User> getUserByEmail(String email) {
-        return userRepo.findByEmail(email);
+        Optional<User> user = userRepo.findByEmail(email);
+        if(user.isPresent()){
+            user.get().getBoards().removeIf(obj -> obj.getDeleted() == true);
+        }
+        return user;
     }
 
     public Optional<User> getUserByQuery(String query) {
@@ -52,11 +64,9 @@ public class UserService2 {
         Optional<User> oldUserUsername = userRepo.findByUsername(user.getUsername());
         if (oldUserEmail.isPresent()) {
             return HttpStatus.CONFLICT;
-        } 
-        else if (oldUserUsername.isPresent()){
+        } else if (oldUserUsername.isPresent()) {
             return HttpStatus.NOT_ACCEPTABLE;
-        }
-        else {
+        } else {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             userRepo.save(user);
             return HttpStatus.CREATED;
@@ -72,6 +82,16 @@ public class UserService2 {
         Optional<User> oldUser = userRepo.findById(id);
         if (oldUser.isPresent()) {
             user.setId(oldUser.get().getId());
+            user.setPassword(oldUser.get().getPassword());
+            userRepo.save(user);
+        }
+    }
+
+    public void updateUserWithPassword(String id, User user) {
+        Optional<User> oldUser = userRepo.findById(id);
+        if (oldUser.isPresent()) {
+            user.setId(oldUser.get().getId());
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
             userRepo.save(user);
         }
     }
@@ -80,12 +100,16 @@ public class UserService2 {
         Optional<User> oldUser = userRepo.findByEmail(email);
         if (oldUser.isPresent()) {
             user.setId(oldUser.get().getId());
+            user.setPassword(oldUser.get().getPassword());
             userRepo.save(user);
         }
     }
 
     public Iterable<Board> getBoards(String email) {
         Optional<User> user = userRepo.findByEmail(email);
+        if(user.isPresent()){
+            user.get().getBoards().removeIf(obj -> obj.getDeleted() == true);
+        }
         return user.get().getBoards();
     }
 

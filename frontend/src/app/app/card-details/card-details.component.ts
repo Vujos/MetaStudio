@@ -6,6 +6,7 @@ import { Checklist } from '../checklist.model';
 import { DialogSaveChanges } from '../dialog/dialog-save-changes';
 import { Task } from '../task.model';
 import { WebSocketService } from '../web-socket/web-socket.service';
+import { UserService } from '../users/user.service';
 
 @Component({
   selector: 'app-card-details',
@@ -42,9 +43,12 @@ export class CardDetailsComponent implements OnInit {
   cardTitle: string = "";
   checklistRenameTitle: string = "";
 
+  newUser = "";
+  errorMessageNewUser = undefined;
+
   private wc;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: CardDetailsData, private fb: FormBuilder, private dialogRef: MatDialogRef<CardDetailsComponent>, public dialog: MatDialog, private webSocketService: WebSocketService) { }
+  constructor(@Inject(MAT_DIALOG_DATA) public data: CardDetailsData, private fb: FormBuilder, private dialogRef: MatDialogRef<CardDetailsComponent>, public dialog: MatDialog, private webSocketService: WebSocketService, private userService: UserService) { }
 
   ngOnInit() {
     this.cardForm = this.fb.group({
@@ -252,6 +256,55 @@ export class CardDetailsComponent implements OnInit {
 
   updateBoard() {
     this.wc.send("/app/boards/update/" + this.data.board.id, {}, JSON.stringify(this.data.board));
+  }
+
+  addUser() {
+    if (this.newUser.trim() != "") {
+      this.userService.getByQuery(this.newUser).subscribe(data => {
+        if (data) {
+          this.errorMessageNewUser = undefined;
+          this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].members.forEach(user => {
+            if(user.id == data.id){
+              this.errorMessageNewUser = "That user already exists";
+            }
+          });
+          if(this.errorMessageNewUser){
+            return;
+          }
+          this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].members.push(data);
+          this.updateBoard();
+          this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].members = [];
+          let userHasBoard = false;
+          data.boards.forEach(board => {
+            if(board.id == this.data.board.id){
+              this.resetAddUser();
+              userHasBoard = true;
+            }
+          });
+          if(userHasBoard){
+            return;
+          }
+          data.boards.push(this.data.board);
+          this.wc.send("/app/users/update/" + data.email, {}, JSON.stringify(data));
+          this.resetAddUser();
+        }
+      }, error => {
+        this.errorMessageNewUser = "That user does not exist"
+      });
+    }
+    else {
+      this.resetAddUser();
+    }
+  }
+
+  deleteMember(index){
+    this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].members.splice(index, 1);
+    this.updateBoard();
+  }
+
+  resetAddUser() {
+    this.newUser = "";
+    this.errorMessageNewUser = undefined;
   }
 }
 

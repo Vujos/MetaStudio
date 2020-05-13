@@ -71,6 +71,12 @@ public class UserController2 {
         return new ResponseEntity<User>(user, HttpStatus.CREATED);
     }
 
+    @RequestMapping(value = "/update/{id}", method = RequestMethod.PUT)
+    public ResponseEntity<User> updateUserWithPassword(@PathVariable String id, @RequestBody User user) {
+        userService.updateUserWithPassword(id, user);
+        return new ResponseEntity<User>(user, HttpStatus.CREATED);
+    }
+
     @MessageMapping("/users/update/{email}")
     public ResponseEntity<User> updateUserWebSocket(@DestinationVariable String email, @Payload User user)
             throws Exception {

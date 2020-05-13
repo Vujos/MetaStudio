@@ -12,7 +12,7 @@ export class WebSocketService {
 
   getClient(){
     let client = Stomp.client(this.url)
-    //client.debug = false;
+    client.debug = false;
     return client;
   }
 }

@@ -43,12 +43,12 @@
           </div>
         </mat-menu>
 
-        <button mat-menu-item [matMenuTriggerFor]="addUsersMenu" #renameBoardTrigger="matMenuTrigger">Add users</button>
+        <button mat-menu-item [matMenuTriggerFor]="addUsersMenu" #addUsersTrigger="matMenuTrigger">Add users</button>
         <mat-menu #addUsersMenu="matMenu" (closed)="resetAddUser()">
           <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
             <mat-form-field>
               <mat-label class="white">Email address or username</mat-label>
-              <input #renameBoardInput placeholder="Enter email address or username" class="white" matInput [(ngModel)]="newUser"
+              <input #addUsersInput placeholder="Enter email address or username" class="white" matInput [(ngModel)]="newUser"
                 (keyup.enter)="addUser()">
             </mat-form-field>
             <br>
@@ -74,7 +74,9 @@
             <button class="center white background-color-gray save" mat-button (click)="renameBoard()">Save</button>
           </div>
         </mat-menu>
-        <button class="delete" mat-menu-item>Delete board</button>
+        <button class="delete" mat-menu-item (click)="deleteBoardDialog()">Delete board</button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="logout()">Logout</button>
       </span>
     </mat-menu>
     <!--

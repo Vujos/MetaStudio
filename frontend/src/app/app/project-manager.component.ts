@@ -1,7 +1,7 @@
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { Component, ElementRef, Input, ViewChild, ViewChildren, ViewEncapsulation } from '@angular/core';
 import { MatDialog, MatDialogRef, MatMenuTrigger } from '@angular/material';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SharedDataService } from '../shared/shared-data.service';
 import { AdComponent } from './ad.component';
 import { Board } from './board.model';
@@ -10,6 +10,8 @@ import { CardDetailsComponent } from './card-details/card-details.component';
 import { DialogSaveChanges } from './dialog/dialog-save-changes';
 import { WebSocketService } from './web-socket/web-socket.service';
 import { UserService } from './users/user.service';
+import { AuthService } from '../auth/auth.service';
+import { DialogOkComponent } from './dialog/dialog-ok/dialog-ok.component';
 
 @Component({
   selector: 'app-project-manager',
@@ -54,14 +56,14 @@ export class ProjectManagerComponent implements AdComponent {
 
   private wc;
 
-  constructor(public dialog: MatDialog, public sharedDataService: SharedDataService, private route: ActivatedRoute, private boardService: BoardService, private webSocketService: WebSocketService, private userService: UserService) {
+  constructor(public dialog: MatDialog, public sharedDataService: SharedDataService, private route: ActivatedRoute, private boardService: BoardService, private webSocketService: WebSocketService, private userService: UserService, private authService: AuthService, private router: Router) {
 
   }
 
   ngOnInit() {
     let id = this.route.snapshot.paramMap.get("id");
 
-    this.boardService.getOne(id).subscribe(data => {
+    this.boardService.getOne(id, this.authService.getCurrentUser()).subscribe(data => {
       this.board = data;
       for (let list of this.board.lists) {
         this.connectedTo.push(list.id);
@@ -75,6 +77,16 @@ export class ProjectManagerComponent implements AdComponent {
     this.wc = this.webSocketService.getClient();
     this.wc.connect({}, () => {
       this.wc.subscribe("/topic/boards/update/" + id, (msg) => {
+        if(JSON.parse(msg.body).statusCodeValue == 204){
+          const dialogRef = this.dialog.open(DialogOkComponent, {
+            data: { title: "Content Deleted", content: "The owner has deleted the content" }
+          });
+    
+          dialogRef.afterClosed().subscribe(result => {
+            this.router.navigate(['/boards']);
+          });
+          
+        }
         let data = JSON.parse(msg.body).body;
         this.board = data;
         if (this.dialogRef && this.dialogRef.componentInstance) {
@@ -250,19 +262,43 @@ export class ProjectManagerComponent implements AdComponent {
     }
   }
 
+  deleteBoard(){
+    this.board.deleted = true;
+    this.updateBoard();
+    this.router.navigate(['/boards']);
+  }
+
+  deleteBoardDialog() {
+    const dialogRef = this.dialog.open(DialogSaveChanges, {
+      data: { title: "Confirmation", content: "Delete Board " + this.board.title }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.deleteBoard();
+      }
+    });
+  }
+
   addUser() {
     if (this.newUser.trim() != "") {
       this.userService.getByQuery(this.newUser).subscribe(data => {
-        if(data){
+        if (data) {
           this.errorMessageNewUser = undefined;
-          /* this.board.users.push(data);
-          this.updateBoard(); */
+          this.board.users.forEach(user => {
+            if(user.id == data.id){
+              this.errorMessageNewUser = "That user already exists";
+            }
+          });
+          if(this.errorMessageNewUser){
+            return;
+          }
+          this.board.users.push(data);
+          this.updateBoard();
+          this.board.users = []
           data.boards.push(this.board);
           this.wc.send("/app/users/update/" + data.email, {}, JSON.stringify(data));
           this.resetAddUser();
-          /* this.userService.update(data.id, data).subscribe(_ => {
-            this.resetAddUser();
-          }); */
         }
       }, error => {
         this.errorMessageNewUser = "That user does not exist"
@@ -273,7 +309,7 @@ export class ProjectManagerComponent implements AdComponent {
     }
   }
 
-  resetAddUser(){
+  resetAddUser() {
     this.newUser = "";
     this.errorMessageNewUser = undefined;
   }
@@ -429,5 +465,10 @@ export class ProjectManagerComponent implements AdComponent {
 
   updateBoard() {
     this.wc.send("/app/boards/update/" + this.board.id, {}, JSON.stringify(this.board));
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

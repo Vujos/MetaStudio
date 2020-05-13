@@ -6,6 +6,7 @@ import { VisionComponent } from './vision/vision.component';
 import { ProjectManagerComponent } from './app/project-manager.component';
 import { LoginRegisterComponent } from './app/login-register/login-register.component';
 import { RegisterComponent } from './app/register/register.component';
+import { ProfileComponent } from './app/profile/profile.component';
 
 
 const routes: Routes = [
@@ -14,6 +15,7 @@ const routes: Routes = [
   { path: 'login', component: LoginRegisterComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'boards', component: BoardsComponent },
+  { path: 'profile', component: ProfileComponent },
   { path: 'projectManager/:id', component: ProjectManagerComponent }
 ];
 

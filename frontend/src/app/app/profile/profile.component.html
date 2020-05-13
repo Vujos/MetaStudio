@@ -1,0 +1,50 @@
+<div class="profile">
+    <div class="mat-elevation-z8">
+        <!--<img src="" alt="logo">-->
+        <br>
+        <h3 class="white">{{currentUser?.fullName}}</h3>
+        <p class="white">{{currentUser?.username}}</p>
+        <br>
+        <div [formGroup]="form">
+            <mat-form-field>
+                <input class="white" matInput name="fullName" formControlName="fullName" type="text"
+                    placeholder="Full Name">
+                <mat-error>{{formError.mapErrors(form.get('fullName'), 'Full Name')}}</mat-error>
+            </mat-form-field>&nbsp;
+            <mat-form-field>
+                <input class="white" matInput name="username" formControlName="username" type="text"
+                    placeholder="Username">
+                <mat-error>{{formError.mapErrors(form.get('username'), 'Username')}}</mat-error>
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <input class="white" matInput name="email" formControlName="email" type="text"
+                    placeholder="Email address">
+                <mat-error>{{formError.mapErrors(form.get('email'), 'Email address')}}</mat-error>
+            </mat-form-field>
+            &nbsp;
+            <mat-form-field>
+                <input class="white" matInput name="oldPassword" formControlName="oldPassword"
+                    placeholder="Old password" [type]="hide ? 'password' : 'text'">
+                <mat-error>{{formError.mapErrors(form.get('oldPassword'), 'Old password')}}</mat-error>
+            </mat-form-field>
+            <br>
+            <mat-form-field>
+                <input class="white" matInput name="newPassword" formControlName="newPassword"
+                    placeholder="New password" [type]="hide ? 'password' : 'text'">
+                <mat-error>{{formError.mapErrors(form.get('newPassword'), 'New password')}}</mat-error>
+            </mat-form-field>
+            &nbsp;
+            <mat-form-field>
+                <input class="white" matInput name="repeatNewPassword" formControlName="repeatNewPassword"
+                    placeholder="Repeat new password" [type]="hide ? 'password' : 'text'">
+                <mat-error>{{formError.mapErrors(form.get('repeatNewPassword'), 'Repeat new password')}}</mat-error>
+            </mat-form-field>
+            <p class="message">{{message}}</p>
+            <button class="register-button" mat-raised-button [routerLink]="['/boards']">BACK</button>
+            &nbsp;
+            <button [disabled]="loading ? true : false" class="register-button" mat-raised-button
+                (click)="onSave()">SAVE</button>
+        </div>
+    </div>
+</div>

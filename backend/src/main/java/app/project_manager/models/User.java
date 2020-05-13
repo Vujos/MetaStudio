@@ -19,7 +19,7 @@ public class User {
     private String password;
     private Date date;
 
-    @DBRef
+    @DBRef(lazy = true)
     private ArrayList<Board> boards;
 
     public User() {

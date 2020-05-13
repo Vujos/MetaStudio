@@ -27,6 +27,8 @@ import { CardDetailsComponent } from './app/card-details/card-details.component'
 import { BoardsComponent } from './app/boards/boards.component';
 import { LoginRegisterComponent } from './app/login-register/login-register.component';
 import { RegisterComponent } from './app/register/register.component';
+import { ProfileComponent } from './app/profile/profile.component';
+import { DialogOkComponent } from './app/dialog/dialog-ok/dialog-ok.component';
 
 
 window['$'] = $;
@@ -48,7 +50,9 @@ window['$'] = $;
     CardDetailsComponent,
     BoardsComponent,
     LoginRegisterComponent,
-    RegisterComponent
+    RegisterComponent,
+    ProfileComponent,
+    DialogOkComponent
   ],
   imports: [
     BrowserModule,
@@ -64,7 +68,8 @@ window['$'] = $;
     ProjectManagerComponent,
     LoginDialog,
     DialogSaveChanges,
-    CardDetailsComponent
+    CardDetailsComponent,
+    DialogOkComponent
   ],
   providers: [AdService],
   bootstrap: [AppComponent]

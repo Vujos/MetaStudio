@@ -34,7 +34,15 @@ export class UserService {
   }
 
   update(id:string, user:User) {
-    return this.http.put(this.userUrl+`/${id}`, user)
+    return this.http.put(this.userUrl+`/${id}`, user);
+  }
+
+  updateWithPassword(id:string, user:User) {
+    return this.http.put(this.userUrl+`/update/${id}`, user);
+  }
+
+  checkPassword(id:string, user:User) {
+    return this.http.put(this.userUrl+`/password/${id}`, user);
   }
 
   getBoards(email: String) {

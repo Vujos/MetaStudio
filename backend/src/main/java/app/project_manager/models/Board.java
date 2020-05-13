@@ -3,6 +3,10 @@ package app.project_manager.models;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -18,19 +22,23 @@ public class Board {
     private String description;
     private String background;
 
-    @DBRef
+    @DBRef(lazy = true)
+    @JsonSerialize(using = CustomUsersSerializer.class)
     private ArrayList<User> users;
 
     @DBRef
     private ArrayList<List> lists;
-    
+
     private Integer priority;
+
+    @NotNull
+	private Boolean deleted = false;
 
     public Board() {
     }
 
     public Board(String id, String title, Date date, String description, String background, ArrayList<User> users,
-    ArrayList<List> lists, Integer priority) {
+            ArrayList<List> lists, Integer priority, @NotNull Boolean deleted) {
         this.id = id;
         this.title = title;
         this.date = date;
@@ -39,6 +47,7 @@ public class Board {
         this.users = users;
         this.lists = lists;
         this.priority = priority;
+        this.deleted = deleted;
     }
 
     public String getId() {
@@ -103,6 +112,14 @@ public class Board {
 
     public void setPriority(Integer priority) {
         this.priority = priority;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
 }

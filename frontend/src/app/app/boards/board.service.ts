@@ -16,8 +16,8 @@ export class BoardService {
     return this.http.get<Board[]>(this.boardUrl);
   }
 
-  getOne(id: String) {
-    return this.http.get<Board>(this.boardUrl+`/${id}`);
+  getOne(id: String, email: String) {
+    return this.http.get<Board>(this.boardUrl+`/${id}/${email}`);
   }
 
   delete(id: String) {
