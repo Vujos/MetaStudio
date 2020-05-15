@@ -2,7 +2,12 @@ package app.project_manager.services;
 
 import java.util.Optional;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,6 +18,9 @@ import app.project_manager.repositories.UserRepository2;
 
 @Service
 public class UserService2 {
+
+    @Autowired
+    MongoTemplate mongoTemplate;
 
     @Autowired
     private UserRepository2 userRepo;
@@ -111,6 +119,16 @@ public class UserService2 {
             user.get().getBoards().removeIf(obj -> obj.getDeleted() == true);
         }
         return user.get().getBoards();
+    }
+
+    public void leaveBoard(String boardId, String userId) {
+        Query query = Query.query( Criteria.where( "$id" ).is( new ObjectId(boardId) ) );
+        Update update = new Update().pull("boards", query );
+        mongoTemplate.updateMulti( Query.query( Criteria.where( "_id" ).is( new ObjectId(userId) ) ), update, "users" );
+
+        query = Query.query( Criteria.where( "$id" ).is( new ObjectId(userId) ) );
+        update = new Update().pull("users", query );
+        mongoTemplate.updateMulti( Query.query( Criteria.where( "_id" ).is( new ObjectId(boardId) ) ), update, "boards" );
     }
 
 }

@@ -87,6 +87,12 @@
   max-height: 65vh;
 }
 
+.done-tasks{
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
 .cdk-drag-preview {
   box-sizing: border-box;
   border-radius: 4px;
@@ -259,6 +265,24 @@ td {
   padding: 10px;
   border-radius: 5px;
   background-color: red;
+}
+
+.placeholder{
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.no-lists{
+  color: white;
+}
+
+.transform-scale:hover{
+  transform:scale(1.1,1.1);
+  -webkit-transform:scale(1.1,1.1);
+  -moz-transform:scale(1.1,1.1);
 }
 /*
 .mat-input-element {

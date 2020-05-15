@@ -45,7 +45,11 @@ export class UserService {
     return this.http.put(this.userUrl+`/password/${id}`, user);
   }
 
-  getBoards(email: String) {
+  getBoards(email: string) {
     return this.http.get<Board[]>(this.userUrl+`/boards/${email}`);
+  }
+
+  leaveBoard(boardId: string, userId: string){
+    return this.http.delete(this.userUrl+`/leaveBoard/${boardId}/${userId}`);
   }
 }

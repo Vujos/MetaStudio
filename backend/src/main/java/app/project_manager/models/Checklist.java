@@ -3,6 +3,8 @@ package app.project_manager.models;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -19,14 +21,18 @@ public class Checklist {
     @DBRef
     private ArrayList<Task> tasks;
 
+    @NotNull
+    private Boolean deleted = false;
+    
     public Checklist() {
     }
 
-    public Checklist(String id, String title, Date date, ArrayList<Task> tasks) {
+    public Checklist(String id, String title, Date date, ArrayList<Task> tasks, @NotNull Boolean deleted) {
         this.id = id;
         this.title = title;
         this.date = date;
         this.tasks = tasks;
+        this.deleted = deleted;
     }
 
     public String getId() {
@@ -59,6 +65,14 @@ public class Checklist {
 
     public void setTasks(ArrayList<Task> tasks) {
         this.tasks = tasks;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
 }

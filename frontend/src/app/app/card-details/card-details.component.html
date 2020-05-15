@@ -14,12 +14,12 @@
             (keyup.enter)="renameCard()">
         </mat-form-field>
         <br>
-        <button class="center white background-color-gray save" mat-button
+        <button class="center white background-color-gray transform-scale" mat-button
           (click)="renameCard();cardRenameInput.focus()">Save</button>
       </div>
     </mat-menu>
     <span *ngFor="let label of data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.labels; index as i">
-      <span class="label" [ngStyle]="{'background-color':label}" [matMenuTriggerFor]="labelUpdateMenu"
+      <span class="label transform-scale" [ngStyle]="{'background-color':label, 'padding-top':editLabels ? 0 : '10px','padding-bottom':editLabels ? 0 : '10px'}" [matMenuTriggerFor]="labelUpdateMenu"
         #labelUpdateTrigger="matMenuTrigger" [matTooltip]="editLabels ? 'Click to delete': 'Click to change'"
         (click)="editLabels ? deleteLabel(i) : labelUpdate = label"><span *ngIf="editLabels">X</span></span>&nbsp;
       <mat-menu #labelUpdateMenu="matMenu">
@@ -58,17 +58,17 @@
             <mat-label class="white">Description</mat-label>
             <textarea cdkTextareaAutosize #cardDescriptionAutosize="cdkTextareaAutosize" cdkAutosizeMinRows="1"
               cdkAutosizeMaxRows="5" matInput placeholder="Enter card description" #cardDescriptionInput
-              formControlName="description" class="white" (focusout)="saveCardDescription()"></textarea>
+              formControlName="description" class="white" (focusout)="saveCardDescription()" [value]="this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].description"></textarea>
           </mat-form-field>
           <br>
           <mat-form-field>
             <mat-label>Start date</mat-label>
-            <input formControlName="startDate" matInput type="datetime-local" (focusout)="saveStartDate()">
+            <input formControlName="startDate" matInput type="datetime-local" (focusout)="saveStartDate()" [value]="this.toDateString(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].startDate)">
           </mat-form-field>
           &nbsp;
           <mat-form-field>
             <mat-label>Due date</mat-label>
-            <input formControlName="endDate" matInput type="datetime-local" (focusout)="saveEndDate()">
+            <input formControlName="endDate" matInput type="datetime-local" (focusout)="saveEndDate()" [value]="this.toDateString(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].endDate)">
           </mat-form-field>
         </div>
         <br>
@@ -85,7 +85,7 @@
                 [(ngModel)]="checklistTitle" (keyup.enter)="addChecklist()">
             </mat-form-field>
             <br>
-            <button class="center white background-color-gray save" mat-button
+            <button class="center white background-color-gray transform-scale" mat-button
               (click)="addChecklist();checklistInput.focus()">Save</button>
           </div>
         </mat-menu>
@@ -105,7 +105,7 @@
                     [(ngModel)]="checklistRenameTitle" (keyup.enter)="renameChecklist(i)">
                 </mat-form-field>
                 <br>
-                <button class="center white background-color-gray save" mat-button
+                <button class="center white background-color-gray transform-scale" mat-button
                   (click)="renameChecklist(i);checklistRenameInput.focus()">Save</button>
               </div>
             </mat-menu>
@@ -119,8 +119,8 @@
           </div>
           <br>
           <span
-            class="float-right">{{checklist.tasks.length>0 ? (checked[i]/checklist.tasks.length*100 | number:'1.0-0') : 0}}%</span>
-          <mat-progress-bar mode="determinate" [value]="checked[i]/checklist.tasks.length*100"></mat-progress-bar>
+            class="float-right">{{checklist.tasks.length>0 ? (data.checkedNumber[i]/checklist.tasks.length*100 | number:'1.0-0') : 0}}%</span>
+          <mat-progress-bar mode="determinate" [value]="data.checkedNumber[i]/checklist.tasks.length*100"></mat-progress-bar>
           <div *ngFor="let task of checklist.tasks; index as j">
             <br>
             <mat-checkbox [color]="checkboxColor"
@@ -144,7 +144,7 @@
                   (keyup.enter)="addItem(i)">
               </mat-form-field>
               <br>
-              <button class="center white background-color-gray save" mat-button
+              <button class="center white background-color-gray transform-scale" mat-button
                 (click)="addItem(i);itemInput.focus()">Save</button>
             </div>
           </mat-menu>
@@ -155,7 +155,7 @@
       <mat-tab label="Members">
         <br>
         <button class="background-color-gray" mat-button [matMenuTriggerFor]="addUsersMenu"
-          #addUsersTrigger="matMenuTrigger">Add members</button>
+          #addUsersTrigger="matMenuTrigger" (menuOpened)="addUsersInput.focus()">Add members</button>
         <mat-menu #addUsersMenu="matMenu" (closed)="resetAddUser()">
           <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
             <mat-form-field>
@@ -164,7 +164,8 @@
                 [(ngModel)]="newUser" (keyup.enter)="addUser()">
             </mat-form-field>
             <br>
-            <button class="center white background-color-gray save" mat-button (click)="addUser()">Add</button>
+            <button class="center white background-color-gray transform-scale" mat-button
+              (click)="addUser()">Add</button>
             <p *ngIf="errorMessageNewUser" class="error-message white">{{errorMessageNewUser}}</p>
           </div>
         </mat-menu>
@@ -176,7 +177,7 @@
               <h3 class="center margin-0">{{member.fullName}}</h3>
               <p class="center">{{member.email}}</p>
             </div>
-            <button class="delete" mat-icon-button matTooltip="Delete member" (click)="deleteMember(i)">
+            <button class="delete" mat-icon-button matTooltip="Delete member" (click)="deleteMemberDialog(i)">
               <mat-icon>delete</mat-icon>
             </button>
           </div>
@@ -186,7 +187,7 @@
     </mat-tab-group>
   </div>
   <div mat-dialog-actions>
-    <!--<button class="background-color-gray save" mat-button (click)="saveCardDetails()">Save</button>-->
+    <!--<button class="background-color-gray transform-scale" mat-button (click)="saveCardDetails()">Save</button>-->
     <button class="background-color-gray delete" mat-button (click)="deleteCard()">Delete card</button>
   </div>
 </div>

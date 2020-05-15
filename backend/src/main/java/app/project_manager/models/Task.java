@@ -2,6 +2,8 @@ package app.project_manager.models;
 
 import java.util.Date;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -16,15 +18,19 @@ public class Task {
     private Date date;
     private Date doneDate;
 
+    @NotNull
+	private Boolean deleted = false;
+
     public Task() {
     }
 
-    public Task(String id, String title, Boolean done, Date date, Date doneDate) {
+    public Task(String id, String title, Boolean done, Date date, Date doneDate, @NotNull Boolean deleted) {
         this.id = id;
         this.title = title;
         this.done = done;
         this.date = date;
         this.doneDate = doneDate;
+        this.deleted = deleted;
     }
 
     public String getId() {
@@ -65,6 +71,14 @@ public class Task {
 
     public void setDoneDate(Date doneDate) {
         this.doneDate = doneDate;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
 }

@@ -2,17 +2,27 @@ package app.project_manager.services;
 
 import java.util.Optional;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import app.project_manager.models.Board;
+import app.project_manager.models.Card;
+import app.project_manager.models.Checklist;
 import app.project_manager.models.List;
 import app.project_manager.models.User;
 import app.project_manager.repositories.BoardRepository;
 
 @Service
 public class BoardService {
+
+    @Autowired
+    MongoTemplate mongoTemplate;
 
     @Autowired
     private BoardRepository boardRepo;
@@ -27,14 +37,42 @@ public class BoardService {
         return boardRepo.findAll();
     }
 
-    public Optional<Board> getBoardById(String id, String email) {
-        Optional<Board> board = boardRepo.findByIdAndDeleted(id, false);
-        for (User user : board.get().getUsers()) {
-            if(user.getEmail().equals(email)){
-                return board;
+    public Optional<Board> getBoardByIdInternalServer(String id) {
+        Optional<Board> board =  boardRepo.findById(id);
+        if(board.isPresent()){
+            board.get().getLists().removeIf(obj -> obj.getDeleted() == true);
+            for (List list : board.get().getLists()) {
+                list.getCards().removeIf(obj -> obj.getDeleted() == true);
+                for (Card card : list.getCards()) {
+                    card.getChecklists().removeIf(obj -> obj.getDeleted() == true);
+                    for (Checklist checklist : card.getChecklists()) {
+                        checklist.getTasks().removeIf(obj -> obj.getDeleted() == true);
+                    }
+                }
             }
         }
-        return Optional.empty();
+        return board;
+    }
+
+    public Optional<Board> getBoardById(String id, String email) {
+        Optional<Board> board = boardRepo.findByIdAndDeleted(id, false);
+        if(board.isPresent()){
+            for (User user : board.get().getUsers()) {
+                if(user.getEmail().equals(email)){
+                    board.get().getLists().removeIf(obj -> obj.getDeleted() == true);
+                    for (List list : board.get().getLists()) {
+                        list.getCards().removeIf(obj -> obj.getDeleted() == true);
+                        for (Card card : list.getCards()) {
+                            card.getChecklists().removeIf(obj -> obj.getDeleted() == true);
+                            for (Checklist checklist : card.getChecklists()) {
+                                checklist.getTasks().removeIf(obj -> obj.getDeleted() == true);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return board;
     }
 
     public HttpStatus addBoard(Board board) {
@@ -47,9 +85,13 @@ public class BoardService {
 
     public void removeBoard(String id) {
         Optional<Board> board = boardRepo.findByIdAndDeleted(id, false);
-        Board b = board.get();
-        b.setDeleted(true);
-        boardRepo.save(b);
+        if(board.isPresent()){
+            for (User user : board.get().getUsers()) {
+                Query query = Query.query( Criteria.where( "$id" ).is( new ObjectId(board.get().getId()) ) );
+                Update update = new Update().pull("boards", query );
+                mongoTemplate.updateMulti( Query.query( Criteria.where( "_id" ).is( new ObjectId(user.getId()) ) ), update, "users" );
+            }
+        }
     }
 
     public void updateBoard(String id, Board board) {

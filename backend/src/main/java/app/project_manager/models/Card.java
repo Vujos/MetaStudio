@@ -3,6 +3,8 @@ package app.project_manager.models;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import org.springframework.data.annotation.Id;
@@ -33,11 +35,15 @@ public class Card {
     @DBRef
     private ArrayList<Checklist> checklists;
 
+    @NotNull
+	private Boolean deleted = false;
+
     public Card() {
     }
 
     public Card(String id, String title, Date date, String description, ArrayList<User> members, Date startDate,
-            Date endDate, ArrayList<String> attachments, ArrayList<String> labels, ArrayList<Checklist> checklists) {
+            Date endDate, ArrayList<String> attachments, ArrayList<String> labels, ArrayList<Checklist> checklists,
+            @NotNull Boolean deleted) {
         this.id = id;
         this.title = title;
         this.date = date;
@@ -48,6 +54,7 @@ public class Card {
         this.attachments = attachments;
         this.labels = labels;
         this.checklists = checklists;
+        this.deleted = deleted;
     }
 
     public String getId() {
@@ -128,6 +135,14 @@ public class Card {
 
     public void setChecklists(ArrayList<Checklist> checklists) {
         this.checklists = checklists;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
 }

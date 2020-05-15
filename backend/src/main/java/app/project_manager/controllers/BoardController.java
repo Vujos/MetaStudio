@@ -62,14 +62,19 @@ public class BoardController {
     @MessageMapping("/boards/update/{id}")
     public ResponseEntity<Board> updateBoardWebSocket(@DestinationVariable String id, @Payload Board board)
             throws Exception {
-        boardService.updateBoard(id, board);
         if (board.getDeleted() == true) {
+            this.boardService.removeBoard(id);
             for (User user : board.getUsers()) {
                 this.template.convertAndSend("/topic/users/update/"+user.getEmail(), new ResponseEntity<>(HttpStatus.NO_CONTENT));
             }
             return new ResponseEntity<Board>(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<Board>(board, HttpStatus.CREATED);
+        boardService.updateBoard(id, board);
+        Optional<Board> updatedBoard = this.boardService.getBoardByIdInternalServer(id);
+        if (updatedBoard.isPresent()) {
+            return new ResponseEntity<Board>(updatedBoard.get(), HttpStatus.CREATED);
+        }
+        return new ResponseEntity<Board>(HttpStatus.NOT_FOUND);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)

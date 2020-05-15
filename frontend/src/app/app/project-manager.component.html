@@ -26,7 +26,7 @@
                 #boardDescriptionInput class="white"></textarea>
             </mat-form-field>
             <br>
-            <button class="center white background-color-gray save" mat-button
+            <button class="center white background-color-gray transform-scale" mat-button
               (click)="saveBoardDescription()">Save</button>
           </div>
 
@@ -52,7 +52,7 @@
                 (keyup.enter)="addUser()">
             </mat-form-field>
             <br>
-            <button class="center white background-color-gray save" mat-button (click)="addUser()">Add</button>
+            <button class="center white background-color-gray transform-scale" mat-button (click)="addUser()">Add</button>
             <p *ngIf="errorMessageNewUser" class="error-message white">{{errorMessageNewUser}}</p>
           </div>
         </mat-menu>
@@ -71,10 +71,11 @@
                 (keyup.enter)="renameBoard()">
             </mat-form-field>
             <br>
-            <button class="center white background-color-gray save" mat-button (click)="renameBoard()">Save</button>
+            <button class="center white background-color-gray transform-scale" mat-button (click)="renameBoard()">Save</button>
           </div>
         </mat-menu>
-        <button class="delete" mat-menu-item (click)="deleteBoardDialog()">Delete board</button>
+        <button *ngIf="currentUser?.id == board?.users[0].id" class="delete" mat-menu-item (click)="deleteBoardDialog()">Delete board</button>
+        <button *ngIf="currentUser?.id != board?.users[0].id" class="delete" mat-menu-item (click)="leaveBoardDialog()">Leave board</button>
         <mat-divider></mat-divider>
         <button mat-menu-item (click)="logout()">Logout</button>
       </span>
@@ -93,7 +94,7 @@
           [(ngModel)]="listTitle" (keyup.enter)="addList()">
       </mat-form-field>
       &nbsp;
-      <button class="black whitesmoke" mat-button (click)="addList()">
+      <button class="black whitesmoke transform-scale" mat-button (click)="addList()">
         Add list
       </button>
       <!--
@@ -149,7 +150,7 @@
                       </mat-select>
                     </mat-form-field>
                     <br>
-                    <button class="center white background-color-gray save" mat-button
+                    <button class="center white background-color-gray transform-scale" mat-button
                       (click)="moveList(i, selectedMoveListPosition, selectedMoveList)"
                       [disabled]="selectedMoveListPosition==undefined || selectedMoveList==undefined">Move</button>
                   </div>
@@ -166,7 +167,7 @@
                         [(ngModel)]="listTitleRename" (keyup.enter)="renameList(i)">
                     </mat-form-field>
                     <br>
-                    <button class="center white background-color-gray save" mat-button
+                    <button class="center white background-color-gray transform-scale" mat-button
                       (click)="renameList(i)">Save</button>
                   </div>
                 </mat-menu>
@@ -188,7 +189,7 @@
                       </mat-select>
                     </mat-form-field>
                     <br>
-                    <button class="center white background-color-gray save" mat-button
+                    <button class="center white background-color-gray transform-scale" mat-button
                       (click)="copyAllCards(i, selectedCopyAllCards)"
                       [disabled]="selectedCopyAllCards == undefined">Copy</button>
                   </div>
@@ -210,7 +211,7 @@
                       </mat-select>
                     </mat-form-field>
                     <br>
-                    <button class="center white background-color-gray save" mat-button
+                    <button class="center white background-color-gray transform-scale" mat-button
                       (click)="moveAllCards(i, selectedMoveAllCards)"
                       [disabled]="selectedMoveAllCards == undefined">Move</button>
                   </div>
@@ -233,7 +234,7 @@
               <input matInput [(ngModel)]="cardTitle[i]" #cardTitleInput (keyup.enter)="addCard(i)">
             </mat-form-field>
             &nbsp;
-            <button mat-button (click)="addCard(i)" class="black whitesmoke padding-0">
+            <button mat-button (click)="addCard(i)" class="black whitesmoke padding-0 transform-scale">
               Add card
             </button>
           </div>
@@ -244,13 +245,21 @@
                 <span class="label" [ngStyle]="{'background-color':label}"></span>
                 &nbsp;
               </span>
-
               <div>{{item?.title}}</div>
+              <div *ngIf="tasksDoneNumber[item?.id]" class="done-tasks">
+                <span matTooltip="Completed items" class="done-tasks">
+                  <mat-icon>check_circle_outline</mat-icon>&nbsp;
+                  {{tasksDoneNumber[item?.id]}}
+                </span>
+              </div>
             </div>
           </div>
 
         </div>
       </td>
+      <div class="placeholder" *ngIf="board?.lists.length==0">
+        <h1 class="no-lists" [ngStyle]="{'color': lightBackground ? 'gray' : 'white'}">No lists</h1>
+      </div>
     </tr>
   </table>
 </div>

@@ -2,16 +2,16 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/dr
 import { Component, ElementRef, Input, ViewChild, ViewChildren, ViewEncapsulation } from '@angular/core';
 import { MatDialog, MatDialogRef, MatMenuTrigger } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../auth/auth.service';
 import { SharedDataService } from '../shared/shared-data.service';
 import { AdComponent } from './ad.component';
 import { Board } from './board.model';
 import { BoardService } from './boards/board.service';
 import { CardDetailsComponent } from './card-details/card-details.component';
-import { DialogSaveChanges } from './dialog/dialog-save-changes';
-import { WebSocketService } from './web-socket/web-socket.service';
-import { UserService } from './users/user.service';
-import { AuthService } from '../auth/auth.service';
 import { DialogOkComponent } from './dialog/dialog-ok/dialog-ok.component';
+import { DialogSaveChanges } from './dialog/dialog-save-changes';
+import { UserService } from './users/user.service';
+import { WebSocketService } from './web-socket/web-socket.service';
 
 @Component({
   selector: 'app-project-manager',
@@ -27,6 +27,10 @@ export class ProjectManagerComponent implements AdComponent {
   @Input() data: any;
 
   private dialogRef: MatDialogRef<CardDetailsComponent>;
+
+  currentUser = undefined;
+
+  tasksDoneNumber = {};
 
   lists = [];
   connectedTo = [];
@@ -54,6 +58,8 @@ export class ProjectManagerComponent implements AdComponent {
   showAddCardBool = false;
   cardTitle = {};
 
+  checked: number[] = [];
+
   private wc;
 
   constructor(public dialog: MatDialog, public sharedDataService: SharedDataService, private route: ActivatedRoute, private boardService: BoardService, private webSocketService: WebSocketService, private userService: UserService, private authService: AuthService, private router: Router) {
@@ -72,37 +78,77 @@ export class ProjectManagerComponent implements AdComponent {
       this.boardDescription = this.board.description;
       this.boardTitle = this.board.title;
       this.boardBackground = this.board.background;
+
+      this.board.lists.forEach(list => {
+        list.cards.forEach(card => {
+          let done = 0;
+          let size = 0;
+          card.checklists.forEach(checklist => {
+            checklist.tasks.forEach(task => {
+              size += 1;
+              if(task.done){
+                done+=1;
+              }
+            });
+          })
+          this.tasksDoneNumber[card.id] = done + "/" + size;
+        })
+      })
     });
 
     this.wc = this.webSocketService.getClient();
     this.wc.connect({}, () => {
       this.wc.subscribe("/topic/boards/update/" + id, (msg) => {
-        if(JSON.parse(msg.body).statusCodeValue == 204){
+        if (JSON.parse(msg.body).statusCodeValue == 204) {
           const dialogRef = this.dialog.open(DialogOkComponent, {
             data: { title: "Content Deleted", content: "The owner has deleted the content" }
           });
-    
+
           dialogRef.afterClosed().subscribe(result => {
             this.router.navigate(['/boards']);
           });
-          
+
         }
-        let data = JSON.parse(msg.body).body;
-        this.board = data;
-        if (this.dialogRef && this.dialogRef.componentInstance) {
-          if (this.board.lists[this.dialogRef.componentInstance.data.listIndex].cards[this.dialogRef.componentInstance.data.cardIndex] == undefined || this.board.lists[this.dialogRef.componentInstance.data.listIndex].cards[this.dialogRef.componentInstance.data.cardIndex].id != this.dialogRef.componentInstance.data.board.lists[this.dialogRef.componentInstance.data.listIndex].cards[this.dialogRef.componentInstance.data.cardIndex].id) {
-            this.dialogRef.close();
+        else {
+          let data = JSON.parse(msg.body).body;
+          this.board = data;
+          if (this.dialogRef && this.dialogRef.componentInstance) {
+            if (this.board.lists[this.dialogRef.componentInstance.data.listIndex].cards[this.dialogRef.componentInstance.data.cardIndex] == undefined || this.board.lists[this.dialogRef.componentInstance.data.listIndex].cards[this.dialogRef.componentInstance.data.cardIndex].id != this.dialogRef.componentInstance.data.board.lists[this.dialogRef.componentInstance.data.listIndex].cards[this.dialogRef.componentInstance.data.cardIndex].id) {
+              this.dialogRef.close();
+            }
+            this.dialogRef.componentInstance.data.board = data;
+            this.dialogRef.componentInstance.data.checkedNumber = this.calculateCheckedTasks(this.dialogRef.componentInstance.data.listIndex, this.dialogRef.componentInstance.data.cardIndex);
           }
-          this.dialogRef.componentInstance.data.board = data;
+          this.connectedTo = [];
+          for (let list of this.board.lists) {
+            this.connectedTo.push(list.id);
+          };
+          this.boardDescription = this.board.description;
+          this.boardTitle = this.board.title;
+          this.boardBackground = this.board.background;
+
+          this.board.lists.forEach(list => {
+            list.cards.forEach(card => {
+              let done = 0;
+              let size = 0;
+              card.checklists.forEach(checklist => {
+                checklist.tasks.forEach(task => {
+                  size += 1;
+                  if(task.done){
+                    done+=1;
+                  }
+                });
+              })
+              this.tasksDoneNumber[card.id] = done + "/" + size;
+            })
+          })
         }
-        this.connectedTo = [];
-        for (let list of this.board.lists) {
-          this.connectedTo.push(list.id);
-        };
-        this.boardDescription = this.board.description;
-        this.boardTitle = this.board.title;
-        this.boardBackground = this.board.background;
+
       })
+    })
+
+    this.userService.getByQuery(this.authService.getCurrentUser()).subscribe(currentUser => {
+      this.currentUser = currentUser;
     })
   }
 
@@ -144,7 +190,8 @@ export class ProjectManagerComponent implements AdComponent {
           title: this.listTitle.trim(),
           cards: [],
           priority: 1,
-          date: new Date()
+          date: new Date(),
+          deleted: false
         }
       );
       this.updateBoard();
@@ -171,7 +218,8 @@ export class ProjectManagerComponent implements AdComponent {
         endDate: new Date(),
         attachments: [],
         labels: [],
-        checklists: []
+        checklists: [],
+        deleted: false
       });
       this.updateBoard();
     }
@@ -262,7 +310,7 @@ export class ProjectManagerComponent implements AdComponent {
     }
   }
 
-  deleteBoard(){
+  deleteBoard() {
     this.board.deleted = true;
     this.updateBoard();
     this.router.navigate(['/boards']);
@@ -280,17 +328,35 @@ export class ProjectManagerComponent implements AdComponent {
     });
   }
 
+  leaveBoard() {
+    this.userService.leaveBoard(this.board.id, this.currentUser.id).subscribe(data => {
+      this.router.navigate(['/boards']);
+    });
+  }
+
+  leaveBoardDialog() {
+    const dialogRef = this.dialog.open(DialogSaveChanges, {
+      data: { title: "Confirmation", content: "Leave Board " + this.board.title }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.leaveBoard();
+      }
+    });
+  }
+
   addUser() {
     if (this.newUser.trim() != "") {
       this.userService.getByQuery(this.newUser).subscribe(data => {
         if (data) {
           this.errorMessageNewUser = undefined;
           this.board.users.forEach(user => {
-            if(user.id == data.id){
+            if (user.id == data.id) {
               this.errorMessageNewUser = "That user already exists";
             }
           });
-          if(this.errorMessageNewUser){
+          if (this.errorMessageNewUser) {
             return;
           }
           this.board.users.push(data);
@@ -417,7 +483,7 @@ export class ProjectManagerComponent implements AdComponent {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.board.lists.splice(index, 1);
+        this.board.lists[index].deleted = true;
         this.updateBoard();
       }
     });
@@ -459,8 +525,23 @@ export class ProjectManagerComponent implements AdComponent {
     }
   }
 
+  calculateCheckedTasks(listIndex, cardIndex){
+    let checkedNumber: number[] = [];
+    let sum = 0;
+    this.board.lists[listIndex].cards[cardIndex].checklists.forEach(checklist => {
+      checklist.tasks.forEach(task => {
+        if (task.done) {
+          sum += 1;
+        }
+      })
+      checkedNumber.push(sum);
+      sum = 0;
+    })
+    return checkedNumber;
+  }
+
   openCardDetailsDialog(listIndex, cardIndex) {
-    this.dialogRef = this.dialog.open(CardDetailsComponent, { data: { board: this.board, listIndex: listIndex, cardIndex: cardIndex }, autoFocus: false });
+    this.dialogRef = this.dialog.open(CardDetailsComponent, { data: { board: this.board, listIndex: listIndex, cardIndex: cardIndex , checkedNumber: this.calculateCheckedTasks(listIndex, cardIndex)}, autoFocus: false });
   }
 
   updateBoard() {

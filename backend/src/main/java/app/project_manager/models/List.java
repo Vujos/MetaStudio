@@ -3,6 +3,8 @@ package app.project_manager.models;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -21,15 +23,19 @@ public class List {
     private Integer priority;
     private Date date;
 
+    @NotNull
+	private Boolean deleted = false;
+
     public List() {
     }
 
-    public List(String id, String title, ArrayList<Card> cards, Integer priority, Date date) {
+    public List(String id, String title, ArrayList<Card> cards, Integer priority, Date date, @NotNull Boolean deleted) {
         this.id = id;
         this.title = title;
         this.cards = cards;
         this.priority = priority;
         this.date = date;
+        this.deleted = deleted;
     }
 
     public String getId() {
@@ -70,6 +76,14 @@ public class List {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
 }

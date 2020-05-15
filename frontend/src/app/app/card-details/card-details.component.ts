@@ -37,7 +37,6 @@ export class CardDetailsComponent implements OnInit {
   deleteLabelsColor: ThemePalette = 'warn';
   checkboxColor: ThemePalette = 'warn';
 
-  checked: number[] = [];
   checkboxChecked = {};
 
   cardTitle: string = "";
@@ -57,17 +56,6 @@ export class CardDetailsComponent implements OnInit {
       endDate: [this.toDateString(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].endDate)]
     });
     this.cardForm.patchValue({ description: this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].description });
-
-    let sum = 0;
-    this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists.forEach(checklist => {
-      checklist.tasks.forEach(task => {
-        if (task.done) {
-          sum += 1;
-        }
-      })
-      this.checked.push(sum);
-      sum = 0;
-    })
 
     this.cardTitle = this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title;
 
@@ -99,7 +87,7 @@ export class CardDetailsComponent implements OnInit {
     dialogSaveChanges.afterClosed().subscribe(result => {
       if (result) {
         this.dialogRef.close();
-        this.data.board.lists[this.data.listIndex].cards.splice(this.data.cardIndex, 1);
+        this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].deleted = true;
         this.updateBoard();
       }
     });
@@ -171,17 +159,17 @@ export class CardDetailsComponent implements OnInit {
 
   addChecklist() {
     if (this.checklistTitle.trim() != "") {
-      this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists.push(new Checklist(null, this.checklistTitle, new Date(), []));
+      this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists.push(new Checklist(null, this.checklistTitle, new Date(), [], false));
       this.updateBoard();
       this.checklistTrigger.closeMenu();
-      this.checked[this.checked.length] = 0;
+      this.data.checkedNumber[this.data.checkedNumber.length] = 0;
     }
     this.checklistTitle = "";
   }
 
   addItem(index) {
     if (this.itemTitle.trim() != "") {
-      this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].tasks.push(new Task(null, this.itemTitle, false, new Date(), null));
+      this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].tasks.push(new Task(null, this.itemTitle, false, new Date(), null, false));
       this.updateBoard();
     }
     this.itemTitle = "";
@@ -205,7 +193,7 @@ export class CardDetailsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[checklistIndex].tasks.splice(taskIndex, 1);
+        this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[checklistIndex].tasks[taskIndex].deleted = true;
         this.updateBoard();
       }
     });
@@ -218,7 +206,7 @@ export class CardDetailsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists.splice(index, 1);
+        this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].deleted = true;
         this.updateBoard();
       }
     });
@@ -247,11 +235,11 @@ export class CardDetailsComponent implements OnInit {
   }
 
   checkedPlus(index) {
-    this.checked[index]++;
+    this.data.checkedNumber[index]++;
   }
 
   checkedMinus(index) {
-    this.checked[index]--;
+    this.data.checkedNumber[index]--;
   }
 
   updateBoard() {
@@ -302,6 +290,18 @@ export class CardDetailsComponent implements OnInit {
     this.updateBoard();
   }
 
+  deleteMemberDialog(index) {
+    const dialogRef = this.dialog.open(DialogSaveChanges, {
+      data: { title: "Confirmation", content: "Delete this member" }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.deleteMember(index);
+      }
+    });
+  }
+
   resetAddUser() {
     this.newUser = "";
     this.errorMessageNewUser = undefined;
@@ -312,4 +312,5 @@ export interface CardDetailsData {
   board: Board;
   listIndex: string;
   cardIndex: string;
+  checkedNumber: number[];
 }

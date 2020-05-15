@@ -100,4 +100,15 @@ public class UserController2 {
         return new ResponseEntity<Iterable<Board>>(userService.getBoards(email), HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/leaveBoard/{boardId}/{userId}", method = RequestMethod.DELETE)
+    public ResponseEntity<User> leaveBoard(@PathVariable String boardId, @PathVariable String userId) {
+        try {
+            userService.leaveBoard(boardId, userId);
+        } catch (Exception e) {
+            return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<User>(HttpStatus.NO_CONTENT);
+    }
+
 }

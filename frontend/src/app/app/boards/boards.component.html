@@ -5,7 +5,7 @@
       (keyup.enter)="addBoard()">
   </mat-form-field>
   &nbsp;
-  <button class="black whitesmoke" mat-button (click)="addBoard()">
+  <button class="black whitesmoke transform-scale" mat-button (click)="addBoard()">
     Add board
   </button>
   <button mat-icon-button class="boards-more" #boardsMoreButton [matMenuTriggerFor]="boardsMoreMenu"
@@ -40,5 +40,9 @@
       [ngStyle]="{'background-color':board.background, 'color': checkBackground(board.background) ? 'black' : 'white'}">
       {{board.title}}
     </div>
+    <div class="placeholder" *ngIf="boards?.length==0">
+      <h1 class="no-boards">No boards</h1>
+    </div>
+    
   </div>
 </div>

@@ -10,4 +10,5 @@ import app.project_manager.models.Board;
 @Repository
 public interface BoardRepository extends MongoRepository<Board, Long> {
     Optional<Board> findByIdAndDeleted(String id, Boolean deleted);
+    Optional<Board> findById(String id);
 }

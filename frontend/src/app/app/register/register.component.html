@@ -5,8 +5,8 @@
         <p class="white">REGISTER</p>
         <div [formGroup]="form">
             <mat-form-field>
-                <input class="white" matInput name="fullName" formControlName="fullName" type="text" placeholder="Full Name">
-                <mat-error>{{formError.mapErrors(form.get('fullName'), 'Full Name')}}</mat-error>
+                <input class="white" matInput name="fullName" formControlName="fullName" type="text" placeholder="Full name">
+                <mat-error>{{formError.mapErrors(form.get('fullName'), 'Full name')}}</mat-error>
             </mat-form-field>&nbsp;
             <mat-form-field>
                 <input class="white" matInput name="username" formControlName="username" type="text" placeholder="Username">
@@ -19,7 +19,7 @@
             </mat-form-field>&nbsp;
             <mat-form-field>
                 <input class="white" matInput name="password" formControlName="password" placeholder="Password"
-                    [type]="hide ? 'password' : 'text'">
+                    [type]="hide ? 'password' : 'text'" (keyup.enter)="onRegister()">
                 <mat-icon class="password-toggle white" matSuffix (click)="hide = !hide">
                     {{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
                 <mat-error>{{formError.mapErrors(form.get('password'), 'Password')}}</mat-error>
@@ -27,6 +27,8 @@
             <p class="message">{{message}}</p>
             <button [disabled]="loading ? true : false" class="register-button" mat-raised-button
                 (click)="onRegister()">REGISTER</button>
+            <br>
+            <p class="white">Already have an account? &nbsp; <a class="white" href="" [routerLink]="['/login']">Login</a></p>
         </div>
     </div>
 </div>

@@ -8,8 +8,8 @@
         <div [formGroup]="form">
             <mat-form-field>
                 <input class="white" matInput name="fullName" formControlName="fullName" type="text"
-                    placeholder="Full Name">
-                <mat-error>{{formError.mapErrors(form.get('fullName'), 'Full Name')}}</mat-error>
+                    placeholder="Full name">
+                <mat-error>{{formError.mapErrors(form.get('fullName'), 'Full name')}}</mat-error>
             </mat-form-field>&nbsp;
             <mat-form-field>
                 <input class="white" matInput name="username" formControlName="username" type="text"
@@ -25,8 +25,8 @@
             &nbsp;
             <mat-form-field>
                 <input class="white" matInput name="oldPassword" formControlName="oldPassword"
-                    placeholder="Old password" [type]="hide ? 'password' : 'text'">
-                <mat-error>{{formError.mapErrors(form.get('oldPassword'), 'Old password')}}</mat-error>
+                    placeholder="Password" [type]="hide ? 'password' : 'text'">
+                <mat-error>{{formError.mapErrors(form.get('oldPassword'), 'Password')}}</mat-error>
             </mat-form-field>
             <br>
             <mat-form-field>
