@@ -11,6 +11,8 @@ import { FormErrorService } from 'src/app/shared/formError.service';
 })
 export class ProfileComponent implements OnInit {
 
+  loadingData = true;
+
   currentUser = undefined;
 
   loading = false;
@@ -32,6 +34,7 @@ export class ProfileComponent implements OnInit {
     });
 
     this.userService.getByQuery(this.authService.getCurrentUser()).subscribe(currentUser => {
+      this.loadingData = false;
       this.currentUser = currentUser;
       this.form.patchValue(this.currentUser);
     })
@@ -45,7 +48,7 @@ export class ProfileComponent implements OnInit {
 
     let validOldPassword = false;
 
-    this.authService.login2(this.form.value.email, this.form.value.oldPassword).subscribe(response => {
+    this.authService.login(this.form.value.email, this.form.value.oldPassword).subscribe(response => {
       if (response.token != "") {
         validOldPassword = true;
       }

@@ -1,10 +1,11 @@
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { DialogSaveChangesData } from './dialog-save-changes-data.model';
+import { DialogSaveChangesData } from '../models/dialog-save-changes-data.model';
 
 @Component({
     selector: 'dialog-save-changes',
     templateUrl: 'dialog-save-changes.html',
+    styleUrls: ['./dialog-save-changes.scss']
 })
 export class DialogSaveChanges {
 

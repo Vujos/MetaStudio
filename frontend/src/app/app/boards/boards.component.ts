@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, ViewEncapsulation } from '@angular/core';
 import { BoardService } from './board.service';
-import { Board } from '../board.model';
+import { Board } from '../models/board.model';
 import { AuthService } from 'src/app/auth/auth.service';
 import { Router } from '@angular/router';
 import { UserService } from '../users/user.service';
@@ -16,6 +16,8 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 export class BoardsComponent implements OnInit {
 
   @ViewChild('boardTitleInput', { static: false }) boardTitleElement: ElementRef;
+
+  loading = true;
 
   currentUser = undefined;
 
@@ -41,13 +43,6 @@ export class BoardsComponent implements OnInit {
     this.wc.connect({}, () => {
       this.wc.subscribe("/topic/users/update/" + this.authService.getCurrentUser(), (msg) => {
         if (JSON.parse(msg.body).statusCodeValue == 204) {
-          /* const dialogRef = this.dialog.open(DialogOkComponent, {
-            data: { title: "Content Deleted", content: "The owner has deleted the content" }
-          });
-    
-          dialogRef.afterClosed().subscribe(result => {
-            this.router.navigate(['/boards']);
-          }); */
           this.loadBoards();
         }
         else {
@@ -98,6 +93,7 @@ export class BoardsComponent implements OnInit {
 
   loadBoards() {
     this.userService.getBoards(this.authService.getCurrentUser()).subscribe(data => {
+      this.loading = false;
       this.boards = data;
     })
   }

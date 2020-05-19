@@ -1,17 +1,17 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialog, MatDialogRef, MatMenuTrigger, MAT_DIALOG_DATA, ThemePalette } from '@angular/material';
-import { Board } from '../board.model';
-import { Checklist } from '../checklist.model';
+import { Board } from '../models/board.model';
+import { Checklist } from '../models/checklist.model';
 import { DialogSaveChanges } from '../dialog/dialog-save-changes';
-import { Task } from '../task.model';
+import { Task } from '../models/task.model';
 import { WebSocketService } from '../web-socket/web-socket.service';
 import { UserService } from '../users/user.service';
 import { AuthService } from 'src/app/auth/auth.service';
 import { BoardService } from '../boards/board.service';
-import { User } from '../user.model';
-import { Card } from '../card.model';
-import { List } from '../list.model';
+import { User } from '../models/user.model';
+import { Card } from '../models/card.model';
+import { List } from '../models/list.model';
 import { Router } from '@angular/router';
 
 @Component({
@@ -88,7 +88,7 @@ export class CardDetailsComponent implements OnInit {
 
   deleteCard() {
     const dialogSaveChanges = this.dialog.open(DialogSaveChanges, {
-      data: { title: "Confirmation", content: "Delete this card" }
+      data: { title: "Confirmation", content: "Delete this card" }, autoFocus: false
     });
 
     dialogSaveChanges.afterClosed().subscribe(result => {
@@ -115,7 +115,7 @@ export class CardDetailsComponent implements OnInit {
   saveCardTitleDialog() {
     if (this.cardTitle.trim() != this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title && this.cardTitle.trim() != "") {
       const dialogRef = this.dialog.open(DialogSaveChanges, {
-        data: { title: "Unsaved Changes", content: "Save Changes to Card Title" }
+        data: { title: "Unsaved Changes", content: "Save Changes to Card Title" }, autoFocus: false
       });
 
       dialogRef.afterClosed().subscribe(result => {
@@ -147,7 +147,7 @@ export class CardDetailsComponent implements OnInit {
   saveChecklistTitleDialog(index) {
     if (this.checklistRenameTitle.trim() != this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].title && this.checklistRenameTitle.trim() != "") {
       const dialogRef = this.dialog.open(DialogSaveChanges, {
-        data: { title: "Unsaved Changes", content: "Save Changes to Checklist Title" }
+        data: { title: "Unsaved Changes", content: "Save Changes to Checklist Title" }, autoFocus: false
       });
 
       dialogRef.afterClosed().subscribe(result => {
@@ -195,7 +195,7 @@ export class CardDetailsComponent implements OnInit {
 
   deleteTask(checklistIndex, taskIndex) {
     const dialogRef = this.dialog.open(DialogSaveChanges, {
-      data: { title: "Confirmation", content: "Delete this checkbox" }
+      data: { title: "Confirmation", content: "Delete this checkbox" }, autoFocus: false
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -208,7 +208,7 @@ export class CardDetailsComponent implements OnInit {
 
   deleteChecklist(index) {
     const dialogRef = this.dialog.open(DialogSaveChanges, {
-      data: { title: "Confirmation", content: "Delete this checklist" }
+      data: { title: "Confirmation", content: "Delete this checklist" }, autoFocus: false
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -302,7 +302,7 @@ export class CardDetailsComponent implements OnInit {
 
   deleteMemberDialog(index) {
     const dialogRef = this.dialog.open(DialogSaveChanges, {
-      data: { title: "Confirmation", content: "Delete this member" }
+      data: { title: "Confirmation", content: "Delete this member" }, autoFocus: false
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -358,7 +358,7 @@ export class CardDetailsComponent implements OnInit {
 
   makeCardBoardDialog() {
     const dialogRef = this.dialog.open(DialogSaveChanges, {
-      data: { title: "Confirmation", content: "Make this card a board" }
+      data: { title: "Confirmation", content: "Make this card a board" }, autoFocus: false
     });
 
     dialogRef.afterClosed().subscribe(result => {

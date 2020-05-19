@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { DialogSaveChangesData } from '../dialog-save-changes-data.model';
+import { DialogSaveChangesData } from '../models/dialog-save-changes-data.model';
 
 @Component({
   selector: 'app-dialog-ok',

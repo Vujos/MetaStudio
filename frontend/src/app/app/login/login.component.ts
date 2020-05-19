@@ -6,10 +6,10 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login-register',
-  templateUrl: './login-register.component.html',
-  styleUrls: ['./login-register.component.scss']
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss']
 })
-export class LoginRegisterComponent implements OnInit {
+export class LoginComponent implements OnInit {
 
   loading = false;
 
@@ -33,7 +33,7 @@ export class LoginRegisterComponent implements OnInit {
       return;
     }
     this.loading = true;
-    this.authService.login2(this.loginForm.value.emailInput, this.loginForm.value.passwordInput).subscribe(
+    this.authService.login(this.loginForm.value.emailInput, this.loginForm.value.passwordInput).subscribe(
       response => {
         this.loading = false;
         if (response.token) {

@@ -1,11 +1,11 @@
 <div class="project-manager" [ngStyle]="{'background-color':boardBackground}">
   <div class="project-manager-menu">
     <div class="project-manager-menu-padding">
-      <button mat-icon-button class="home" [routerLink]="['/boards']" matTooltip="Home">
+      <button mat-icon-button class="home transform-scale" [routerLink]="['/boards']" matTooltip="Home">
         <mat-icon>home</mat-icon>
       </button>
-      <span class="board-title"><b>{{board?.title}}</b></span>
-      <button mat-icon-button class="board-more" #boardMoreButton [matMenuTriggerFor]="boardMoreMenu"
+      <span *ngIf="!loading" class="board-title"><b>{{board?.title}}</b></span>
+      <button *ngIf="!loading" mat-icon-button class="board-more" #boardMoreButton [matMenuTriggerFor]="boardMoreMenu"
         #boardMoreTrigger="matMenuTrigger" [ngStyle]="{'color': lightBackground ? 'black' : 'whitesmoke'}">
         <mat-icon>more_vert</mat-icon>
       </button>
@@ -117,7 +117,7 @@
         </span>
       </mat-menu>
       &nbsp;&nbsp;
-      <span>
+      <span *ngIf="!loading">
         <mat-form-field [ngClass]="lightBackground ? 'add-list-title-black' : 'add-list-title'">
           <mat-label [ngClass]="lightBackground ? 'black-important' : 'white'">Enter list title</mat-label>
           <input #listTitleInput [ngClass]="lightBackground ? 'black-important' : 'white'" matInput
@@ -130,158 +130,161 @@
       </span>
     </div>
   </div>
-  <table cellspacing="0" class="lists">
-    <tr class="example-list-lists" cdkDropList cdkDropListOrientation="horizontal"
-      (cdkDropListDropped)="dropList($event)">
-      <td class="example-container example-box-lists" *ngFor="let list of board?.lists; index as i" cdkDrag>
-        <div id="{{list.id}}" cdkDropList [cdkDropListData]="list.cards" [cdkDropListConnectedTo]="connectedTo"
-          class="example-list" (cdkDropListDropped)="drop($event)">
-          <div class="list-header overflow-auto" cdkDragHandle>
-            <h3 class="list-title">{{list.title}}</h3>
-            <button mat-icon-button class="list-more" #listMoreButton [matMenuTriggerFor]="listMoreMenu"
-              #listMoreTrigger="matMenuTrigger" (click)="listTitleRename = list.title">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #listMoreMenu="matMenu" class="padding-top-0">
-              <span>
-                <div class="menu-header">
-                  <button mat-button disabled class="float-left"><b>List actions</b></button>
-                  <button mat-icon-button class="close">
-                    <mat-icon>close</mat-icon>
-                  </button>
-                </div>
-                <mat-divider></mat-divider>
-                <button mat-menu-item (click)="$event.stopPropagation();showAddCard(i)">New card</button>
-                <button mat-menu-item [disabled]="board?.lists.length < 2" [matMenuTriggerFor]="moveListMenu"
-                  #moveListTrigger="matMenuTrigger">Move list</button>
-                <mat-menu #moveListMenu="matMenu"
-                  (closed)="moveListDialog(i, selectedMoveListPosition, selectedMoveList)">
-                  <div class="menu-item-padding" (click)="$event.stopPropagation()"
-                    (keydown)="$event.stopPropagation()">
-                    <mat-form-field>
-                      <mat-label>Select a position</mat-label>
-                      <mat-select [(value)]="selectedMoveListPosition">
-                        <mat-option value="before">Before</mat-option>
-                        <mat-option value="after">After</mat-option>
-                      </mat-select>
-                    </mat-form-field>
-                    <mat-form-field>
-                      <mat-label>Select a list</mat-label>
-                      <mat-select [(value)]="selectedMoveList">
-                        <ng-container *ngFor="let list of board?.lists; index as j">
-                          <mat-option *ngIf="i!=j" [value]="j">{{list.title}}</mat-option>
-                        </ng-container>
-                      </mat-select>
-                    </mat-form-field>
-                    <br>
-                    <button class="center white background-color-default transform-scale" mat-button
-                      (click)="moveList(i, selectedMoveListPosition, selectedMoveList)"
-                      [disabled]="selectedMoveListPosition==undefined || selectedMoveList==undefined">Move</button>
+  <mat-spinner class="spinner" *ngIf="loading else loaded"></mat-spinner>
+  <ng-template #loaded>
+    <table cellspacing="0" class="lists">
+      <tr class="example-list-lists" cdkDropList cdkDropListOrientation="horizontal"
+        (cdkDropListDropped)="dropList($event)">
+        <td class="example-container example-box-lists" *ngFor="let list of board?.lists; index as i" cdkDrag>
+          <div id="{{list.id}}" cdkDropList [cdkDropListData]="list.cards" [cdkDropListConnectedTo]="connectedTo"
+            class="example-list" (cdkDropListDropped)="drop($event)">
+            <div class="list-header overflow-auto" cdkDragHandle>
+              <h3 class="list-title">{{list.title}}</h3>
+              <button mat-icon-button class="list-more" #listMoreButton [matMenuTriggerFor]="listMoreMenu"
+                #listMoreTrigger="matMenuTrigger" (click)="listTitleRename = list.title">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #listMoreMenu="matMenu" class="padding-top-0">
+                <span>
+                  <div class="menu-header">
+                    <button mat-button disabled class="float-left"><b>List actions</b></button>
+                    <button mat-icon-button class="close">
+                      <mat-icon>close</mat-icon>
+                    </button>
                   </div>
-                </mat-menu>
+                  <mat-divider></mat-divider>
+                  <button mat-menu-item (click)="$event.stopPropagation();showAddCard(i)">New card</button>
+                  <button mat-menu-item [disabled]="board?.lists.length < 2" [matMenuTriggerFor]="moveListMenu"
+                    #moveListTrigger="matMenuTrigger">Move list</button>
+                  <mat-menu #moveListMenu="matMenu"
+                    (closed)="moveListDialog(i, selectedMoveListPosition, selectedMoveList)">
+                    <div class="menu-item-padding" (click)="$event.stopPropagation()"
+                      (keydown)="$event.stopPropagation()">
+                      <mat-form-field>
+                        <mat-label>Select a position</mat-label>
+                        <mat-select [(value)]="selectedMoveListPosition">
+                          <mat-option value="before">Before</mat-option>
+                          <mat-option value="after">After</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                      <mat-form-field>
+                        <mat-label>Select a list</mat-label>
+                        <mat-select [(value)]="selectedMoveList">
+                          <ng-container *ngFor="let list of board?.lists; index as j">
+                            <mat-option *ngIf="i!=j" [value]="j">{{list.title}}</mat-option>
+                          </ng-container>
+                        </mat-select>
+                      </mat-form-field>
+                      <br>
+                      <button class="center white background-color-default transform-scale" mat-button
+                        (click)="moveList(i, selectedMoveListPosition, selectedMoveList)"
+                        [disabled]="selectedMoveListPosition==undefined || selectedMoveList==undefined">Move</button>
+                    </div>
+                  </mat-menu>
 
-                <button mat-menu-item [matMenuTriggerFor]="renameListMenu" #renameListTrigger="matMenuTrigger">Rename
-                  list</button>
-                <mat-menu #renameListMenu="matMenu" (closed)="saveListTitleDialog(i)">
-                  <div class="menu-item-padding" (click)="$event.stopPropagation()"
-                    (keydown)="$event.stopPropagation()">
-                    <mat-form-field>
-                      <mat-label>Title</mat-label>
-                      <input #renameListInput placeholder="Enter list title" matInput [(ngModel)]="listTitleRename"
-                        (keyup.enter)="renameList(i)">
-                    </mat-form-field>
-                    <br>
-                    <button class="center white background-color-default transform-scale" mat-button
-                      (click)="renameList(i)">Save</button>
-                  </div>
-                </mat-menu>
-                <button class="delete" mat-menu-item (click)="deleteListDialog(i)">Delete list</button>
+                  <button mat-menu-item [matMenuTriggerFor]="renameListMenu" #renameListTrigger="matMenuTrigger">Rename
+                    list</button>
+                  <mat-menu #renameListMenu="matMenu" (closed)="saveListTitleDialog(i)">
+                    <div class="menu-item-padding" (click)="$event.stopPropagation()"
+                      (keydown)="$event.stopPropagation()">
+                      <mat-form-field>
+                        <mat-label>Title</mat-label>
+                        <input #renameListInput placeholder="Enter list title" matInput [(ngModel)]="listTitleRename"
+                          (keyup.enter)="renameList(i)">
+                      </mat-form-field>
+                      <br>
+                      <button class="center white background-color-default transform-scale" mat-button
+                        (click)="renameList(i)">Save</button>
+                    </div>
+                  </mat-menu>
+                  <button class="delete" mat-menu-item (click)="deleteListDialog(i)">Delete list</button>
 
-                <mat-divider></mat-divider>
+                  <mat-divider></mat-divider>
 
-                <button mat-menu-item [disabled]="list.cards.length == 0" [matMenuTriggerFor]="copyAllCardsMenu"
-                  #copyAllCardsTrigger="matMenuTrigger">Copy
-                  all cards</button>
-                <mat-menu #copyAllCardsMenu="matMenu" (closed)="copyAllCardsDialog(i, selectedCopyAllCards)">
-                  <div class="menu-item-padding" (click)="$event.stopPropagation()"
-                    (keydown)="$event.stopPropagation()">
-                    <mat-form-field>
-                      <mat-label>Select a list</mat-label>
-                      <mat-select [(value)]="selectedCopyAllCards">
-                        <mat-option *ngFor="let list of board?.lists; index as j" [value]="j">{{list.title}}
-                        </mat-option>
-                      </mat-select>
-                    </mat-form-field>
-                    <br>
-                    <button class="center white background-color-default transform-scale" mat-button
-                      (click)="copyAllCards(i, selectedCopyAllCards)"
-                      [disabled]="selectedCopyAllCards == undefined">Copy</button>
-                  </div>
-                </mat-menu>
+                  <button mat-menu-item [disabled]="list.cards.length == 0" [matMenuTriggerFor]="copyAllCardsMenu"
+                    #copyAllCardsTrigger="matMenuTrigger">Copy
+                    all cards</button>
+                  <mat-menu #copyAllCardsMenu="matMenu" (closed)="copyAllCardsDialog(i, selectedCopyAllCards)">
+                    <div class="menu-item-padding" (click)="$event.stopPropagation()"
+                      (keydown)="$event.stopPropagation()">
+                      <mat-form-field>
+                        <mat-label>Select a list</mat-label>
+                        <mat-select [(value)]="selectedCopyAllCards">
+                          <mat-option *ngFor="let list of board?.lists; index as j" [value]="j">{{list.title}}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                      <br>
+                      <button class="center white background-color-default transform-scale" mat-button
+                        (click)="copyAllCards(i, selectedCopyAllCards)"
+                        [disabled]="selectedCopyAllCards == undefined">Copy</button>
+                    </div>
+                  </mat-menu>
 
-                <button mat-menu-item [disabled]="list.cards.length == 0 || board?.lists.length < 2"
-                  [matMenuTriggerFor]="moveAllCardsMenu" #moveAllCardsTrigger="matMenuTrigger">Move
-                  all cards</button>
-                <mat-menu #moveAllCardsMenu="matMenu" (closed)="moveAllCardsDialog(i, selectedMoveAllCards)">
-                  <div class="menu-item-padding" (click)="$event.stopPropagation()"
-                    (keydown)="$event.stopPropagation()">
-                    <mat-form-field>
-                      <mat-label>Select a list</mat-label>
-                      <mat-select [(value)]="selectedMoveAllCards">
-                        <ng-container *ngFor="let list of board?.lists; index as j">
-                          <mat-option *ngIf="i!=j" [value]="j">{{list.title}}</mat-option>
-                        </ng-container>
+                  <button mat-menu-item [disabled]="list.cards.length == 0 || board?.lists.length < 2"
+                    [matMenuTriggerFor]="moveAllCardsMenu" #moveAllCardsTrigger="matMenuTrigger">Move
+                    all cards</button>
+                  <mat-menu #moveAllCardsMenu="matMenu" (closed)="moveAllCardsDialog(i, selectedMoveAllCards)">
+                    <div class="menu-item-padding" (click)="$event.stopPropagation()"
+                      (keydown)="$event.stopPropagation()">
+                      <mat-form-field>
+                        <mat-label>Select a list</mat-label>
+                        <mat-select [(value)]="selectedMoveAllCards">
+                          <ng-container *ngFor="let list of board?.lists; index as j">
+                            <mat-option *ngIf="i!=j" [value]="j">{{list.title}}</mat-option>
+                          </ng-container>
 
-                      </mat-select>
-                    </mat-form-field>
-                    <br>
-                    <button class="center white background-color-default transform-scale" mat-button
-                      (click)="moveAllCards(i, selectedMoveAllCards)"
-                      [disabled]="selectedMoveAllCards == undefined">Move</button>
-                  </div>
-                </mat-menu>
-                <button class="delete" mat-menu-item [disabled]="list.cards.length == 0"
-                  (click)="deleteAllCardsDialog(i)">Delete all
-                  cards</button>
-              </span>
-            </mat-menu>
-          </div>
-          <div class="example-box-list-header" [ngStyle]="{'background-color':lightBackground?'lightgray':'white'}">
-            <mat-form-field class="add-card-title">
-              <mat-label class="black">Enter card title</mat-label>
-              <input matInput [(ngModel)]="cardTitle[i]" #cardTitleInput (keyup.enter)="addCard(i)">
-            </mat-form-field>
-            &nbsp;
-            <button mat-button (click)="addCard(i)" class="black background-ebebeb padding-0 transform-scale">
-              Add card
-            </button>
-          </div>
-          <div class="list-content">
-            <div class="example-box" *ngFor="let item of list.cards; index as j" (click)="openCardDetailsDialog(i, j)"
-              [ngStyle]="{'background-color':lightBackground?'lightgray':'white'}" cdkDrag>
-              <span *ngFor="let label of item?.labels">
-                <span class="label" [ngStyle]="{'background-color':label}"></span>
-                &nbsp;
-              </span>
-              <div>{{item?.title}}</div>
-              <span class="done-tasks">
-                <span *ngIf="item?.members.length>0" matTooltip="Members" class="done-tasks">
-                  <mat-icon>person_outline</mat-icon>
-                  {{item?.members.length}}
+                        </mat-select>
+                      </mat-form-field>
+                      <br>
+                      <button class="center white background-color-default transform-scale" mat-button
+                        (click)="moveAllCards(i, selectedMoveAllCards)"
+                        [disabled]="selectedMoveAllCards == undefined">Move</button>
+                    </div>
+                  </mat-menu>
+                  <button class="delete" mat-menu-item [disabled]="list.cards.length == 0"
+                    (click)="deleteAllCardsDialog(i)">Delete all
+                    cards</button>
                 </span>
-                &nbsp;&nbsp;
-                <span *ngIf="item.checklists[0]?.tasks.length>0" matTooltip="Completed items" class="done-tasks">
-                  <mat-icon>check_circle_outline</mat-icon>
-                  {{tasksDoneNumber[item?.id]}}
+              </mat-menu>
+            </div>
+            <div class="example-box-list-header" [ngStyle]="{'background-color':lightBackground?'lightgray':'white'}">
+              <mat-form-field class="add-card-title">
+                <mat-label class="black">Enter card title</mat-label>
+                <input matInput [(ngModel)]="cardTitle[i]" #cardTitleInput (keyup.enter)="addCard(i)">
+              </mat-form-field>
+              &nbsp;
+              <button mat-button (click)="addCard(i)" class="black background-ebebeb padding-0 transform-scale">
+                Add card
+              </button>
+            </div>
+            <div class="list-content">
+              <div class="example-box" *ngFor="let item of list.cards; index as j" (click)="openCardDetailsDialog(i, j)"
+                [ngStyle]="{'background-color':lightBackground?'lightgray':'white'}" cdkDrag>
+                <span *ngFor="let label of item?.labels">
+                  <span class="label" [ngStyle]="{'background-color':label}"></span>
+                  &nbsp;
                 </span>
-              </span>
+                <div>{{item?.title}}</div>
+                <span class="done-tasks">
+                  <span *ngIf="item?.members.length>0" matTooltip="Members" class="done-tasks">
+                    <mat-icon>person_outline</mat-icon>
+                    {{item?.members.length}}
+                  </span>
+                  &nbsp;&nbsp;
+                  <span *ngIf="item.checklists[0]?.tasks.length>0" matTooltip="Completed items" class="done-tasks">
+                    <mat-icon>check_circle_outline</mat-icon>
+                    {{tasksDoneNumber[item?.id]}}
+                  </span>
+                </span>
+              </div>
             </div>
           </div>
+        </td>
+        <div class="placeholder" *ngIf="board?.lists.length==0">
+          <h1 class="no-lists" [ngStyle]="{'color': lightBackground ? 'gray' : 'white'}">No lists</h1>
         </div>
-      </td>
-      <div class="placeholder" *ngIf="board?.lists.length==0">
-        <h1 class="no-lists" [ngStyle]="{'color': lightBackground ? 'gray' : 'white'}">No lists</h1>
-      </div>
-    </tr>
-  </table>
+      </tr>
+    </table>
+  </ng-template>
 </div>

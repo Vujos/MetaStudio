@@ -3,12 +3,10 @@ import { Component, ElementRef, Input, ViewChild, ViewChildren, ViewEncapsulatio
 import { MatDialog, MatDialogRef, MatMenuTrigger } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
-import { SharedDataService } from '../shared/shared-data.service';
-import { AdComponent } from './ad.component';
-import { Board } from './board.model';
+import { Board } from './models/board.model';
 import { BoardService } from './boards/board.service';
 import { CardDetailsComponent } from './card-details/card-details.component';
-import { DialogOkComponent } from './dialog/dialog-ok/dialog-ok.component';
+import { DialogOkComponent } from './dialog-ok/dialog-ok.component';
 import { DialogSaveChanges } from './dialog/dialog-save-changes';
 import { UserService } from './users/user.service';
 import { WebSocketService } from './web-socket/web-socket.service';
@@ -19,7 +17,7 @@ import { WebSocketService } from './web-socket/web-socket.service';
   styleUrls: ['./project-manager.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class ProjectManagerComponent implements AdComponent {
+export class ProjectManagerComponent {
   @ViewChildren('cardTitleInput') cardTitleElements: ElementRef;
   @ViewChild('listTitleInput', { static: false }) listTitleElement: ElementRef;
   @ViewChild('boardMoreTrigger', { static: false }) boardMoreTrigger: MatMenuTrigger;
@@ -27,6 +25,8 @@ export class ProjectManagerComponent implements AdComponent {
   @Input() data: any;
 
   private dialogRef: MatDialogRef<CardDetailsComponent>;
+
+  loading = true;
 
   currentUser = undefined;
 
@@ -51,7 +51,7 @@ export class ProjectManagerComponent implements AdComponent {
   selectedMoveListPosition;
   selectedMoveList;
 
-  lightBackground = false;
+  lightBackground = true;
 
   listTitle = "";
 
@@ -62,7 +62,7 @@ export class ProjectManagerComponent implements AdComponent {
 
   private wc;
 
-  constructor(public dialog: MatDialog, public sharedDataService: SharedDataService, private route: ActivatedRoute, private boardService: BoardService, private webSocketService: WebSocketService, private userService: UserService, private authService: AuthService, private router: Router) {
+  constructor(public dialog: MatDialog, private route: ActivatedRoute, private boardService: BoardService, private webSocketService: WebSocketService, private userService: UserService, private authService: AuthService, private router: Router) {
 
   }
 
@@ -70,6 +70,7 @@ export class ProjectManagerComponent implements AdComponent {
     let id = this.route.snapshot.paramMap.get("id");
 
     this.boardService.getOne(id, this.authService.getCurrentUser()).subscribe(data => {
+      this.loading = false;
       this.board = data;
       for (let list of this.board.lists) {
         this.connectedTo.push(list.id);
@@ -102,7 +103,7 @@ export class ProjectManagerComponent implements AdComponent {
       this.wc.subscribe("/topic/boards/update/" + id, (msg) => {
         if (JSON.parse(msg.body).statusCodeValue == 204) {
           const dialogRef = this.dialog.open(DialogOkComponent, {
-            data: { title: "Content Deleted", content: "The owner has deleted the content" }
+            data: { title: "Content Deleted", content: "The owner has deleted the content" }, autoFocus: false
           });
 
           dialogRef.afterClosed().subscribe(result => {
@@ -237,7 +238,7 @@ export class ProjectManagerComponent implements AdComponent {
 
   deleteAllListsDialog() {
     const dialogRef = this.dialog.open(DialogSaveChanges, {
-      data: { title: "Confirmation", content: "Delete All Lists" }
+      data: { title: "Confirmation", content: "Delete All Lists" }, autoFocus: false
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -262,7 +263,7 @@ export class ProjectManagerComponent implements AdComponent {
   saveBoardTitleDialog() {
     if (this.boardTitle.trim() != this.board.title && this.boardTitle.trim() != "") {
       const dialogRef = this.dialog.open(DialogSaveChanges, {
-        data: { title: "Unsaved Changes", content: "Save Changes to Board Title" }
+        data: { title: "Unsaved Changes", content: "Save Changes to Board Title" }, autoFocus: false
       });
 
       dialogRef.afterClosed().subscribe(result => {
@@ -282,7 +283,7 @@ export class ProjectManagerComponent implements AdComponent {
   saveBoardDescriptionDialog() {
     if (this.boardDescription.trim() != this.board.description) {
       const dialogRef = this.dialog.open(DialogSaveChanges, {
-        data: { title: "Unsaved Changes", content: "Save Changes to Board Description" }
+        data: { title: "Unsaved Changes", content: "Save Changes to Board Description" }, autoFocus: false
       });
 
       dialogRef.afterClosed().subscribe(result => {
@@ -320,7 +321,7 @@ export class ProjectManagerComponent implements AdComponent {
 
   deleteBoardDialog() {
     const dialogRef = this.dialog.open(DialogSaveChanges, {
-      data: { title: "Confirmation", content: "Delete Board " + this.board.title }
+      data: { title: "Confirmation", content: "Delete Board " + this.board.title }, autoFocus: false
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -338,7 +339,7 @@ export class ProjectManagerComponent implements AdComponent {
 
   leaveBoardDialog() {
     const dialogRef = this.dialog.open(DialogSaveChanges, {
-      data: { title: "Confirmation", content: "Leave Board " + this.board.title }
+      data: { title: "Confirmation", content: "Leave Board " + this.board.title }, autoFocus: false
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -402,7 +403,7 @@ export class ProjectManagerComponent implements AdComponent {
 
   deleteUserDialog(index) {
     const dialogRef = this.dialog.open(DialogSaveChanges, {
-      data: { title: "Confirmation", content: "Delete this user" }
+      data: { title: "Confirmation", content: "Delete this user" }, autoFocus: false
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -426,7 +427,7 @@ export class ProjectManagerComponent implements AdComponent {
   saveListTitleDialog(index) {
     if (this.listTitleRename.trim() != this.board.lists[index].title && this.listTitleRename.trim() != "") {
       const dialogRef = this.dialog.open(DialogSaveChanges, {
-        data: { title: "Unsaved Changes", content: "Save Changes to List Title" }
+        data: { title: "Unsaved Changes", content: "Save Changes to List Title" }, autoFocus: false
       });
 
       dialogRef.afterClosed().subscribe(result => {
@@ -454,7 +455,7 @@ export class ProjectManagerComponent implements AdComponent {
   copyAllCardsDialog(indexFromList, indexToList) {
     if (indexToList != undefined) {
       const dialogRef = this.dialog.open(DialogSaveChanges, {
-        data: { title: "Unsaved Changes", content: "Copy All Cards from " + this.board.lists[indexFromList].title + " to " + this.board.lists[indexToList].title }
+        data: { title: "Unsaved Changes", content: "Copy All Cards from " + this.board.lists[indexFromList].title + " to " + this.board.lists[indexToList].title }, autoFocus: false
       });
 
       dialogRef.afterClosed().subscribe(result => {
@@ -481,7 +482,7 @@ export class ProjectManagerComponent implements AdComponent {
   moveAllCardsDialog(indexFromList, indexToList) {
     if (indexToList != undefined) {
       const dialogRef = this.dialog.open(DialogSaveChanges, {
-        data: { title: "Unsaved Changes", content: "Move All Cards from " + this.board.lists[indexFromList].title + " to " + this.board.lists[indexToList].title }
+        data: { title: "Unsaved Changes", content: "Move All Cards from " + this.board.lists[indexFromList].title + " to " + this.board.lists[indexToList].title }, autoFocus: false
       });
 
       dialogRef.afterClosed().subscribe(result => {
@@ -497,7 +498,7 @@ export class ProjectManagerComponent implements AdComponent {
 
   deleteAllCardsDialog(index) {
     const dialogRef = this.dialog.open(DialogSaveChanges, {
-      data: { title: "Confirmation", content: "Delete All Cards from " + this.board.lists[index].title }
+      data: { title: "Confirmation", content: "Delete All Cards from " + this.board.lists[index].title }, autoFocus: false
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -510,7 +511,7 @@ export class ProjectManagerComponent implements AdComponent {
 
   deleteListDialog(index) {
     const dialogRef = this.dialog.open(DialogSaveChanges, {
-      data: { title: "Confirmation", content: "Delete this list" }
+      data: { title: "Confirmation", content: "Delete this list" }, autoFocus: false
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -538,7 +539,7 @@ export class ProjectManagerComponent implements AdComponent {
   moveListDialog(indexFromList, position, indexToList) {
     if (indexToList != undefined && position != undefined) {
       const dialogRef = this.dialog.open(DialogSaveChanges, {
-        data: { title: "Unsaved Changes", content: "Move List " + position + " " + this.board.lists[indexToList].title }
+        data: { title: "Unsaved Changes", content: "Move List " + position + " " + this.board.lists[indexToList].title }, autoFocus: false
       });
 
       dialogRef.afterClosed().subscribe(result => {

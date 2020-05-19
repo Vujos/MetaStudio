@@ -6,12 +6,12 @@ import { HttpClientModule } from '@angular/common/http';
 import { MaterialModule } from './material.module';
 import { AppRoutingModule } from '../app-routing.module';
 
-import {FlexLayoutModule} from "@angular/flex-layout";
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { FlexLayoutModule } from "@angular/flex-layout";
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
-    
+
   ],
   imports: [
     CommonModule,
@@ -33,6 +33,6 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
     BrowserAnimationsModule,
     FlexLayoutModule
   ],
-  entryComponents: [  ]
+  entryComponents: []
 })
 export class SharedModule { }
