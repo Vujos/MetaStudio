@@ -2,25 +2,25 @@
     <div class="mat-elevation-z8">
         <!--<img src="" alt="logo">-->
         <br>
-        <p class="white">REGISTER</p>
+        <p>REGISTER</p>
         <div [formGroup]="form">
             <mat-form-field>
-                <input class="white" matInput name="fullName" formControlName="fullName" type="text" placeholder="Full name">
+                <input matInput name="fullName" formControlName="fullName" type="text" placeholder="Full name">
                 <mat-error>{{formError.mapErrors(form.get('fullName'), 'Full name')}}</mat-error>
             </mat-form-field>&nbsp;
             <mat-form-field>
-                <input class="white" matInput name="username" formControlName="username" type="text" placeholder="Username">
+                <input matInput name="username" formControlName="username" type="text" placeholder="Username">
                 <mat-error>{{formError.mapErrors(form.get('username'), 'Username')}}</mat-error>
             </mat-form-field>
             <br>
             <mat-form-field>
-                <input class="white" matInput name="email" formControlName="email" type="text" placeholder="Email address">
+                <input matInput name="email" formControlName="email" type="text" placeholder="Email address">
                 <mat-error>{{formError.mapErrors(form.get('email'), 'Email address')}}</mat-error>
             </mat-form-field>&nbsp;
             <mat-form-field>
-                <input class="white" matInput name="password" formControlName="password" placeholder="Password"
+                <input matInput name="password" formControlName="password" placeholder="Password"
                     [type]="hide ? 'password' : 'text'" (keyup.enter)="onRegister()">
-                <mat-icon class="password-toggle white" matSuffix (click)="hide = !hide">
+                <mat-icon class="password-toggle" matSuffix (click)="hide = !hide">
                     {{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
                 <mat-error>{{formError.mapErrors(form.get('password'), 'Password')}}</mat-error>
             </mat-form-field>
@@ -28,7 +28,7 @@
             <button [disabled]="loading ? true : false" class="register-button" mat-raised-button
                 (click)="onRegister()">REGISTER</button>
             <br>
-            <p class="white">Already have an account? &nbsp; <a class="white" href="" [routerLink]="['/login']">Login</a></p>
+            <p>Already have an account? &nbsp; <a class="login" href="" [routerLink]="['/login']">Login</a></p>
         </div>
     </div>
 </div>

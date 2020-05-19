@@ -1,6 +1,6 @@
-import { Injectable }           from '@angular/core';
+import { Injectable } from '@angular/core';
 import { ProjectManagerComponent } from './project-manager.component';
-import { AdItem }               from './ad-item';
+import { AdItem } from './ad-item';
 
 @Injectable()
 export class AdService {

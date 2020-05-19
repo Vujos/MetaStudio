@@ -1,26 +1,28 @@
 .project-manager {
-  height: 95vh;
-  min-height: 95vh;
+  height: 100%;
 }
 
 .project-manager-menu {
   text-align:center;
-  height: 11vh;
-  min-height: 4em;
-  margin-left: 10px;
+  height: 13%;
+  //padding: 10px;
   border-radius: 4px;
   //margin-bottom: 1px;
   overflow: auto;
   //padding: 5px;
 }
 
+.project-manager-menu-padding{
+  padding: 10px 10px 0 10px;
+}
+
 .lists {
-  width:80vw;
+  width:100%;
   max-width: 100%; 
   overflow:auto;
   display:block;
-  height: 84vh;
-  min-height: 84vh;
+  height: 87%;
+  min-height: 87%;
 }
 
 .example-container {
@@ -51,27 +53,30 @@
 }
 
 .list-title{
-  padding: 0px 10px;
+  padding: 10px;
   display: inline-block;
   width: 200px;
   white-space: nowrap;
-  overflow: auto;
+  margin: 0;
 }
 
 .example-box-list-header {
-  margin: 5px;
-  padding: 20px 10px;
-  border-bottom: solid 1px #bbb;
+  margin-left: 8px;
+  margin-right: 8px;
+  padding: 5px;
+  //border-bottom: solid 1px #bbb;
   color: rgba(0, 0, 0, 0.87);
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
   box-sizing: border-box;
-  cursor: pointer;
   background: white;
   font-size: 14px;
-  max-height: 65vh;
+  height: 15%;
+  max-height: 15%;
+  overflow: auto;
+  border-bottom: 8px solid #ebebeb;
 }
 
 .example-box {
@@ -84,7 +89,6 @@
   cursor: pointer;
   background: white;
   font-size: 14px;
-  max-height: 65vh;
 }
 
 .done-tasks{
@@ -137,15 +141,21 @@
   padding: 0px;
 }
 
+.padding-top-0 .mat-menu-content {
+  padding-top: 0px !important;
+}
+
 .list-header {
-  min-height: inherit;
-  max-height: 10vh;
+  //min-height: inherit;
+  max-height: 10%;
+  height: 10%;
   cursor: move;
+  overflow: auto;
 }
 
 .list-content {
   overflow: auto;
-  max-height: 59vh;
+  max-height: 75%;
   border-radius: 4px;
 }
 
@@ -162,31 +172,16 @@ td {
   background-color: whitesmoke;
 }
 
-.add-card-title .mat-form-field-wrapper .mat-form-field-underline {
-  background-color: black;
-}
-
 .add-list-title .mat-form-field-wrapper .mat-form-field-underline {
   background-color: white;
-}
-
-.add-list-title-black .mat-form-field-wrapper .mat-form-field-underline {
-  background-color: black;
-}
-
-.cursor-default {
-  cursor: default;
 }
 
 .board-more {
   float: right;
   color: white;
-  margin-top: 10px;
 }
 
 .board-title {
-  margin-top: 10px;
-  //margin-right: 20px;
   padding: 10px;
   background-color: whitesmoke;
   border-radius: 4px;
@@ -197,8 +192,7 @@ td {
 }
 
 .home{
-  margin-right: 10px;
-  margin-top: 10px;
+  margin-right: 10px !important;
   background-color: whitesmoke;
   float: left;
 }
@@ -245,8 +239,13 @@ td {
   //box-shadow: #000 0px 0px 1px, #000 0px 0px 1px,#000 0px 0px 1px,#000 0px 0px 1px,#000 0px 0px 1px,#000 0px 0px 1px;
 }
 
-.background-color-gray {
-  background-color: gray;
+.background-color-default {
+  background-color: #55aa55;
+}
+
+
+.gray{
+  color: gray;
 }
 
 .mat-primary .mat-option.mat-selected:not(.mat-option-disabled) {
@@ -273,8 +272,13 @@ td {
   margin: 0;
 }
 
+.background-ebebeb{
+  background-color: #ebebeb;
+}
+
 .close:hover{
   background-color: red;
+  color: white;
 }
 
 .error-message {

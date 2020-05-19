@@ -8,9 +8,9 @@ export class WebSocketService {
 
   private url = "ws://localhost:8080/ws";
 
-  constructor() {}
+  constructor() { }
 
-  getClient(){
+  getClient() {
     let client = Stomp.client(this.url)
     client.debug = false;
     return client;

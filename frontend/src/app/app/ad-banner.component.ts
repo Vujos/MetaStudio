@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy } from '@angular/core';
 
 import { AdDirective } from './ad.directive';
-import { AdItem }      from './ad-item';
+import { AdItem } from './ad-item';
 import { AdComponent } from './ad.component';
 import { AdService } from './ad.service';
 import { ProjectManagerComponent } from './project-manager.component';
@@ -14,7 +14,7 @@ import { ProjectManagerComponent } from './project-manager.component';
 export class AdBannerComponent implements OnInit, OnDestroy {
   ads: AdItem[];
   currentAdIndex = -1;
-  @ViewChild(AdDirective, {static: true}) adHost: AdDirective;
+  @ViewChild(AdDirective, { static: true }) adHost: AdDirective;
   interval: any;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver, private adService: AdService) { }
@@ -28,7 +28,7 @@ export class AdBannerComponent implements OnInit, OnDestroy {
     clearInterval(this.interval);
   }
 
-  addList(){
+  addList() {
     const adItem = new AdItem(ProjectManagerComponent, {})
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(adItem.component);
 

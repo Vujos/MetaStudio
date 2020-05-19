@@ -10,7 +10,7 @@ import { SharedDataService } from './shared/shared-data.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  @ViewChild("contextView", {static: false}) contextViewComponent:ContextViewComponent;
+  @ViewChild("contextView", { static: false }) contextViewComponent: ContextViewComponent;
   contextViewOn = true;
   TREE_DATA: TreeNode[] = [];
   title = 'popout-ex';
@@ -27,7 +27,7 @@ export class AppComponent {
     public dialog: MatDialog,
     private ren: Renderer2,
     private sharedDataService: SharedDataService
-  ) {}
+  ) { }
 
   ngOnInit() {
     // this.setMenu();
@@ -54,7 +54,7 @@ export class AppComponent {
   //   Menu.setApplicationMenu(menu);
   // }
 
-  dodaj(){
+  dodaj() {
     let conf = {
       type: 'component',
       title: 'Plugin settings',
@@ -65,16 +65,16 @@ export class AppComponent {
     this.layoutService.addComponent(conf);
   }
 
-  projects(){
+  projects() {
     this.contextViewOn = true;
     this.sharedDataService.contextViewOn = this.contextViewOn;
-    this.TREE_DATA=[
+    this.TREE_DATA = [
       {
         name: 'Project 1',
         children: [
-          {name: 'Subproject 1'},
-          {name: 'Subproject 2'},
-          {name: 'Subproject 3'},
+          { name: 'Subproject 1' },
+          { name: 'Subproject 2' },
+          { name: 'Subproject 3' },
         ]
       }, {
         name: 'Project 2',
@@ -82,14 +82,14 @@ export class AppComponent {
           {
             name: 'Subproject 1',
             children: [
-              {name: 'Subsubproject 1'},
-              {name: 'Subsubproject 2'},
+              { name: 'Subsubproject 1' },
+              { name: 'Subsubproject 2' },
             ]
           }, {
             name: 'Subproject 2',
             children: [
-              {name: 'Subsubproject 1'},
-              {name: 'Subsubproject 2'},
+              { name: 'Subsubproject 1' },
+              { name: 'Subsubproject 2' },
             ]
           },
         ]
@@ -98,45 +98,45 @@ export class AppComponent {
     this.contextViewComponent.update(this.TREE_DATA);
   }
 
-  teams(){
+  teams() {
     this.contextViewOn = true;
     this.sharedDataService.contextViewOn = this.contextViewOn;
-    this.TREE_DATA=[
+    this.TREE_DATA = [
       {
         name: 'Team 1',
         children: [
-          {name: 'Member 1'},
-          {name: 'Member 2'},
-          {name: 'Member 3'},
+          { name: 'Member 1' },
+          { name: 'Member 2' },
+          { name: 'Member 3' },
         ]
       }, {
         name: 'Team2',
         children: [
-          {name: 'Member 1'},
+          { name: 'Member 1' },
         ]
       },
     ];
     this.contextViewComponent.update(this.TREE_DATA);
   }
 
-  tools(){
+  tools() {
     this.contextViewOn = true;
     this.sharedDataService.contextViewOn = this.contextViewOn;
-    this.TREE_DATA=[
-      {name: 'Vision', route: '/vision'},
-      {name: 'Project Manager', route: '/boards'},
-      {name: 'Tool 3'}
+    this.TREE_DATA = [
+      { name: 'Vision', route: '/vision' },
+      { name: 'Project Manager', route: '/boards' },
+      { name: 'Tool 3' }
     ];
     this.contextViewComponent.update(this.TREE_DATA);
   }
 
-  contextView(){
+  contextView() {
     this.contextViewOn = !this.contextViewOn
     this.sharedDataService.contextViewOn = this.contextViewOn;
   }
 
   openLoginDialog() {
-    this.dialog.open(LoginDialog, {panelClass: 'myapp-no-padding-dialog'});
+    this.dialog.open(LoginDialog, { panelClass: 'myapp-no-padding-dialog' });
   }
 
 
@@ -183,7 +183,7 @@ export class AppComponent {
 
   buttonEnter(trigger) {
     setTimeout(() => {
-      if(this.prevButtonTrigger && this.prevButtonTrigger != trigger){
+      if (this.prevButtonTrigger && this.prevButtonTrigger != trigger) {
         this.prevButtonTrigger.closeMenu();
         this.prevButtonTrigger = trigger;
         trigger.openMenu();
@@ -221,7 +221,7 @@ export class AppComponent {
 }
 
 export interface DialogData {
-  
+
 }
 
 @Component({
@@ -231,7 +231,7 @@ export interface DialogData {
 })
 export class LoginDialog {
   constructor(public dialog: MatDialogRef<LoginDialog>,
-    @Inject(MAT_DIALOG_DATA) public data: DialogData) {}
+    @Inject(MAT_DIALOG_DATA) public data: DialogData) { }
 
   onClose(): void {
     this.dialog.close();

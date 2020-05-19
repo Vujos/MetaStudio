@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, ViewEncapsulation } from '@angular/core';
 import { BoardService } from './board.service';
 import { Board } from '../board.model';
 import { AuthService } from 'src/app/auth/auth.service';
@@ -10,7 +10,8 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 @Component({
   selector: 'app-boards',
   templateUrl: './boards.component.html',
-  styleUrls: ['./boards.component.scss']
+  styleUrls: ['./boards.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class BoardsComponent implements OnInit {
 
@@ -39,7 +40,7 @@ export class BoardsComponent implements OnInit {
     this.wc = this.webSocketService.getClient();
     this.wc.connect({}, () => {
       this.wc.subscribe("/topic/users/update/" + this.authService.getCurrentUser(), (msg) => {
-        if(JSON.parse(msg.body).statusCodeValue == 204){
+        if (JSON.parse(msg.body).statusCodeValue == 204) {
           /* const dialogRef = this.dialog.open(DialogOkComponent, {
             data: { title: "Content Deleted", content: "The owner has deleted the content" }
           });
@@ -49,11 +50,11 @@ export class BoardsComponent implements OnInit {
           }); */
           this.loadBoards();
         }
-        else{
+        else {
           let data = JSON.parse(msg.body).body;
           this.boards = data.boards;
         }
-        
+
       })
     })
 
@@ -114,7 +115,7 @@ export class BoardsComponent implements OnInit {
     })
   }
 
-  updateUser(user){
+  updateUser(user) {
     this.userService.update(user.id, user).subscribe();
   }
 

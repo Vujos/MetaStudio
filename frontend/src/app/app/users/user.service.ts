@@ -18,38 +18,38 @@ export class UserService {
   }
 
   getOne(id: String) {
-    return this.http.get<User>(this.userUrl+`/${id}`);
+    return this.http.get<User>(this.userUrl + `/${id}`);
   }
 
   getByQuery(query: String) {
-    return this.http.get<User>(this.userUrl+`/query/${query}`);
+    return this.http.get<User>(this.userUrl + `/query/${query}`);
   }
 
   delete(id: String) {
-    return this.http.delete(this.userUrl+`/${id}`);
+    return this.http.delete(this.userUrl + `/${id}`);
   }
 
-  add(user:User) {
-    return this.http.post(this.userUrl+'/register', user);
+  add(user: User) {
+    return this.http.post(this.userUrl + '/register', user);
   }
 
-  update(id:string, user:User) {
-    return this.http.put(this.userUrl+`/${id}`, user);
+  update(id: string, user: User) {
+    return this.http.put(this.userUrl + `/${id}`, user);
   }
 
-  updateWithPassword(id:string, user:User) {
-    return this.http.put(this.userUrl+`/update/${id}`, user);
+  updateWithPassword(id: string, user: User) {
+    return this.http.put(this.userUrl + `/update/${id}`, user);
   }
 
-  checkPassword(id:string, user:User) {
-    return this.http.put(this.userUrl+`/password/${id}`, user);
+  checkPassword(id: string, user: User) {
+    return this.http.put(this.userUrl + `/password/${id}`, user);
   }
 
   getBoards(email: string) {
-    return this.http.get<Board[]>(this.userUrl+`/boards/${email}`);
+    return this.http.get<Board[]>(this.userUrl + `/boards/${email}`);
   }
 
-  leaveBoard(boardId: string, userId: string){
-    return this.http.delete(this.userUrl+`/leaveBoard/${boardId}/${userId}`);
+  leaveBoard(boardId: string, userId: string) {
+    return this.http.delete(this.userUrl + `/leaveBoard/${boardId}/${userId}`);
   }
 }

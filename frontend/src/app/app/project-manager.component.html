@@ -1,167 +1,157 @@
 <div class="project-manager" [ngStyle]="{'background-color':boardBackground}">
   <div class="project-manager-menu">
-    <button mat-icon-button class="home" [routerLink]="['/boards']" matTooltip="Home">
-      <mat-icon>home</mat-icon>
-    </button>
-    <span class="board-title"><b>{{board?.title}}</b></span>
-    <button mat-icon-button class="board-more" #boardMoreButton [matMenuTriggerFor]="boardMoreMenu"
-      #boardMoreTrigger="matMenuTrigger" [ngStyle]="{'color': lightBackground ? 'black' : 'white'}">
-      <mat-icon>more_vert</mat-icon>
-    </button>
-    <mat-menu #boardMoreMenu="matMenu">
-      <span>
-        <div class="menu-header">
-          <button mat-button disabled class="float-left">Board actions</button>
-          <button mat-icon-button class="white close">
-            <mat-icon>close</mat-icon>
-          </button>
-        </div>
-        <mat-divider></mat-divider>
-        <button mat-menu-item [matMenuTriggerFor]="aboutThisBoard" #aboutThisBoardTrigger="matMenuTrigger">About this
-          board</button>
-        <mat-menu #aboutThisBoard="matMenu" (closed)="saveBoardDescriptionDialog()">
-          <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
-            <mat-form-field>
-              <mat-label class="white">Description</mat-label>
-              <textarea cdkTextareaAutosize #boardDescriptionAutosize="cdkTextareaAutosize" cdkAutosizeMinRows="1"
-                cdkAutosizeMaxRows="5" matInput placeholder="Enter board description" [(ngModel)]="boardDescription"
-                #boardDescriptionInput class="white"></textarea>
-            </mat-form-field>
-            <br>
-            <button class="center white background-color-gray transform-scale" mat-button
-              (click)="saveBoardDescription()">Save</button>
+    <div class="project-manager-menu-padding">
+      <button mat-icon-button class="home" [routerLink]="['/boards']" matTooltip="Home">
+        <mat-icon>home</mat-icon>
+      </button>
+      <span class="board-title"><b>{{board?.title}}</b></span>
+      <button mat-icon-button class="board-more" #boardMoreButton [matMenuTriggerFor]="boardMoreMenu"
+        #boardMoreTrigger="matMenuTrigger" [ngStyle]="{'color': lightBackground ? 'black' : 'whitesmoke'}">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+      <mat-menu class="padding-top-0" #boardMoreMenu="matMenu">
+        <span>
+          <div class="menu-header">
+            <button mat-button disabled class="float-left"><b>Board actions</b></button>
+            <button mat-icon-button class="close">
+              <mat-icon>close</mat-icon>
+            </button>
           </div>
-
-        </mat-menu>
-        <button mat-menu-item [matMenuTriggerFor]="changeBackgroundMenu"
-          #changeBackgroundTrigger="matMenuTrigger">Change background</button>
-        <mat-menu #changeBackgroundMenu="matMenu">
-          <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
-            <mat-form-field>
-              <mat-label class="white">Color</mat-label>
-              <input #changeBackgroundInput type="color" class="white" matInput [(ngModel)]="boardBackground"
-                (change)="changeBackground()">
-            </mat-form-field>
-          </div>
-        </mat-menu>
-        <mat-divider></mat-divider>
-
-        <button mat-menu-item [matMenuTriggerFor]="addUsersMenu" #addUsersTrigger="matMenuTrigger">Add users</button>
-        <mat-menu #addUsersMenu="matMenu" (closed)="resetAddUser()">
-          <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
-            <mat-form-field>
-              <mat-label class="white">Email address or username</mat-label>
-              <input #addUsersInput placeholder="Enter email address or username" class="white" matInput
-                [(ngModel)]="newUser" (keyup.enter)="addUser()">
-            </mat-form-field>
-            <br>
-            <button class="center white background-color-gray transform-scale" mat-button
-              (click)="addUser()">Add</button>
-            <p *ngIf="errorMessageNewUser" class="error-message white">{{errorMessageNewUser}}</p>
-          </div>
-        </mat-menu>
-
-        <button mat-menu-item [matMenuTriggerFor]="deleteUsersMenu" #deleteUsersTrigger="matMenuTrigger">Delete
-          users</button>
-        <mat-menu #deleteUsersMenu="matMenu">
-          <div (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
-            <div *ngIf="board?.users.length==1" class="menu-item-padding white"><h3>No more users</h3></div>
-            <mat-divider *ngIf="board?.users.length>1"></mat-divider>
-            <div *ngFor="let user of board?.users; index as i">
-              <div *ngIf="currentUser?.id != user.id">
-                <br>
-                <div class="text-align-right menu-item-margin">
-                  <div class="float-left">
-                    <h3 class="text-align-left margin-0 white">{{user.fullName}}</h3>
-                    <p class="text-align-left white">{{user.email}}</p>
-                  </div>
-                  <button class="delete white" mat-icon-button matTooltip="Delete user" (click)="deleteUserDialog(i)">
-                    <mat-icon>delete</mat-icon>
-                  </button>
-                </div>
-                <br><br>
-                <mat-divider></mat-divider>
-              </div>
-
+          <mat-divider></mat-divider>
+          <button mat-menu-item [matMenuTriggerFor]="aboutThisBoard" #aboutThisBoardTrigger="matMenuTrigger">About this
+            board</button>
+          <mat-menu #aboutThisBoard="matMenu" (closed)="saveBoardDescriptionDialog()">
+            <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+              <mat-form-field>
+                <mat-label>Description</mat-label>
+                <textarea cdkTextareaAutosize #boardDescriptionAutosize="cdkTextareaAutosize" cdkAutosizeMinRows="1"
+                  cdkAutosizeMaxRows="5" matInput placeholder="Enter board description" [(ngModel)]="boardDescription"
+                  #boardDescriptionInput></textarea>
+              </mat-form-field>
+              <br>
+              <button class="center white background-color-default transform-scale" mat-button
+                (click)="saveBoardDescription()">Save</button>
             </div>
-          </div>
-        </mat-menu>
 
-        <mat-divider></mat-divider>
-        <button mat-menu-item (click)="$event.stopPropagation();showAddList()">New list</button>
-        <button [disabled]="board?.lists.length < 1" class="delete" mat-menu-item
-          (click)="deleteAllListsDialog()">Delete all lists</button>
-        <mat-divider></mat-divider>
-        <button mat-menu-item [matMenuTriggerFor]="renameBoardMenu" #renameBoardTrigger="matMenuTrigger">Rename
-          board</button>
-        <mat-menu #renameBoardMenu="matMenu" (closed)="saveBoardTitleDialog()">
-          <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
-            <mat-form-field>
-              <mat-label class="white">Title</mat-label>
-              <input #renameBoardInput placeholder="Enter board title" class="white" matInput [(ngModel)]="boardTitle"
-                (keyup.enter)="renameBoard()">
-            </mat-form-field>
-            <br>
-            <button class="center white background-color-gray transform-scale" mat-button
-              (click)="renameBoard()">Save</button>
-          </div>
-        </mat-menu>
-        <button *ngIf="currentUser?.id == board?.users[0]?.id" class="delete" mat-menu-item
-          (click)="deleteBoardDialog()">Delete board</button>
-        <button *ngIf="currentUser?.id != board?.users[0]?.id" class="delete" mat-menu-item
-          (click)="leaveBoardDialog()">Leave board</button>
-        <mat-divider></mat-divider>
-        <button mat-menu-item (click)="logout()">Logout</button>
+          </mat-menu>
+          <button mat-menu-item [matMenuTriggerFor]="changeBackgroundMenu"
+            #changeBackgroundTrigger="matMenuTrigger">Change background</button>
+          <mat-menu #changeBackgroundMenu="matMenu">
+            <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+              <mat-form-field>
+                <mat-label>Color</mat-label>
+                <input #changeBackgroundInput type="color" matInput [(ngModel)]="boardBackground"
+                  (change)="changeBackground()">
+              </mat-form-field>
+            </div>
+          </mat-menu>
+          <mat-divider></mat-divider>
+
+          <button mat-menu-item [matMenuTriggerFor]="addUsersMenu" #addUsersTrigger="matMenuTrigger">Add users</button>
+          <mat-menu #addUsersMenu="matMenu" (closed)="resetAddUser()">
+            <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+              <mat-form-field>
+                <mat-label>Email address or username</mat-label>
+                <input #addUsersInput placeholder="Enter email address or username" matInput [(ngModel)]="newUser"
+                  (keyup.enter)="addUser()">
+              </mat-form-field>
+              <br>
+              <button class="center white background-color-default transform-scale" mat-button
+                (click)="addUser()">Add</button>
+              <p *ngIf="errorMessageNewUser" class="error-message white">{{errorMessageNewUser}}</p>
+            </div>
+          </mat-menu>
+
+          <button mat-menu-item [matMenuTriggerFor]="deleteUsersMenu" #deleteUsersTrigger="matMenuTrigger">Delete
+            users</button>
+          <mat-menu #deleteUsersMenu="matMenu">
+            <div (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+              <div *ngIf="board?.users.length==1" class="menu-item-padding">
+                <h3 class="gray">No users</h3>
+              </div>
+              <mat-divider *ngIf="board?.users.length>1"></mat-divider>
+              <div *ngFor="let user of board?.users; index as i">
+                <div *ngIf="currentUser?.id != user.id">
+                  <br>
+                  <div class="text-align-right menu-item-margin">
+                    <div class="float-left">
+                      <h3 class="text-align-left margin-0">{{user.fullName}}</h3>
+                      <p class="text-align-left">{{user.email}}</p>
+                    </div>
+                    <button class="delete" mat-icon-button matTooltip="Delete user" (click)="deleteUserDialog(i)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                  <br><br>
+                  <mat-divider></mat-divider>
+                </div>
+              </div>
+            </div>
+          </mat-menu>
+
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="$event.stopPropagation();showAddList()">New list</button>
+          <button [disabled]="board?.lists.length < 1" class="delete" mat-menu-item
+            (click)="deleteAllListsDialog()">Delete all lists</button>
+          <mat-divider></mat-divider>
+          <button mat-menu-item [matMenuTriggerFor]="renameBoardMenu" #renameBoardTrigger="matMenuTrigger">Rename
+            board</button>
+          <mat-menu #renameBoardMenu="matMenu" (closed)="saveBoardTitleDialog()">
+            <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+              <mat-form-field>
+                <mat-label>Title</mat-label>
+                <input #renameBoardInput placeholder="Enter board title" matInput [(ngModel)]="boardTitle"
+                  (keyup.enter)="renameBoard()">
+              </mat-form-field>
+              <br>
+              <button class="center white background-color-default transform-scale" mat-button
+                (click)="renameBoard()">Save</button>
+            </div>
+          </mat-menu>
+          <button *ngIf="currentUser?.id == board?.users[0]?.id" class="delete" mat-menu-item
+            (click)="deleteBoardDialog()">Delete board</button>
+          <button *ngIf="currentUser?.id != board?.users[0]?.id" class="delete" mat-menu-item
+            (click)="leaveBoardDialog()">Leave board</button>
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="logout()">Logout</button>
+        </span>
+      </mat-menu>
+      &nbsp;&nbsp;
+      <span>
+        <mat-form-field [ngClass]="lightBackground ? 'add-list-title-black' : 'add-list-title'">
+          <mat-label [ngClass]="lightBackground ? 'black-important' : 'white'">Enter list title</mat-label>
+          <input #listTitleInput [ngClass]="lightBackground ? 'black-important' : 'white'" matInput
+            [(ngModel)]="listTitle" (keyup.enter)="addList()">
+        </mat-form-field>
+        &nbsp;
+        <button class="black whitesmoke transform-scale" mat-button (click)="addList()">
+          Add list
+        </button>
       </span>
-    </mat-menu>
-    <!--
-    <button *ngIf="!showAddListBool" class="black whitesmoke" mat-button (click)="showAddList()">
-      <mat-icon>add</mat-icon>
-      <span>New list</span>
-    </button>
-    -->
-    &nbsp;&nbsp;
-    <span>
-      <mat-form-field [ngClass]="lightBackground ? 'add-list-title-black' : 'add-list-title'">
-        <mat-label [ngClass]="lightBackground ? 'black-important' : 'white'">Enter list title</mat-label>
-        <input #listTitleInput [ngClass]="lightBackground ? 'black-important' : 'white'" matInput
-          [(ngModel)]="listTitle" (keyup.enter)="addList()">
-      </mat-form-field>
-      &nbsp;
-      <button class="black whitesmoke transform-scale" mat-button (click)="addList()">
-        Add list
-      </button>
-      <!--
-      &nbsp;
-      <button class="black whitesmoke" mat-button (click)="showAddList()">
-        Cancel
-      </button>
-      -->
-    </span>
+    </div>
   </div>
-  <table cellspacing="0" class="lists" [ngStyle]="{'width': sharedDataService.contextViewOn ? '80vw' : '95vw'}">
+  <table cellspacing="0" class="lists">
     <tr class="example-list-lists" cdkDropList cdkDropListOrientation="horizontal"
       (cdkDropListDropped)="dropList($event)">
       <td class="example-container example-box-lists" *ngFor="let list of board?.lists; index as i" cdkDrag>
         <div id="{{list.id}}" cdkDropList [cdkDropListData]="list.cards" [cdkDropListConnectedTo]="connectedTo"
           class="example-list" (cdkDropListDropped)="drop($event)">
-          <div class="list-header" cdkDragHandle>
+          <div class="list-header overflow-auto" cdkDragHandle>
             <h3 class="list-title">{{list.title}}</h3>
             <button mat-icon-button class="list-more" #listMoreButton [matMenuTriggerFor]="listMoreMenu"
               #listMoreTrigger="matMenuTrigger" (click)="listTitleRename = list.title">
               <mat-icon>more_vert</mat-icon>
             </button>
-            <mat-menu #listMoreMenu="matMenu">
+            <mat-menu #listMoreMenu="matMenu" class="padding-top-0">
               <span>
                 <div class="menu-header">
-                  <button mat-button disabled class="float-left">List actions</button>
-                  <button mat-icon-button class="white close">
+                  <button mat-button disabled class="float-left"><b>List actions</b></button>
+                  <button mat-icon-button class="close">
                     <mat-icon>close</mat-icon>
                   </button>
                 </div>
                 <mat-divider></mat-divider>
                 <button mat-menu-item (click)="$event.stopPropagation();showAddCard(i)">New card</button>
-                <!--<button mat-menu-item>Copy list</button>-->
                 <button mat-menu-item [disabled]="board?.lists.length < 2" [matMenuTriggerFor]="moveListMenu"
                   #moveListTrigger="matMenuTrigger">Move list</button>
                 <mat-menu #moveListMenu="matMenu"
@@ -169,14 +159,14 @@
                   <div class="menu-item-padding" (click)="$event.stopPropagation()"
                     (keydown)="$event.stopPropagation()">
                     <mat-form-field>
-                      <mat-label class="white">Select a position</mat-label>
+                      <mat-label>Select a position</mat-label>
                       <mat-select [(value)]="selectedMoveListPosition">
                         <mat-option value="before">Before</mat-option>
                         <mat-option value="after">After</mat-option>
                       </mat-select>
                     </mat-form-field>
                     <mat-form-field>
-                      <mat-label class="white">Select a list</mat-label>
+                      <mat-label>Select a list</mat-label>
                       <mat-select [(value)]="selectedMoveList">
                         <ng-container *ngFor="let list of board?.lists; index as j">
                           <mat-option *ngIf="i!=j" [value]="j">{{list.title}}</mat-option>
@@ -184,7 +174,7 @@
                       </mat-select>
                     </mat-form-field>
                     <br>
-                    <button class="center white background-color-gray transform-scale" mat-button
+                    <button class="center white background-color-default transform-scale" mat-button
                       (click)="moveList(i, selectedMoveListPosition, selectedMoveList)"
                       [disabled]="selectedMoveListPosition==undefined || selectedMoveList==undefined">Move</button>
                   </div>
@@ -196,12 +186,12 @@
                   <div class="menu-item-padding" (click)="$event.stopPropagation()"
                     (keydown)="$event.stopPropagation()">
                     <mat-form-field>
-                      <mat-label class="white">Title</mat-label>
-                      <input #renameListInput placeholder="Enter list title" class="white" matInput
-                        [(ngModel)]="listTitleRename" (keyup.enter)="renameList(i)">
+                      <mat-label>Title</mat-label>
+                      <input #renameListInput placeholder="Enter list title" matInput [(ngModel)]="listTitleRename"
+                        (keyup.enter)="renameList(i)">
                     </mat-form-field>
                     <br>
-                    <button class="center white background-color-gray transform-scale" mat-button
+                    <button class="center white background-color-default transform-scale" mat-button
                       (click)="renameList(i)">Save</button>
                   </div>
                 </mat-menu>
@@ -216,14 +206,14 @@
                   <div class="menu-item-padding" (click)="$event.stopPropagation()"
                     (keydown)="$event.stopPropagation()">
                     <mat-form-field>
-                      <mat-label class="white">Select a list</mat-label>
+                      <mat-label>Select a list</mat-label>
                       <mat-select [(value)]="selectedCopyAllCards">
                         <mat-option *ngFor="let list of board?.lists; index as j" [value]="j">{{list.title}}
                         </mat-option>
                       </mat-select>
                     </mat-form-field>
                     <br>
-                    <button class="center white background-color-gray transform-scale" mat-button
+                    <button class="center white background-color-default transform-scale" mat-button
                       (click)="copyAllCards(i, selectedCopyAllCards)"
                       [disabled]="selectedCopyAllCards == undefined">Copy</button>
                   </div>
@@ -236,7 +226,7 @@
                   <div class="menu-item-padding" (click)="$event.stopPropagation()"
                     (keydown)="$event.stopPropagation()">
                     <mat-form-field>
-                      <mat-label class="white">Select a list</mat-label>
+                      <mat-label>Select a list</mat-label>
                       <mat-select [(value)]="selectedMoveAllCards">
                         <ng-container *ngFor="let list of board?.lists; index as j">
                           <mat-option *ngIf="i!=j" [value]="j">{{list.title}}</mat-option>
@@ -245,7 +235,7 @@
                       </mat-select>
                     </mat-form-field>
                     <br>
-                    <button class="center white background-color-gray transform-scale" mat-button
+                    <button class="center white background-color-default transform-scale" mat-button
                       (click)="moveAllCards(i, selectedMoveAllCards)"
                       [disabled]="selectedMoveAllCards == undefined">Move</button>
                   </div>
@@ -255,20 +245,14 @@
                   cards</button>
               </span>
             </mat-menu>
-            <!--
-            <button mat-icon-button class="list-more" matTooltip="New card" (click)="showAddCard(i)">
-              <mat-icon>add</mat-icon>
-            </button>
-            -->
           </div>
-          <div class="example-box-list-header cursor-default list-header"
-            [ngStyle]="{'background-color':lightBackground?'lightgray':'white'}">
+          <div class="example-box-list-header" [ngStyle]="{'background-color':lightBackground?'lightgray':'white'}">
             <mat-form-field class="add-card-title">
               <mat-label class="black">Enter card title</mat-label>
               <input matInput [(ngModel)]="cardTitle[i]" #cardTitleInput (keyup.enter)="addCard(i)">
             </mat-form-field>
             &nbsp;
-            <button mat-button (click)="addCard(i)" class="black whitesmoke padding-0 transform-scale">
+            <button mat-button (click)="addCard(i)" class="black background-ebebeb padding-0 transform-scale">
               Add card
             </button>
           </div>
@@ -293,7 +277,6 @@
               </span>
             </div>
           </div>
-
         </div>
       </td>
       <div class="placeholder" *ngIf="board?.lists.length==0">

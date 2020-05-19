@@ -9,24 +9,26 @@
     <mat-menu #cardRenameMenu="matMenu" (closed)="saveCardTitleDialog()">
       <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
         <mat-form-field>
-          <mat-label class="white">Title</mat-label>
-          <input #cardRenameInput placeholder="Enter card title" class="white" matInput [(ngModel)]="cardTitle"
+          <mat-label>Title</mat-label>
+          <input #cardRenameInput placeholder="Enter card title" matInput [(ngModel)]="cardTitle"
             (keyup.enter)="renameCard()">
         </mat-form-field>
         <br>
-        <button class="center white background-color-gray transform-scale" mat-button
+        <button class="center transform-scale white background-color-default" mat-button
           (click)="renameCard();cardRenameInput.focus()">Save</button>
       </div>
     </mat-menu>
     <span *ngFor="let label of data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.labels; index as i">
-      <span class="label transform-scale" [ngStyle]="{'background-color':label, 'padding-top':editLabels ? 0 : '10px','padding-bottom':editLabels ? 0 : '10px'}" [matMenuTriggerFor]="labelUpdateMenu"
-        #labelUpdateTrigger="matMenuTrigger" [matTooltip]="editLabels ? 'Click to delete': 'Click to change'"
+      <span class="label transform-scale"
+        [ngStyle]="{'background-color':label, 'padding-top':editLabels ? 0 : '10px','padding-bottom':editLabels ? 0 : '10px'}"
+        [matMenuTriggerFor]="labelUpdateMenu" #labelUpdateTrigger="matMenuTrigger"
+        [matTooltip]="editLabels ? 'Click to delete': 'Click to change'"
         (click)="editLabels ? deleteLabel(i) : labelUpdate = label"><span *ngIf="editLabels">X</span></span>&nbsp;
       <mat-menu #labelUpdateMenu="matMenu">
         <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
           <mat-form-field>
-            <mat-label class="white">Label</mat-label>
-            <input value="label" #labelUpdateInput type="color" class="white" matInput [(ngModel)]="labelUpdate"
+            <mat-label>Label</mat-label>
+            <input value="label" #labelUpdateInput type="color" matInput [(ngModel)]="labelUpdate"
               (change)="updateLabel(i)">
           </mat-form-field>
         </div>
@@ -37,13 +39,13 @@
     <mat-tab-group mat-align-tabs="center" (selectedTabChange)="editLabels=false" [dynamicHeight]='true'>
       <mat-tab label="General">
         <br>
-        <button class="background-color-gray" mat-button [matMenuTriggerFor]="labelsMenu"
+        <button class="white background-color-default" mat-button [matMenuTriggerFor]="labelsMenu"
           #labelsTrigger="matMenuTrigger">Add Labels</button>
         <mat-menu #labelsMenu="matMenu">
           <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
             <mat-form-field>
-              <mat-label class="white">Label</mat-label>
-              <input #labelInput type="color" class="white" matInput [(ngModel)]="label" (change)="addLabel()">
+              <mat-label>Label</mat-label>
+              <input #labelInput type="color" matInput [(ngModel)]="label" (change)="addLabel()">
             </mat-form-field>
           </div>
         </mat-menu>
@@ -57,37 +59,40 @@
         <br>
         <div [formGroup]="cardForm">
           <mat-form-field class="width-100">
-            <mat-label class="white">Description</mat-label>
+            <mat-label>Description</mat-label>
             <textarea cdkTextareaAutosize #cardDescriptionAutosize="cdkTextareaAutosize" cdkAutosizeMinRows="1"
               cdkAutosizeMaxRows="5" matInput placeholder="Enter card description" #cardDescriptionInput
-              formControlName="description" class="white" (focusout)="saveCardDescription()" [value]="this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].description"></textarea>
+              formControlName="description" (focusout)="saveCardDescription()"
+              [value]="this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].description"></textarea>
           </mat-form-field>
           <br>
           <mat-form-field>
             <mat-label>Start date</mat-label>
-            <input formControlName="startDate" matInput type="datetime-local" (focusout)="saveStartDate()" [value]="this.toDateString(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].startDate)">
+            <input formControlName="startDate" matInput type="datetime-local" (focusout)="saveStartDate()"
+              [value]="this.toDateString(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].startDate)">
           </mat-form-field>
           &nbsp;
           <mat-form-field>
             <mat-label>Due date</mat-label>
-            <input formControlName="endDate" matInput type="datetime-local" (focusout)="saveEndDate()" [value]="this.toDateString(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].endDate)">
+            <input formControlName="endDate" matInput type="datetime-local" (focusout)="saveEndDate()"
+              [value]="this.toDateString(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].endDate)">
           </mat-form-field>
         </div>
         <br>
       </mat-tab>
       <mat-tab label="Checklists">
         <br>
-        <button class="background-color-gray" mat-button [matMenuTriggerFor]="checklistMenu"
+        <button class="white background-color-default" mat-button [matMenuTriggerFor]="checklistMenu"
           #checklistTrigger="matMenuTrigger" (menuOpened)="checklistInput.focus()">Add Checklists</button>
         <mat-menu #checklistMenu="matMenu" (closed)="checklistTitle = ''">
           <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
             <mat-form-field>
-              <mat-label class="white">Title</mat-label>
-              <input #checklistInput placeholder="Enter checklist title" class="white" matInput
-                [(ngModel)]="checklistTitle" (keyup.enter)="addChecklist()">
+              <mat-label>Title</mat-label>
+              <input #checklistInput placeholder="Enter checklist title" matInput [(ngModel)]="checklistTitle"
+                (keyup.enter)="addChecklist()">
             </mat-form-field>
             <br>
-            <button class="center white background-color-gray transform-scale" mat-button
+            <button class="center transform-scale white background-color-default" mat-button
               (click)="addChecklist();checklistInput.focus()">Save</button>
           </div>
         </mat-menu>
@@ -104,12 +109,12 @@
             <mat-menu #checklistRenameMenu="matMenu" (closed)="saveChecklistTitleDialog(i)">
               <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
                 <mat-form-field>
-                  <mat-label class="white">Title</mat-label>
-                  <input #checklistRenameInput placeholder="Enter checklist title" class="white" matInput
+                  <mat-label>Title</mat-label>
+                  <input #checklistRenameInput placeholder="Enter checklist title" matInput
                     [(ngModel)]="checklistRenameTitle" (keyup.enter)="renameChecklist(i)">
                 </mat-form-field>
                 <br>
-                <button class="center white background-color-gray transform-scale" mat-button
+                <button class="center transform-scale white background-color-default" mat-button
                   (click)="renameChecklist(i);checklistRenameInput.focus()">Save</button>
               </div>
             </mat-menu>
@@ -124,7 +129,8 @@
           <br>
           <span
             class="float-right">{{checklist.tasks.length>0 ? (data.checkedNumber[i]/checklist.tasks.length*100 | number:'1.0-0') : 0}}%</span>
-          <mat-progress-bar mode="determinate" [value]="data.checkedNumber[i]/checklist.tasks.length*100"></mat-progress-bar>
+          <mat-progress-bar mode="determinate" [value]="data.checkedNumber[i]/checklist.tasks.length*100">
+          </mat-progress-bar>
           <div *ngFor="let task of checklist.tasks; index as j">
             <br>
             <mat-checkbox [color]="checkboxColor"
@@ -137,18 +143,18 @@
             </button>
           </div>
           <br>
-          <button class="background-color-gray" mat-button [matMenuTriggerFor]="itemMenu" #itemTrigger="matMenuTrigger"
-            (menuOpened)="itemInput.focus()">Add
+          <button class="white background-color-default" mat-button [matMenuTriggerFor]="itemMenu"
+            #itemTrigger="matMenuTrigger" (menuOpened)="itemInput.focus()">Add
             an item</button>
           <mat-menu #itemMenu="matMenu" (closed)="itemTitle = ''">
             <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
               <mat-form-field>
-                <mat-label class="white">Title</mat-label>
-                <input #itemInput placeholder="Enter item title" class="white" matInput [(ngModel)]="itemTitle"
+                <mat-label>Title</mat-label>
+                <input #itemInput placeholder="Enter item title" matInput [(ngModel)]="itemTitle"
                   (keyup.enter)="addItem(i)">
               </mat-form-field>
               <br>
-              <button class="center white background-color-gray transform-scale" mat-button
+              <button class="center transform-scale white background-color-default" mat-button
                 (click)="addItem(i);itemInput.focus()">Save</button>
             </div>
           </mat-menu>
@@ -159,17 +165,17 @@
       </mat-tab>
       <mat-tab label="Members">
         <br>
-        <button class="background-color-gray" mat-button [matMenuTriggerFor]="addUsersMenu"
+        <button class="white background-color-default" mat-button [matMenuTriggerFor]="addUsersMenu"
           #addUsersTrigger="matMenuTrigger" (menuOpened)="addUsersInput.focus()">Add members</button>
         <mat-menu #addUsersMenu="matMenu" (closed)="resetAddUser()">
           <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
             <mat-form-field>
-              <mat-label class="white">Email address or username</mat-label>
-              <input #addUsersInput placeholder="Enter email address or username" class="white" matInput
-                [(ngModel)]="newUser" (keyup.enter)="addUser()">
+              <mat-label>Email address or username</mat-label>
+              <input #addUsersInput placeholder="Enter email address or username" matInput [(ngModel)]="newUser"
+                (keyup.enter)="addUser()">
             </mat-form-field>
             <br>
-            <button class="center white background-color-gray transform-scale" mat-button
+            <button class="center transform-scale white background-color-default" mat-button
               (click)="addUser()">Add</button>
             <p *ngIf="errorMessageNewUser" class="error-message white">{{errorMessageNewUser}}</p>
           </div>
@@ -195,9 +201,9 @@
       </mat-tab>
     </mat-tab-group>
   </div>
-  <div mat-dialog-actions>
-    <!--<button class="background-color-gray transform-scale" mat-button (click)="saveCardDetails()">Save</button>-->
-    <button class="background-color-gray" mat-button (click)="makeCardBoardDialog()">Make it a board</button>
-    <button class="background-color-gray delete" mat-button (click)="deleteCard()">Delete card</button>
+  <div mat-dialog-actions class="actions" align="end">
+    <!--<button class="white background-color-default transform-scale" mat-button (click)="saveCardDetails()">Save</button>-->
+    <button class="white background-color-default" mat-button (click)="makeCardBoardDialog()">Make it a board</button>
+    <button class="white background-color-default delete" mat-button (click)="deleteCard()">Delete card</button>
   </div>
 </div>

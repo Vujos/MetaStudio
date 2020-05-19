@@ -78,6 +78,7 @@ export class ProjectManagerComponent implements AdComponent {
       this.boardDescription = this.board.description;
       this.boardTitle = this.board.title;
       this.boardBackground = this.board.background;
+      this.checkBoardBackground();
 
       this.board.lists.forEach(list => {
         list.cards.forEach(card => {
@@ -86,8 +87,8 @@ export class ProjectManagerComponent implements AdComponent {
           card.checklists.forEach(checklist => {
             checklist.tasks.forEach(task => {
               size += 1;
-              if(task.done){
-                done+=1;
+              if (task.done) {
+                done += 1;
               }
             });
           })
@@ -126,6 +127,7 @@ export class ProjectManagerComponent implements AdComponent {
           this.boardDescription = this.board.description;
           this.boardTitle = this.board.title;
           this.boardBackground = this.board.background;
+          this.checkBoardBackground();
 
           this.board.lists.forEach(list => {
             list.cards.forEach(card => {
@@ -134,8 +136,8 @@ export class ProjectManagerComponent implements AdComponent {
               card.checklists.forEach(checklist => {
                 checklist.tasks.forEach(task => {
                   size += 1;
-                  if(task.done){
-                    done+=1;
+                  if (task.done) {
+                    done += 1;
                   }
                 });
               })
@@ -380,12 +382,12 @@ export class ProjectManagerComponent implements AdComponent {
     this.errorMessageNewUser = undefined;
   }
 
-  deleteUser(index){
+  deleteUser(index) {
     this.userService.leaveBoard(this.board.id, this.board.users[index].id).subscribe(data => {
       this.board.lists.forEach((list, listIndex) => {
         list.cards.forEach((card, cardIndex) => {
           for (let memberIndex = 0; memberIndex < card.members.length; memberIndex++) {
-            if(card.members[memberIndex].id == this.board.users[index].id){
+            if (card.members[memberIndex].id == this.board.users[index].id) {
               this.board.lists[listIndex].cards[cardIndex].members.splice(memberIndex, 1);
               break;
             }
@@ -395,7 +397,7 @@ export class ProjectManagerComponent implements AdComponent {
       this.board.users.splice(index, 1);
       this.updateBoard();
     });
-    
+
   }
 
   deleteUserDialog(index) {
@@ -555,7 +557,7 @@ export class ProjectManagerComponent implements AdComponent {
     }
   }
 
-  calculateCheckedTasks(listIndex, cardIndex){
+  calculateCheckedTasks(listIndex, cardIndex) {
     let checkedNumber: number[] = [];
     let sum = 0;
     this.board.lists[listIndex].cards[cardIndex].checklists.forEach(checklist => {
@@ -571,7 +573,7 @@ export class ProjectManagerComponent implements AdComponent {
   }
 
   openCardDetailsDialog(listIndex, cardIndex) {
-    this.dialogRef = this.dialog.open(CardDetailsComponent, { data: { board: this.board, listIndex: listIndex, cardIndex: cardIndex , checkedNumber: this.calculateCheckedTasks(listIndex, cardIndex)}, autoFocus: false });
+    this.dialogRef = this.dialog.open(CardDetailsComponent, { data: { board: this.board, listIndex: listIndex, cardIndex: cardIndex, checkedNumber: this.calculateCheckedTasks(listIndex, cardIndex) }, autoFocus: false, width: '50%' });
   }
 
   updateBoard() {

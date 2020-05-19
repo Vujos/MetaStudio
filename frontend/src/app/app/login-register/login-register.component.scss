@@ -1,35 +1,34 @@
 .login-div {
-    margin: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
     max-width: 100%;
-    height: auto;
-    width: auto\9; /* ie8 */
+    height: 100%;
+    background-color: #55aa55;
+    overflow: auto;
 }
 
 .mat-elevation-z8 {
     max-width: 100%;
     height: auto;
-    width: auto\9; /* ie8 */
     padding: 40px;
-    //background-color: #407040;
+    background-color: white;
 }
 
 img {
     max-width: 100%;
     height: auto;
-    width: auto\9; /* ie8 */
 }
 
 .login-button {
     margin-top: 20px;
     margin-bottom: 20px;
+    background-color: #55aa55;
+    color: white;
 }
 
 .login-button:hover {
-    // color: rgb(210, 255, 220);
     transform:scale(1.1,1.1);
     -webkit-transform:scale(1.1,1.1);
     -moz-transform:scale(1.1,1.1);
@@ -39,12 +38,8 @@ img {
     cursor: pointer;
 }
 
-.white{
-    color: white;
-}
-
 .register{
-    text-decoration: none;
+    color: black;
 }
 
 .message{

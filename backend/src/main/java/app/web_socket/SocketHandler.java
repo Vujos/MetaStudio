@@ -26,7 +26,6 @@ public class SocketHandler extends TextWebSocketHandler {
 
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-		System.out.println("konekcija");
 		sessions.add(session);
 	}
 }

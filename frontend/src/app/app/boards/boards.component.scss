@@ -7,16 +7,16 @@
 .black {
     color:black;
 }
-  
-.whitesmoke {
-    background-color: whitesmoke;
-}
 
-.add-list-title .mat-form-field-wrapper .mat-form-field-underline {
+.background-white{
   background-color: white;
 }
 
-.add-list-title-black .mat-form-field-wrapper .mat-form-field-underline {
+.add-board-title .mat-form-field-wrapper .mat-form-field-underline {
+  background-color: white;
+}
+
+.add-board-title-black .mat-form-field-wrapper .mat-form-field-underline {
   background-color: black;
 }
 
@@ -30,15 +30,15 @@
 
 .boards-menu{
   text-align:center;
-  height: 11vh;
+  height: 11%;
   overflow: auto;
-  min-height: 4em;
+  //min-height: 5em;
   //background-color: #407040;
   background-color: #55aa55;
 }
 
 .boards{
-  height: 84vh;
+  height: 89%;
   //overflow: auto;
   //background-color: #407040;
   background-color: #55aa55;
@@ -58,20 +58,20 @@
   background-color: red;
 }
 
-.example-list {
+.example-list-boards {
   width: 50%;
   max-width: 100%;
-  border: solid 1px #ccc;
+  //border: solid 1px #ccc;
   min-height: 60px;
   display: block;
   background: white;
   border-radius: 4px;
   overflow: auto;
   margin: 0 auto;
-  height: 84vh;
+  height: 100%;
 }
 
-.example-box {
+.example-box-boards {
   padding: 20px 10px;
   border-bottom: solid 1px #ccc;
   color: rgba(0, 0, 0, 0.87);
@@ -87,7 +87,7 @@
   border-radius: 5px;
 }
 
-.example-list.cdk-drop-list-dragging .example-box {
+.example-list-boards.cdk-drop-list-dragging .example-box-boards {
   cursor: move;
 }
 
@@ -107,11 +107,11 @@
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-.example-box:last-child {
+.example-box-boards:last-child {
   border: none;
 }
 
-.example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+.example-list-boards.cdk-drop-list-dragging .example-box-boards:not(.cdk-drag-placeholder) {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 

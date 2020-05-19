@@ -30,7 +30,7 @@ export class ProfileComponent implements OnInit {
       newPassword: [''],
       repeatNewPassword: ['']
     });
-    
+
     this.userService.getByQuery(this.authService.getCurrentUser()).subscribe(currentUser => {
       this.currentUser = currentUser;
       this.form.patchValue(this.currentUser);
@@ -46,16 +46,16 @@ export class ProfileComponent implements OnInit {
     let validOldPassword = false;
 
     this.authService.login2(this.form.value.email, this.form.value.oldPassword).subscribe(response => {
-      if (response.token!="") {
+      if (response.token != "") {
         validOldPassword = true;
       }
 
-      if (!validOldPassword){
+      if (!validOldPassword) {
         this.message = "The password does not match!"
         return
       }
 
-      if (this.form.value.newPassword != this.form.value.repeatNewPassword){
+      if (this.form.value.newPassword != this.form.value.repeatNewPassword) {
         this.message = "The repeated password does not match!"
         return
       }
@@ -67,7 +67,7 @@ export class ProfileComponent implements OnInit {
       this.currentUser.fullName = this.form.value.fullName.trim();
       this.currentUser.username = this.form.value.username.trim();
       this.currentUser.email = this.form.value.email.trim();
-      if(this.form.value.newPassword != ""){
+      if (this.form.value.newPassword != "") {
         this.currentUser.password = this.form.value.newPassword;
       }
       this.currentUser.password = this.form.value.oldPassword;
@@ -80,7 +80,7 @@ export class ProfileComponent implements OnInit {
           this.form.controls["repeatNewPassword"].reset();
         });
     }, e => {
-      if (!validOldPassword){
+      if (!validOldPassword) {
         this.message = "The password does not match!"
         return
       }

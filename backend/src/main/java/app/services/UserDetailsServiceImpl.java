@@ -17,11 +17,11 @@ import app.models.User;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
 	@Autowired
-	UserService userService2;
+	UserService userService;
 
 	@Transactional
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-		Optional<User> user = userService2.getUserByEmail(email);
+		Optional<User> user = userService.getUserByEmail(email);
 
 		if (user.isPresent()) {
 			ArrayList<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();

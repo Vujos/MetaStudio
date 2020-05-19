@@ -1,11 +1,11 @@
 <div class="boards-menu">
-  <mat-form-field [ngClass]="lightBackground ? 'add-list-title-black' : 'add-list-title'">
+  <mat-form-field [ngClass]="lightBackground ? 'add-board-title-black' : 'add-board-title'">
     <mat-label [ngClass]="lightBackground ? 'black-important' : 'white'">Enter board title</mat-label>
     <input #boardTitleInput [ngClass]="lightBackground ? 'black-important' : 'white'" matInput [(ngModel)]="boardTitle"
       (keyup.enter)="addBoard()">
   </mat-form-field>
   &nbsp;
-  <button class="black whitesmoke transform-scale" mat-button (click)="addBoard()">
+  <button class="black background-white transform-scale" mat-button (click)="addBoard()">
     Add board
   </button>
   <button mat-icon-button class="boards-more" #boardsMoreButton [matMenuTriggerFor]="boardsMoreMenu"
@@ -15,7 +15,8 @@
   <mat-menu #boardsMoreMenu="matMenu">
     <span>
       <div class="menu-header">
-        <button mat-button disabled class="float-left">{{currentUser?.fullName}} ({{currentUser?.username}})</button>
+        <button mat-button disabled class="float-left"><b>{{currentUser?.fullName}}
+            ({{currentUser?.username}})</b></button>
         <button mat-icon-button class="white close">
           <mat-icon>close</mat-icon>
         </button>
@@ -26,23 +27,16 @@
       <button mat-menu-item (click)="logout()">Logout</button>
     </span>
   </mat-menu>
-  <!--
-    &nbsp;
-    <button class="black whitesmoke" mat-button (click)="showAddList()">
-      Cancel
-    </button>
-    -->
 </div>
 
 <div class="boards">
-  <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
-    <div class="example-box" *ngFor="let board of boards" cdkDrag [routerLink]="['/projectManager', board.id]"
+  <div cdkDropList class="example-list-boards" (cdkDropListDropped)="drop($event)">
+    <div class="example-box-boards" *ngFor="let board of boards" cdkDrag [routerLink]="['/projectManager', board.id]"
       [ngStyle]="{'background-color':board.background, 'color': checkBackground(board.background) ? 'black' : 'white'}">
       {{board.title}}
     </div>
     <div class="placeholder" *ngIf="boards?.length==0">
       <h1 class="no-boards">No boards</h1>
     </div>
-    
   </div>
 </div>

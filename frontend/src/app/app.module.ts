@@ -18,10 +18,10 @@ import { PluginManagerComponent } from './plugin manager/plugin-manager.componen
 import { VisionComponent } from './vision/vision.component';
 
 
-import { AdBannerComponent }    from './app/ad-banner.component';
+import { AdBannerComponent } from './app/ad-banner.component';
 import { ProjectManagerComponent } from './app/project-manager.component';
-import { AdDirective }          from './app/ad.directive';
-import { AdService }            from './app/ad.service';
+import { AdDirective } from './app/ad.directive';
+import { AdService } from './app/ad.service';
 import { DialogSaveChanges } from './app/dialog/dialog-save-changes';
 import { CardDetailsComponent } from './app/card-details/card-details.component';
 import { BoardsComponent } from './app/boards/boards.component';
@@ -64,7 +64,7 @@ window['$'] = $;
   entryComponents: [
     LoginComponent,
     LifeCyclesComponent,
-    PluginManagerComponent,  
+    PluginManagerComponent,
     ProjectManagerComponent,
     LoginDialog,
     DialogSaveChanges,
