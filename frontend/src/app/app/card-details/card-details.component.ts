@@ -7,6 +7,12 @@ import { DialogSaveChanges } from '../dialog/dialog-save-changes';
 import { Task } from '../task.model';
 import { WebSocketService } from '../web-socket/web-socket.service';
 import { UserService } from '../users/user.service';
+import { AuthService } from 'src/app/auth/auth.service';
+import { BoardService } from '../boards/board.service';
+import { User } from '../user.model';
+import { Card } from '../card.model';
+import { List } from '../list.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-card-details',
@@ -20,6 +26,7 @@ export class CardDetailsComponent implements OnInit {
   @ViewChild('labelUpdateTrigger', { static: false }) labelUpdateTrigger: MatMenuTrigger;
   @ViewChild('cardRenameTrigger', { static: false }) cardRenameTrigger: MatMenuTrigger;
   @ViewChild('checklistRenameTrigger', { static: false }) checklistRenameTrigger: MatMenuTrigger;
+  @ViewChild('addUsersTrigger', { static: false }) addUsersTrigger: MatMenuTrigger;
 
   public cardForm: FormGroup;
 
@@ -47,7 +54,7 @@ export class CardDetailsComponent implements OnInit {
 
   private wc;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: CardDetailsData, private fb: FormBuilder, private dialogRef: MatDialogRef<CardDetailsComponent>, public dialog: MatDialog, private webSocketService: WebSocketService, private userService: UserService) { }
+  constructor(@Inject(MAT_DIALOG_DATA) public data: CardDetailsData, private fb: FormBuilder, private dialogRef: MatDialogRef<CardDetailsComponent>, public dialog: MatDialog, private webSocketService: WebSocketService, private userService: UserService, private authService: AuthService, private boardService: BoardService, private router: Router) { }
 
   ngOnInit() {
     this.cardForm = this.fb.group({
@@ -93,14 +100,14 @@ export class CardDetailsComponent implements OnInit {
     });
   }
 
-  renameCard(){
+  renameCard() {
     if (this.cardTitle.trim() != this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title && this.cardTitle.trim() != "") {
       this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title = this.cardTitle.trim();
       this.cardTitle = this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title;
       this.updateBoard();
       this.cardRenameTrigger.closeMenu();
     }
-    else{
+    else {
       this.cardTitle = this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title;
     }
   }
@@ -125,14 +132,14 @@ export class CardDetailsComponent implements OnInit {
     }
   }
 
-  renameChecklist(index){
+  renameChecklist(index) {
     if (this.checklistRenameTitle.trim() != this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].title && this.checklistRenameTitle.trim() != "") {
       this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].title = this.checklistRenameTitle.trim();
       this.checklistRenameTitle = this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].title;
       this.updateBoard();
       this.checklistRenameTrigger.closeMenu();
     }
-    else{
+    else {
       this.checklistRenameTitle = this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].title;
     }
   }
@@ -175,14 +182,14 @@ export class CardDetailsComponent implements OnInit {
     this.itemTitle = "";
   }
 
-  updateTask(checklistIndex, taskIndex){
-    if(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[checklistIndex].tasks[taskIndex].done){
+  updateTask(checklistIndex, taskIndex) {
+    if (this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[checklistIndex].tasks[taskIndex].done) {
       this.checkedPlus(checklistIndex);
       this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[checklistIndex].tasks[taskIndex].doneDate = new Date();
     }
-    else{
+    else {
       this.checkedMinus(checklistIndex);
-    } 
+    }
     this.updateBoard();
   }
 
@@ -212,21 +219,21 @@ export class CardDetailsComponent implements OnInit {
     });
   }
 
-  saveCardDescription(){
+  saveCardDescription() {
     this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].description = this.cardForm.get("description").value.trim();
-    this.cardForm.patchValue({"description":this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].description});
+    this.cardForm.patchValue({ "description": this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].description });
     this.updateBoard();
   }
 
-  saveStartDate(){
+  saveStartDate() {
     this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].startDate = this.cardForm.get("startDate").value.trim();
-    this.cardForm.patchValue({"startDate":this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].startDate});
+    this.cardForm.patchValue({ "startDate": this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].startDate });
     this.updateBoard();
   }
 
-  saveEndDate(){
+  saveEndDate() {
     this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].endDate = this.cardForm.get("endDate").value.trim();
-    this.cardForm.patchValue({"endDate":this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].endDate});
+    this.cardForm.patchValue({ "endDate": this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].endDate });
     this.updateBoard();
   }
 
@@ -252,29 +259,32 @@ export class CardDetailsComponent implements OnInit {
         if (data) {
           this.errorMessageNewUser = undefined;
           this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].members.forEach(user => {
-            if(user.id == data.id){
+            if (user.id == data.id) {
               this.errorMessageNewUser = "That user already exists";
             }
           });
-          if(this.errorMessageNewUser){
+          if (this.errorMessageNewUser) {
             return;
           }
           this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].members.push(data);
           this.updateBoard();
+          this.addUsersTrigger.closeMenu();
           this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].members = [];
           let userHasBoard = false;
           data.boards.forEach(board => {
-            if(board.id == this.data.board.id){
-              this.resetAddUser();
+            if (board.id == this.data.board.id) {
               userHasBoard = true;
             }
           });
-          if(userHasBoard){
+          if (userHasBoard) {
             return;
           }
           data.boards.push(this.data.board);
           this.wc.send("/app/users/update/" + data.email, {}, JSON.stringify(data));
-          this.resetAddUser();
+          data.boards = [];
+          this.data.board.users.push(data);
+          this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].members.push(data);
+          this.updateBoard();
         }
       }, error => {
         this.errorMessageNewUser = "That user does not exist"
@@ -285,7 +295,7 @@ export class CardDetailsComponent implements OnInit {
     }
   }
 
-  deleteMember(index){
+  deleteMember(index) {
     this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].members.splice(index, 1);
     this.updateBoard();
   }
@@ -305,6 +315,57 @@ export class CardDetailsComponent implements OnInit {
   resetAddUser() {
     this.newUser = "";
     this.errorMessageNewUser = undefined;
+  }
+
+  makeCardBoard() {
+    let lists: List[] = [];
+    this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists.forEach(checklist => {
+      let cards: Card[] = [];
+      checklist.tasks.forEach(task => {
+        cards.push(new Card(null, task.title, new Date(), "", [], new Date(), new Date(), [], [], [], false));
+      })
+      lists.push(new List(null, checklist.title, cards, 1, new Date(), false));
+    })
+
+    let users: User[] = this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].members;
+    this.userService.getByQuery(this.authService.getCurrentUser()).subscribe(currentUser => {
+      if (!users.includes(currentUser)) {
+        users.unshift(currentUser);
+      }
+      this.boardService.add(
+        {
+          id: null,
+          title: this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title.trim(),
+          date: new Date(),
+          description: this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].description.trim(),
+          background: "#55aa55",
+          users: users,
+          lists: lists,
+          priority: 1,
+          deleted: false
+        }
+      ).subscribe(data => {
+        let newBoard: any = data;
+        users.forEach(user => {
+          user.boards.push(newBoard);
+          this.wc.send("/app/users/update/" + user.email, {}, JSON.stringify(user));
+        })
+        this.dialogRef.close();
+        this.router.navigate(['/boards']);
+      });
+    })
+  }
+
+  makeCardBoardDialog() {
+    const dialogRef = this.dialog.open(DialogSaveChanges, {
+      data: { title: "Confirmation", content: "Make this card a board" }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.makeCardBoard()
+      }
+    });
   }
 }
 

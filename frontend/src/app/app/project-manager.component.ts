@@ -380,6 +380,36 @@ export class ProjectManagerComponent implements AdComponent {
     this.errorMessageNewUser = undefined;
   }
 
+  deleteUser(index){
+    this.userService.leaveBoard(this.board.id, this.board.users[index].id).subscribe(data => {
+      this.board.lists.forEach((list, listIndex) => {
+        list.cards.forEach((card, cardIndex) => {
+          for (let memberIndex = 0; memberIndex < card.members.length; memberIndex++) {
+            if(card.members[memberIndex].id == this.board.users[index].id){
+              this.board.lists[listIndex].cards[cardIndex].members.splice(memberIndex, 1);
+              break;
+            }
+          }
+        })
+      })
+      this.board.users.splice(index, 1);
+      this.updateBoard();
+    });
+    
+  }
+
+  deleteUserDialog(index) {
+    const dialogRef = this.dialog.open(DialogSaveChanges, {
+      data: { title: "Confirmation", content: "Delete this user" }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.deleteUser(index);
+      }
+    });
+  }
+
   renameList(index) {
     if (this.listTitleRename.trim() != this.board.lists[index].title && this.listTitleRename.trim() != "") {
       this.board.lists[index].title = this.listTitleRename.trim();

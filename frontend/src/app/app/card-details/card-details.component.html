@@ -53,6 +53,8 @@
           (toggleChange)="editLabels=!editLabels">
           Delete labels</mat-slide-toggle>
         <br><br>
+        <mat-divider></mat-divider>
+        <br>
         <div [formGroup]="cardForm">
           <mat-form-field class="width-100">
             <mat-label class="white">Description</mat-label>
@@ -89,9 +91,11 @@
               (click)="addChecklist();checklistInput.focus()">Save</button>
           </div>
         </mat-menu>
+        <br><br>
+        <mat-divider></mat-divider>
         <div
           *ngFor="let checklist of data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.checklists; index as i">
-          <br><br>
+          <br>
           <div class="text-align-right">
             <h3 class="float-left cursor-pointer" matTooltip="Click to rename" [matMenuTriggerFor]="checklistRenameMenu"
               #checklistRenameTrigger="matMenuTrigger"
@@ -148,7 +152,8 @@
                 (click)="addItem(i);itemInput.focus()">Save</button>
             </div>
           </mat-menu>
-          <br>
+          <br><br>
+          <mat-divider></mat-divider>
         </div>
         <br><br><br>
       </mat-tab>
@@ -169,18 +174,22 @@
             <p *ngIf="errorMessageNewUser" class="error-message white">{{errorMessageNewUser}}</p>
           </div>
         </mat-menu>
+        <br><br>
+        <mat-divider></mat-divider>
         <div
           *ngFor="let member of data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.members; index as i">
-          <br><br>
+          <br>
           <div class="text-align-right">
             <div class="float-left">
-              <h3 class="center margin-0">{{member.fullName}}</h3>
-              <p class="center">{{member.email}}</p>
+              <h3 class="text-align-left margin-0">{{member.fullName}}</h3>
+              <p class="text-align-left">{{member.email}}</p>
             </div>
             <button class="delete" mat-icon-button matTooltip="Delete member" (click)="deleteMemberDialog(i)">
               <mat-icon>delete</mat-icon>
             </button>
           </div>
+          <br><br>
+          <mat-divider></mat-divider>
         </div>
         <br><br><br>
       </mat-tab>
@@ -188,6 +197,7 @@
   </div>
   <div mat-dialog-actions>
     <!--<button class="background-color-gray transform-scale" mat-button (click)="saveCardDetails()">Save</button>-->
+    <button class="background-color-gray" mat-button (click)="makeCardBoardDialog()">Make it a board</button>
     <button class="background-color-gray delete" mat-button (click)="deleteCard()">Delete card</button>
   </div>
 </div>
