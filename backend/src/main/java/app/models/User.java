@@ -1,71 +1,95 @@
 package app.models;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Column;
-import java.util.Set;
-import com.fasterxml.jackson.annotation.JsonView;
-import javax.persistence.OneToMany;
-import app.utils.View.ShowUserProjectTeam;
+import java.util.ArrayList;
+import java.util.Date;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
+@Document(collection = "users")
 public class User {
 
-	@Column(length=128, nullable = false, unique = true)
-	private String username;
+    @Id
+    private String id;
 
-	@Column(length=128, nullable = false)
-	private String password;
+    private String fullName;
+    private String username;
+    private String email;
+    private String password;
+    private Date date;
 
-	@JsonView(ShowUserProjectTeam.class)
-	@OneToMany(mappedBy="user")
-	private Set<UserProjectTeam> teams;
+    @DBRef(lazy = true)
+    private ArrayList<Board> boards;
 
-	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Long id;
+    public User() {
+    }
 
-	public User() {}
+    public User(String id, String fullName, String username, String email, String password, Date date,
+            ArrayList<Board> boards) {
+        this.id = id;
+        this.fullName = fullName;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.date = date;
+        this.boards = boards;
+    }
 
-	public User(String password, Set<UserProjectTeam> teams, Long id){
-		this.password = password;
-		this.teams = teams;
-		this.id = id;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public String getUsername(){
-		return username;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public void setUsername(String username){
-		this.username = username;
-	}
-	
-	public String getPassword(){
-		return password;
-	}
+    public String getFullName() {
+        return fullName;
+    }
 
-	public void setPassword(String password){
-		this.password = password;
-	}
-	
-	public Set<UserProjectTeam> getTeams(){
-		return teams;
-	}
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
 
-	public void setTeams(Set<UserProjectTeam> teams){
-		this.teams = teams;
-	}
-	
-	public Long getId(){
-		return id;
-	}
+    public String getUsername() {
+        return username;
+    }
 
-	public void setId(Long id){
-		this.id = id;
-	}
-	
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public ArrayList<Board> getBoards() {
+        return boards;
+    }
+
+    public void setBoards(ArrayList<Board> boards) {
+        this.boards = boards;
+    }
+
 }

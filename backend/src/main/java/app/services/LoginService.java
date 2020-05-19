@@ -18,37 +18,34 @@ import app.utils.TokenUtils;
 
 @Service
 public class LoginService {
-	@Autowired
-	UserService uS;
 
-	@Autowired
-	private AuthenticationManager authenticationManager;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
-	@Autowired
-	private UserDetailsService userDetailsService;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
-	@Autowired
-	private TokenUtils tokenUtils;
+    @Autowired
+    private TokenUtils tokenUtils;
 
-	public ResponseEntity<HashMap<String, String>> login(User user) {
-		try {
-			UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user.getUsername(),
-					user.getPassword());
-			
-			Authentication authentication = authenticationManager.authenticate(token);
-			SecurityContextHolder.getContext().setAuthentication(authentication);
+    public ResponseEntity<HashMap<String, String>> login(User user) {
+        try {
+            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user.getEmail(),
+                    user.getPassword());
 
-			UserDetails details = userDetailsService.loadUserByUsername(user.getUsername());
-			String userToken = tokenUtils.generateToken(details);
-			
-			HashMap<String, String> data = new HashMap<String, String>();
-			data.put("token", userToken);
-			
-			return new ResponseEntity<HashMap<String, String>>(data, HttpStatus.OK);
+            Authentication authentication = authenticationManager.authenticate(token);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-		} catch (Exception e) {
-			return new ResponseEntity<HashMap<String, String>>(HttpStatus.UNAUTHORIZED);
-		}
-	}
+            UserDetails details = userDetailsService.loadUserByUsername(user.getEmail());
+            String userToken = tokenUtils.generateToken(details);
+
+            HashMap<String, String> data = new HashMap<String, String>();
+            data.put("token", userToken);
+
+            return new ResponseEntity<HashMap<String, String>>(data, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<HashMap<String, String>>(HttpStatus.UNAUTHORIZED);
+        }
+    }
 
 }
