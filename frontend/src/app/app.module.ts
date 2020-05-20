@@ -4,14 +4,14 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import * as $ from 'jquery';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { BoardsComponent } from './app/boards/boards.component';
-import { CardDetailsComponent } from './app/card-details/card-details.component';
-import { DialogOkComponent } from './app/dialog-ok/dialog-ok.component';
-import { DialogSaveChanges } from './app/dialog/dialog-save-changes';
-import { LoginComponent } from './app/login/login.component';
-import { ProfileComponent } from './app/profile/profile.component';
-import { ProjectManagerComponent } from './app/project-manager.component';
-import { RegisterComponent } from './app/register/register.component';
+import { BoardsComponent } from './boards/boards.component';
+import { CardDetailsComponent } from './card-details/card-details.component';
+import { DialogOkComponent } from './dialog-ok/dialog-ok.component';
+import { DialogSaveChanges } from './dialog/dialog-save-changes';
+import { LoginComponent } from './login/login.component';
+import { ProfileComponent } from './profile/profile.component';
+import { BoardComponent } from './board/board.component';
+import { RegisterComponent } from './register/register.component';
 import { MaterialModule } from './shared/material.module';
 import { SharedModule } from './shared/shared.module';
 
@@ -20,7 +20,7 @@ window['$'] = $;
 @NgModule({
   declarations: [
     AppComponent,
-    ProjectManagerComponent,
+    BoardComponent,
     DialogSaveChanges,
     CardDetailsComponent,
     BoardsComponent,
@@ -37,7 +37,7 @@ window['$'] = $;
     MaterialModule
   ],
   entryComponents: [
-    ProjectManagerComponent,
+    BoardComponent,
     DialogSaveChanges,
     CardDetailsComponent,
     DialogOkComponent

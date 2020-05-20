@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/auth/auth.service';
 import { UserService } from '../users/user.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { FormErrorService } from 'src/app/shared/formError.service';
+import { FormErrorService } from 'src/app/shared/form-error.service';
+import { SnackBarService } from '../shared/snack-bar.service';
 
 @Component({
   selector: 'app-profile',
@@ -21,7 +22,7 @@ export class ProfileComponent implements OnInit {
   message: string = "";
   hide = true;
 
-  constructor(private authService: AuthService, private userService: UserService, public readonly formError: FormErrorService, private fb: FormBuilder) { }
+  constructor(private authService: AuthService, private userService: UserService, public readonly formError: FormErrorService, private fb: FormBuilder, private snackBarService: SnackBarService) { }
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -81,6 +82,7 @@ export class ProfileComponent implements OnInit {
           this.form.controls["oldPassword"].reset();
           this.form.controls["newPassword"].reset();
           this.form.controls["repeatNewPassword"].reset();
+          this.snackBarService.openSnackBar("Successfully saved", "X");
         });
     }, e => {
       if (!validOldPassword) {

@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/auth/auth.service';
-import { FormErrorService } from 'src/app/shared/formError.service';
+import { FormErrorService } from 'src/app/shared/form-error.service';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-login-register',
+  selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })

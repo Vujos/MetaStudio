@@ -1,18 +1,20 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { MatDialog, MatDialogRef, MatMenuTrigger, MAT_DIALOG_DATA, ThemePalette } from '@angular/material';
-import { Board } from '../models/board.model';
-import { Checklist } from '../models/checklist.model';
-import { DialogSaveChanges } from '../dialog/dialog-save-changes';
-import { Task } from '../models/task.model';
-import { WebSocketService } from '../web-socket/web-socket.service';
-import { UserService } from '../users/user.service';
+import { MatDialogRef, MatMenuTrigger, MAT_DIALOG_DATA, ThemePalette } from '@angular/material';
+import { Router } from '@angular/router';
 import { AuthService } from 'src/app/auth/auth.service';
 import { BoardService } from '../boards/board.service';
-import { User } from '../models/user.model';
+import { DialogSaveChanges } from '../dialog/dialog-save-changes';
+import { CardDetailsData } from '../models/card-details-data.model';
 import { Card } from '../models/card.model';
+import { Checklist } from '../models/checklist.model';
 import { List } from '../models/list.model';
-import { Router } from '@angular/router';
+import { Task } from '../models/task.model';
+import { User } from '../models/user.model';
+import { DialogService } from '../shared/dialog.service';
+import { SnackBarService } from '../shared/snack-bar.service';
+import { UserService } from '../users/user.service';
+import { WebSocketService } from '../web-socket/web-socket.service';
 
 @Component({
   selector: 'app-card-details',
@@ -54,7 +56,7 @@ export class CardDetailsComponent implements OnInit {
 
   private wc;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: CardDetailsData, private fb: FormBuilder, private dialogRef: MatDialogRef<CardDetailsComponent>, public dialog: MatDialog, private webSocketService: WebSocketService, private userService: UserService, private authService: AuthService, private boardService: BoardService, private router: Router) { }
+  constructor(@Inject(MAT_DIALOG_DATA) public data: CardDetailsData, private fb: FormBuilder, private dialogRef: MatDialogRef<CardDetailsComponent>, private webSocketService: WebSocketService, private userService: UserService, private authService: AuthService, private boardService: BoardService, private router: Router, private snackBarService: SnackBarService, private dialogService: DialogService) { }
 
   ngOnInit() {
     this.cardForm = this.fb.group({
@@ -87,9 +89,7 @@ export class CardDetailsComponent implements OnInit {
   }
 
   deleteCard() {
-    const dialogSaveChanges = this.dialog.open(DialogSaveChanges, {
-      data: { title: "Confirmation", content: "Delete this card" }, autoFocus: false
-    });
+    const dialogSaveChanges = this.dialogService.openDialog(DialogSaveChanges, "Confirmation", "Delete this card");
 
     dialogSaveChanges.afterClosed().subscribe(result => {
       if (result) {
@@ -114,9 +114,7 @@ export class CardDetailsComponent implements OnInit {
 
   saveCardTitleDialog() {
     if (this.cardTitle.trim() != this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title && this.cardTitle.trim() != "") {
-      const dialogRef = this.dialog.open(DialogSaveChanges, {
-        data: { title: "Unsaved Changes", content: "Save Changes to Card Title" }, autoFocus: false
-      });
+      const dialogRef = this.dialogService.openDialog(DialogSaveChanges, "Unsaved Changes", "Save Changes to Card Title");
 
       dialogRef.afterClosed().subscribe(result => {
         if (result) {
@@ -146,9 +144,7 @@ export class CardDetailsComponent implements OnInit {
 
   saveChecklistTitleDialog(index) {
     if (this.checklistRenameTitle.trim() != this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].title && this.checklistRenameTitle.trim() != "") {
-      const dialogRef = this.dialog.open(DialogSaveChanges, {
-        data: { title: "Unsaved Changes", content: "Save Changes to Checklist Title" }, autoFocus: false
-      });
+      const dialogRef = this.dialogService.openDialog(DialogSaveChanges, "Unsaved Changes", "Save Changes to Checklist Title");
 
       dialogRef.afterClosed().subscribe(result => {
         if (result) {
@@ -194,9 +190,7 @@ export class CardDetailsComponent implements OnInit {
   }
 
   deleteTask(checklistIndex, taskIndex) {
-    const dialogRef = this.dialog.open(DialogSaveChanges, {
-      data: { title: "Confirmation", content: "Delete this checkbox" }, autoFocus: false
-    });
+    const dialogRef = this.dialogService.openDialog(DialogSaveChanges, "Confirmation", "Delete this checkbox");
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
@@ -207,9 +201,7 @@ export class CardDetailsComponent implements OnInit {
   }
 
   deleteChecklist(index) {
-    const dialogRef = this.dialog.open(DialogSaveChanges, {
-      data: { title: "Confirmation", content: "Delete this checklist" }, autoFocus: false
-    });
+    const dialogRef = this.dialogService.openDialog(DialogSaveChanges, "Confirmation", "Delete this checklist");
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
@@ -285,6 +277,7 @@ export class CardDetailsComponent implements OnInit {
           this.data.board.users.push(data);
           this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].members.push(data);
           this.updateBoard();
+          this.snackBarService.openSnackBar("Successfully added", "X");
         }
       }, error => {
         this.errorMessageNewUser = "That user does not exist"
@@ -298,12 +291,11 @@ export class CardDetailsComponent implements OnInit {
   deleteMember(index) {
     this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].members.splice(index, 1);
     this.updateBoard();
+    this.snackBarService.openSnackBar("Successfully deleted", "X");
   }
 
   deleteMemberDialog(index) {
-    const dialogRef = this.dialog.open(DialogSaveChanges, {
-      data: { title: "Confirmation", content: "Delete this member" }, autoFocus: false
-    });
+    const dialogRef = this.dialogService.openDialog(DialogSaveChanges, "Confirmation", "Delete this member");
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
@@ -357,9 +349,7 @@ export class CardDetailsComponent implements OnInit {
   }
 
   makeCardBoardDialog() {
-    const dialogRef = this.dialog.open(DialogSaveChanges, {
-      data: { title: "Confirmation", content: "Make this card a board" }, autoFocus: false
-    });
+    const dialogRef = this.dialogService.openDialog(DialogSaveChanges, "Confirmation", "Make this card a board");
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
@@ -367,11 +357,4 @@ export class CardDetailsComponent implements OnInit {
       }
     });
   }
-}
-
-export interface CardDetailsData {
-  board: Board;
-  listIndex: string;
-  cardIndex: string;
-  checkedNumber: number[];
 }
