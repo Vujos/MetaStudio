@@ -1,0 +1,127 @@
+<div class="team-menu" [ngStyle]="{'background-color':team?.background}">
+    <button mat-icon-button class="team-home transform-scale" [routerLink]="['/boards']" matTooltip="Home">
+        <mat-icon>home</mat-icon>
+    </button>
+    <button mat-icon-button class="team-more-hidden">
+        <mat-icon>more_vert</mat-icon>
+    </button>
+    <div class="add-board">
+        <mat-form-field *ngIf="!loading" [ngClass]="lightBackground ? 'add-black' : 'add'">
+            <mat-label [ngClass]="lightBackground ? 'black-important' : 'white'">Enter board title</mat-label>
+            <input #boardTitleInput [ngClass]="lightBackground ? 'black-important' : 'white'" matInput
+                [(ngModel)]="boardTitle" (keyup.enter)="addBoard()">
+        </mat-form-field>
+        &nbsp;
+        <button *ngIf="!loading" class="black background-white transform-scale" mat-button (click)="addBoard()">
+            Add board
+        </button>
+    </div>
+    &nbsp;&nbsp;&nbsp;
+    <div class="add-member">
+        <mat-form-field *ngIf="!loading" [ngClass]="lightBackground ? 'add-black' : 'add'">
+            <mat-label [ngClass]="lightBackground ? 'black-important' : 'white'">Enter email address or username
+            </mat-label>
+            <input #newMemberInput [ngClass]="lightBackground ? 'black-important' : 'white'" matInput
+                [(ngModel)]="newMember" (keyup.enter)="addMember()">
+        </mat-form-field>
+        &nbsp;
+        <button *ngIf="!loading" class="black background-white transform-scale" mat-button (click)="addMember()">
+            Add member
+        </button>
+    </div>
+    <button mat-icon-button class="team-more" #teamMoreButton [matMenuTriggerFor]="teamMoreMenu"
+        #teamMoreTrigger="matMenuTrigger" [ngStyle]="{'color': lightBackground ? 'black' : 'white'}">
+        <mat-icon>more_vert</mat-icon>
+    </button>
+    <button mat-icon-button class="home-hidden">
+        <mat-icon>home</mat-icon>
+    </button>
+    <mat-menu class="padding-top-0" #teamMoreMenu="matMenu">
+        <span>
+            <div class="menu-header">
+                <button mat-button disabled class="float-left"><b>Team actions</b></button>
+                <button mat-icon-button class="close">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </div>
+            <mat-divider></mat-divider>
+            <button mat-menu-item [matMenuTriggerFor]="aboutThisTeam" #aboutThisTeamTrigger="matMenuTrigger">About this
+                team</button>
+            <mat-menu #aboutThisTeam="matMenu" (closed)="saveTeamDescriptionDialog()">
+                <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                    <mat-form-field>
+                        <mat-label>Description</mat-label>
+                        <textarea cdkTextareaAutosize #teamDescriptionAutosize="cdkTextareaAutosize"
+                            cdkAutosizeMinRows="1" cdkAutosizeMaxRows="5" matInput placeholder="Enter team description"
+                            [(ngModel)]="teamDescription" #teamDescriptionInput></textarea>
+                    </mat-form-field>
+                    <br>
+                    <button class="center white background-color-default transform-scale" mat-button
+                        (click)="saveTeamDescription()">Save</button>
+                </div>
+
+            </mat-menu>
+            <button mat-menu-item [matMenuTriggerFor]="changeBackgroundMenu"
+                #changeBackgroundTrigger="matMenuTrigger">Change background</button>
+            <mat-menu #changeBackgroundMenu="matMenu">
+                <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                    <mat-form-field>
+                        <mat-label>Color</mat-label>
+                        <input #changeBackgroundInput type="color" matInput [(ngModel)]="teamBackground"
+                            (change)="changeBackground()">
+                    </mat-form-field>
+                </div>
+            </mat-menu>
+            <mat-divider></mat-divider>
+            <button mat-menu-item [matMenuTriggerFor]="renameTeamMenu" #renameTeamTrigger="matMenuTrigger">Rename
+                team</button>
+            <mat-menu #renameTeamMenu="matMenu" (closed)="saveTeamNameDialog()">
+                <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                    <mat-form-field>
+                        <mat-label>Name</mat-label>
+                        <input #renameTeamInput placeholder="Enter team name" matInput [(ngModel)]="teamName"
+                            (keyup.enter)="renameTeam()">
+                    </mat-form-field>
+                    <br>
+                    <button class="center white background-color-default transform-scale" mat-button
+                        (click)="renameTeam()">Save</button>
+                </div>
+            </mat-menu>
+            <button *ngIf="currentUser?.id == team?.members[0]?.id" class="delete" mat-menu-item
+                (click)="deleteTeamDialog()">Delete team</button>
+            <button *ngIf="currentUser?.id != team?.members[0]?.id" class="delete" mat-menu-item
+                (click)="leaveTeamDialog()">Leave team</button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item (click)="logout()">Logout</button>
+        </span>
+    </mat-menu>
+</div>
+
+<div class="boards" [ngStyle]="{'background-color':team?.background}">
+    <div cdkDropList class="example-list-boards" (cdkDropListDropped)="dropBoard($event)">
+        <mat-spinner class="spinner" *ngIf="loading else loadedBoards"></mat-spinner>
+        <ng-template #loadedBoards>
+            <div class="example-box-boards" *ngFor="let board of team.boards" cdkDrag
+                [routerLink]="['/board', board.id]"
+                [ngStyle]="{'background-color':board.background, 'color': colorsService.checkBackground(board.background) ? 'black' : 'white'}">
+                {{board.title}}
+            </div>
+            <div class="placeholder" *ngIf="team.boards?.length==0">
+                <h1 class="no-boards">No boards</h1>
+            </div>
+        </ng-template>
+    </div>
+    &nbsp;&nbsp;&nbsp;
+    <div cdkDropList class="example-list-members" (cdkDropListDropped)="dropMember($event)">
+        <mat-spinner class="spinner" *ngIf="loading else loadedMembers"></mat-spinner>
+        <ng-template #loadedMembers>
+            <div class="example-box-members" *ngFor="let member of team.members" cdkDrag>
+                <h3>{{member.fullName}}</h3>
+                <p>{{member.email}}</p>
+            </div>
+            <div class="placeholder" *ngIf="team.members?.length==0">
+                <h1 class="no-members">No members</h1>
+            </div>
+        </ng-template>
+    </div>
+</div>

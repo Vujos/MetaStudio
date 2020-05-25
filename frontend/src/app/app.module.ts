@@ -14,6 +14,7 @@ import { BoardComponent } from './board/board.component';
 import { RegisterComponent } from './register/register.component';
 import { MaterialModule } from './shared/material.module';
 import { SharedModule } from './shared/shared.module';
+import { TeamComponent } from './team/team.component';
 
 window['$'] = $;
 
@@ -27,7 +28,8 @@ window['$'] = $;
     LoginComponent,
     RegisterComponent,
     ProfileComponent,
-    DialogOkComponent
+    DialogOkComponent,
+    TeamComponent
   ],
   imports: [
     BrowserModule,

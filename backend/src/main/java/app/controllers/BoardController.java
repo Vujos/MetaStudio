@@ -67,6 +67,7 @@ public class BoardController {
             for (User user : board.getUsers()) {
                 this.template.convertAndSend("/topic/users/update/"+user.getEmail(), new ResponseEntity<>(HttpStatus.NO_CONTENT));
             }
+            boardService.updateBoard(id, board);
             return new ResponseEntity<Board>(HttpStatus.NO_CONTENT);
         }
         boardService.updateBoard(id, board);

@@ -7,6 +7,8 @@ import { UserService } from '../users/user.service';
 import { WebSocketService } from '../web-socket/web-socket.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ColorsService } from '../shared/colors.service';
+import { Team } from '../models/team.model';
+import { TeamService } from '../teams/team.service';
 
 @Component({
   selector: 'app-boards',
@@ -17,6 +19,7 @@ import { ColorsService } from '../shared/colors.service';
 export class BoardsComponent implements OnInit {
 
   @ViewChild('boardTitleInput', { static: false }) boardTitleElement: ElementRef;
+  @ViewChild('teamNameInput', { static: false }) teamNameElement: ElementRef;
 
   loading = true;
 
@@ -26,15 +29,21 @@ export class BoardsComponent implements OnInit {
 
   boards: Board[];
 
+  teams: Team[];
+
   boardTitle = "";
+  teamName = "";
 
   lightBackground = false;
 
-  constructor(private boardService: BoardService, private authService: AuthService, private router: Router, private userService: UserService, private webSocketService: WebSocketService, private colorsService: ColorsService) { }
+  showTeams: boolean = false;
+
+  constructor(private boardService: BoardService, private authService: AuthService, private router: Router, private userService: UserService, private webSocketService: WebSocketService, private colorsService: ColorsService, private teamService: TeamService) { }
 
   ngOnInit() {
     if (this.authService.isLoggedIn()) {
       this.loadBoards();
+      this.loadTeams();
     }
     else {
       this.router.navigate(['/login']);
@@ -45,10 +54,12 @@ export class BoardsComponent implements OnInit {
       this.wc.subscribe("/topic/users/update/" + this.authService.getCurrentUser(), (msg) => {
         if (JSON.parse(msg.body).statusCodeValue == 204) {
           this.loadBoards();
+          this.loadTeams();
         }
         else {
           let data = JSON.parse(msg.body).body;
           this.boards = data.boards;
+          this.teams = data.teams;
         }
 
       })
@@ -96,10 +107,55 @@ export class BoardsComponent implements OnInit {
 
   }
 
+  addTeam() {
+    if (this.teamName.trim() != "") {
+      this.userService.getByQuery(this.authService.getCurrentUser()).subscribe(currentUser => {
+        this.teamService.add(
+          {
+            id: null,
+            name: this.teamName.trim(),
+            description: "",
+            background: "#808080",
+            members: [currentUser],
+            boards: [],
+            date: new Date(),
+            deleted: false
+          }
+        ).subscribe(data => {
+          let newTeam: any = data;
+          currentUser.teams.push(newTeam);
+          this.userService.update(currentUser.id, currentUser).subscribe(_ => {
+            this.loadTeams();
+            this.teamName = "";
+            this.teamNameElement.nativeElement.focus();
+          });
+        });
+      })
+    }
+    else {
+      this.teamName = "";
+      this.teamNameElement.nativeElement.focus();
+    }
+
+  }
+
   loadBoards() {
     this.userService.getBoards(this.authService.getCurrentUser()).subscribe(data => {
       this.loading = false;
       this.boards = data;
+    })
+  }
+
+  loadTeams() {
+    this.userService.getTeams(this.authService.getCurrentUser()).subscribe(data => {
+      this.loading = false;
+      this.teams = data;
+      if(this.teams.length>0){
+        this.showTeams = true;
+      }
+      else{
+        this.showTeams = false;
+      }
     })
   }
 
@@ -108,10 +164,18 @@ export class BoardsComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 
-  drop(event: CdkDragDrop<string[]>) {
+  dropBoard(event: CdkDragDrop<string[]>) {
     moveItemInArray(this.boards, event.previousIndex, event.currentIndex);
     this.userService.getByQuery(this.authService.getCurrentUser()).subscribe(currentUser => {
       currentUser.boards = this.boards;
+      this.updateUser(currentUser);
+    })
+  }
+
+  dropTeam(event: CdkDragDrop<string[]>) {
+    moveItemInArray(this.teams, event.previousIndex, event.currentIndex);
+    this.userService.getByQuery(this.authService.getCurrentUser()).subscribe(currentUser => {
+      currentUser.teams = this.teams;
       this.updateUser(currentUser);
     })
   }

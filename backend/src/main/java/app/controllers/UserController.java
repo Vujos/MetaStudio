@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.models.Board;
+import app.models.Team;
 import app.models.User;
 import app.services.LoginService;
 import app.services.UserService;
@@ -104,6 +105,22 @@ public class UserController {
     public ResponseEntity<User> leaveBoard(@PathVariable String boardId, @PathVariable String userId) {
         try {
             userService.leaveBoard(boardId, userId);
+        } catch (Exception e) {
+            return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<User>(HttpStatus.NO_CONTENT);
+    }
+
+    @RequestMapping(value = "/teams/{email}", method = RequestMethod.GET)
+    public ResponseEntity<Iterable<Team>> getTeams(@PathVariable String email) {
+        return new ResponseEntity<Iterable<Team>>(userService.getTeams(email), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/leaveTeam/{teamId}/{userId}", method = RequestMethod.DELETE)
+    public ResponseEntity<User> leaveTeam(@PathVariable String teamId, @PathVariable String userId) {
+        try {
+            userService.leaveTeam(teamId, userId);
         } catch (Exception e) {
             return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
         }

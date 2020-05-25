@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import app.models.Board;
+import app.models.Team;
 import app.models.User;
 import app.repositories.UserRepository;
 
@@ -129,6 +130,24 @@ public class UserService {
         query = Query.query( Criteria.where( "$id" ).is( new ObjectId(userId) ) );
         update = new Update().pull("users", query );
         mongoTemplate.updateMulti( Query.query( Criteria.where( "_id" ).is( new ObjectId(boardId) ) ), update, "boards" );
+    }
+
+    public Iterable<Team> getTeams(String email) {
+        Optional<User> user = userRepo.findByEmail(email);
+        if(user.isPresent()){
+            user.get().getTeams().removeIf(obj -> obj.getDeleted() == true);
+        }
+        return user.get().getTeams();
+    }
+
+    public void leaveTeam(String teamId, String userId) {
+        Query query = Query.query( Criteria.where( "$id" ).is( new ObjectId(teamId) ) );
+        Update update = new Update().pull("teams", query );
+        mongoTemplate.updateMulti( Query.query( Criteria.where( "_id" ).is( new ObjectId(userId) ) ), update, "users" );
+
+        query = Query.query( Criteria.where( "$id" ).is( new ObjectId(userId) ) );
+        update = new Update().pull("users", query );
+        mongoTemplate.updateMulti( Query.query( Criteria.where( "_id" ).is( new ObjectId(teamId) ) ), update, "teams" );
     }
 
 }

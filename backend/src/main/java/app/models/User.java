@@ -3,6 +3,8 @@ package app.models;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -22,11 +24,20 @@ public class User {
     @DBRef(lazy = true)
     private ArrayList<Board> boards;
 
+    @DBRef(lazy = true)
+    private ArrayList<Team> teams;
+
+    @DBRef(lazy = true)
+    private ArrayList<Board> templates;
+
+    @NotNull
+    private Boolean deleted = false;
+
     public User() {
     }
 
     public User(String id, String fullName, String username, String email, String password, Date date,
-            ArrayList<Board> boards) {
+            ArrayList<Board> boards, ArrayList<Team> teams, ArrayList<Board> templates, @NotNull Boolean deleted) {
         this.id = id;
         this.fullName = fullName;
         this.username = username;
@@ -34,6 +45,9 @@ public class User {
         this.password = password;
         this.date = date;
         this.boards = boards;
+        this.teams = teams;
+        this.templates = templates;
+        this.deleted = deleted;
     }
 
     public String getId() {
@@ -90,6 +104,30 @@ public class User {
 
     public void setBoards(ArrayList<Board> boards) {
         this.boards = boards;
+    }
+
+    public ArrayList<Team> getTeams() {
+        return teams;
+    }
+
+    public void setTeams(ArrayList<Team> teams) {
+        this.teams = teams;
+    }
+
+    public ArrayList<Board> getTemplates() {
+        return templates;
+    }
+
+    public void setTemplates(ArrayList<Board> templates) {
+        this.templates = templates;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
     }
 
 }

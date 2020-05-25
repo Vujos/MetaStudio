@@ -69,10 +69,11 @@ public class BoardService {
                             }
                         }
                     }
+                    return board;
                 }
             }
         }
-        return board;
+        return Optional.empty();
     }
 
     public HttpStatus addBoard(Board board) {

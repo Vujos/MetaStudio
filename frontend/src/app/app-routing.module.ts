@@ -5,6 +5,7 @@ import { BoardComponent } from './board/board.component';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { ProfileComponent } from './profile/profile.component';
+import { TeamComponent } from './team/team.component';
 
 
 const routes: Routes = [
@@ -14,6 +15,7 @@ const routes: Routes = [
   { path: 'boards', component: BoardsComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'board/:id', component: BoardComponent },
+  { path: 'team/:id', component: TeamComponent },
   { path: '**', redirectTo: '', pathMatch: 'full' }
 ];
 

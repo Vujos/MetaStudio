@@ -33,6 +33,8 @@ public class CustomUsersSerializer extends StdSerializer<List<User>> {
         List<User> usersDTO = new ArrayList<>();
         for (User user : users) {
             user.setBoards(new ArrayList<>());
+            user.setTeams(new ArrayList<>());
+            user.setTemplates(new ArrayList<>());
             usersDTO.add(user);
         }
         generator.writeObject(usersDTO);

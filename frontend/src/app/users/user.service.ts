@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { User } from '../models/user.model';
 import { Board } from '../models/board.model';
+import { Team } from '../models/team.model';
 
 @Injectable({
   providedIn: 'root'
@@ -49,7 +50,15 @@ export class UserService {
     return this.http.get<Board[]>(this.userUrl + `/boards/${email}`);
   }
 
+  getTeams(email: string) {
+    return this.http.get<Team[]>(this.userUrl + `/teams/${email}`);
+  }
+
   leaveBoard(boardId: string, userId: string) {
     return this.http.delete(this.userUrl + `/leaveBoard/${boardId}/${userId}`);
+  }
+
+  leaveTeam(teamId: string, userId: string) {
+    return this.http.delete(this.userUrl + `/leaveTeam/${teamId}/${userId}`);
   }
 }
