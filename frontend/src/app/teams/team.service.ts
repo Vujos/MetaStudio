@@ -31,4 +31,8 @@ export class TeamService {
   update(id:string, team:Team) {
     return this.http.put(this.teamUrl+`/${id}`, team)
   }
+
+  leaveBoard(boardId: string, teamId: string) {
+    return this.http.delete(this.teamUrl + `/leaveBoard/${boardId}/${teamId}`);
+  }
 }

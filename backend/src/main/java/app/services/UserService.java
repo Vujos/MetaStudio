@@ -146,7 +146,7 @@ public class UserService {
         mongoTemplate.updateMulti( Query.query( Criteria.where( "_id" ).is( new ObjectId(userId) ) ), update, "users" );
 
         query = Query.query( Criteria.where( "$id" ).is( new ObjectId(userId) ) );
-        update = new Update().pull("users", query );
+        update = new Update().pull("members", query );
         mongoTemplate.updateMulti( Query.query( Criteria.where( "_id" ).is( new ObjectId(teamId) ) ), update, "teams" );
     }
 

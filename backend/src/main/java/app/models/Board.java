@@ -11,6 +11,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import app.utils.CustomTeamsSerializer;
 import app.utils.CustomUsersSerializer;
 
 @Document(collection = "boards")
@@ -28,25 +29,30 @@ public class Board {
     @JsonSerialize(using = CustomUsersSerializer.class)
     private ArrayList<User> users;
 
+    @DBRef(lazy = true)
+    @JsonSerialize(using = CustomTeamsSerializer.class)
+    private ArrayList<Team> teams;
+
     @DBRef
     private ArrayList<List> lists;
 
     private Integer priority;
 
     @NotNull
-	private Boolean deleted = false;
+    private Boolean deleted = false;
 
     public Board() {
     }
 
     public Board(String id, String title, Date date, String description, String background, ArrayList<User> users,
-            ArrayList<List> lists, Integer priority, @NotNull Boolean deleted) {
+            ArrayList<Team> teams, ArrayList<List> lists, Integer priority, @NotNull Boolean deleted) {
         this.id = id;
         this.title = title;
         this.date = date;
         this.description = description;
         this.background = background;
         this.users = users;
+        this.teams = teams;
         this.lists = lists;
         this.priority = priority;
         this.deleted = deleted;
@@ -98,6 +104,14 @@ public class Board {
 
     public void setUsers(ArrayList<User> users) {
         this.users = users;
+    }
+
+    public ArrayList<Team> getTeams() {
+        return teams;
+    }
+
+    public void setTeams(ArrayList<Team> teams) {
+        this.teams = teams;
     }
 
     public ArrayList<List> getLists() {

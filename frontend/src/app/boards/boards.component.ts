@@ -9,6 +9,9 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ColorsService } from '../shared/colors.service';
 import { Team } from '../models/team.model';
 import { TeamService } from '../teams/team.service';
+import { DialogSaveChanges } from '../dialog/dialog-save-changes';
+import { DialogService } from '../shared/dialog.service';
+import { SnackBarService } from '../shared/snack-bar.service';
 
 @Component({
   selector: 'app-boards',
@@ -38,7 +41,7 @@ export class BoardsComponent implements OnInit {
 
   showTeams: boolean = false;
 
-  constructor(private boardService: BoardService, private authService: AuthService, private router: Router, private userService: UserService, private webSocketService: WebSocketService, private colorsService: ColorsService, private teamService: TeamService) { }
+  constructor(private boardService: BoardService, private snackBarService: SnackBarService, private dialogService: DialogService, private authService: AuthService, private router: Router, private userService: UserService, private webSocketService: WebSocketService, private colorsService: ColorsService, private teamService: TeamService) { }
 
   ngOnInit() {
     if (this.authService.isLoggedIn()) {
@@ -60,6 +63,12 @@ export class BoardsComponent implements OnInit {
           let data = JSON.parse(msg.body).body;
           this.boards = data.boards;
           this.teams = data.teams;
+          if (this.teams.length > 0) {
+            this.showTeams = true;
+          }
+          else {
+            this.showTeams = false;
+          }
         }
 
       })
@@ -85,6 +94,7 @@ export class BoardsComponent implements OnInit {
             description: "",
             background: "#55aa55",
             users: [currentUser],
+            teams: [],
             lists: [],
             priority: 1,
             deleted: false
@@ -139,6 +149,23 @@ export class BoardsComponent implements OnInit {
 
   }
 
+  deleteTemplate(index) {
+    this.currentUser.templates.splice(index, 1);
+    this.updateUser(this.currentUser);
+    this.snackBarService.openSnackBar("Successfully deleted", "X");
+
+  }
+
+  deleteTemplateDialog(index) {
+    const dialogRef = this.dialogService.openDialog(DialogSaveChanges, "Confirmation", "Delete this template");
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.deleteTemplate(index);
+      }
+    });
+  }
+
   loadBoards() {
     this.userService.getBoards(this.authService.getCurrentUser()).subscribe(data => {
       this.loading = false;
@@ -150,10 +177,10 @@ export class BoardsComponent implements OnInit {
     this.userService.getTeams(this.authService.getCurrentUser()).subscribe(data => {
       this.loading = false;
       this.teams = data;
-      if(this.teams.length>0){
+      if (this.teams.length > 0) {
         this.showTeams = true;
       }
-      else{
+      else {
         this.showTeams = false;
       }
     })

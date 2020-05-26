@@ -268,6 +268,12 @@ export class CardDetailsComponent implements OnInit {
               userHasBoard = true;
             }
           });
+          for (let index = 0; index < data.teams.length; index++) {
+            if(this.data.board.teams.some(team => team.id == data.teams[index].id)){
+              userHasBoard = true;
+            }
+            
+          }
           if (userHasBoard) {
             return;
           }
@@ -332,6 +338,7 @@ export class CardDetailsComponent implements OnInit {
           description: this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].description.trim(),
           background: "#55aa55",
           users: users,
+          teams: [],
           lists: lists,
           priority: 1,
           deleted: false

@@ -65,7 +65,7 @@ export class TeamComponent implements OnInit {
     this.wc.connect({}, () => {
       this.wc.subscribe("/topic/teams/update/" + id, (msg) => {
         if (JSON.parse(msg.body).statusCodeValue == 204) {
-          const dialogRef = this.dialogService.openDialog(DialogOkComponent, "Content Deleted", "The owner has deleted the content");
+          const dialogRef = this.dialogService.openDialog(DialogOkComponent, "Content Deleted", "The owner has deleted the team");
 
           dialogRef.afterClosed().subscribe(result => {
             this.router.navigate(['/boards']);
@@ -75,6 +75,14 @@ export class TeamComponent implements OnInit {
         else {
           let data = JSON.parse(msg.body).body;
           this.team = data;
+
+          if (!this.team.members.some(member => member.id == this.currentUser.id)) {
+            const dialogRef = this.dialogService.openDialog(DialogOkComponent, "Content not available", "You have been deleted from team");
+
+            dialogRef.afterClosed().subscribe(result => {
+              this.router.navigate(['/boards']);
+            });
+          }
 
           this.teamDescription = this.team.description;
           this.teamName = this.team.name;
@@ -105,6 +113,7 @@ export class TeamComponent implements OnInit {
             description: "",
             background: "#55aa55",
             users: [currentUser],
+            teams: [],
             lists: [],
             priority: 1,
             deleted: false
@@ -156,6 +165,38 @@ export class TeamComponent implements OnInit {
       this.newMember = "";
       this.newMemberElement.nativeElement.focus();
     }
+  }
+
+  deleteMember(index) {
+    this.userService.leaveTeam(this.team.id, this.team.members[index].id).subscribe(data => {
+      this.wc.send("/app/users/update/" + this.team.members[index].email, {}, JSON.stringify(this.team.members[index]));
+      this.team.boards.forEach((board, boardIndex) => {
+        board.lists.forEach((list, listIndex) => {
+          list.cards.forEach((card, cardIndex) => {
+            for (let memberIndex = 0; memberIndex < card.members.length; memberIndex++) {
+              if (card.members[memberIndex].id == this.team.members[index].id) {
+                this.team.boards[boardIndex].lists[listIndex].cards[cardIndex].members.splice(memberIndex, 1);
+                break;
+              }
+            }
+          })
+        })
+      })
+      this.team.members.splice(index, 1);
+      this.updateTeam();
+      this.snackBarService.openSnackBar("Successfully deleted", "X");
+    });
+
+  }
+
+  deleteMemberDialog(index) {
+    const dialogRef = this.dialogService.openDialog(DialogSaveChanges, "Confirmation", "Delete this member");
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.deleteMember(index);
+      }
+    });
   }
 
   saveTeamDescription() {
@@ -232,18 +273,24 @@ export class TeamComponent implements OnInit {
     });
   }
 
-  leaveTeam() {
+  leaveTeam(index?) {
     this.userService.leaveTeam(this.team.id, this.currentUser.id).subscribe(data => {
+      if (!index) {
+        index = this.team.members.findIndex((member) => member.id == this.currentUser.id);
+      }
+      this.team.members.splice(index, 1);
+      this.updateTeam();
+      this.wc.disconnect();
       this.router.navigate(['/boards']);
     });
   }
 
-  leaveBoardDialog() {
+  leaveTeamDialog(index?) {
     const dialogRef = this.dialogService.openDialog(DialogSaveChanges, "Confirmation", "Leave Team " + this.team.name);
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.leaveTeam();
+        this.leaveTeam(index);
       }
     });
   }
@@ -258,10 +305,10 @@ export class TeamComponent implements OnInit {
     this.updateTeam();
   }
 
-  dropMember(event: CdkDragDrop<string[]>) {
+  /* dropMember(event: CdkDragDrop<string[]>) {
     moveItemInArray(this.team.members, event.previousIndex, event.currentIndex);
     this.updateTeam();
-  }
+  } */
 
   updateTeam() {
     this.wc.send("/app/teams/update/" + this.team.id, {}, JSON.stringify(this.team));

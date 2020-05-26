@@ -74,20 +74,83 @@
                 <div *ngIf="currentUser?.id != user.id">
                   <br>
                   <div class="text-align-right menu-item-margin">
-                    <div class="float-left">
+                    <div class="display-inline-block">
                       <h3 class="text-align-left margin-0">{{user.fullName}}</h3>
                       <p class="text-align-left">{{user.email}}</p>
                     </div>
+                    &nbsp;
                     <button class="delete" mat-icon-button matTooltip="Delete user" (click)="deleteUserDialog(i)">
                       <mat-icon>delete</mat-icon>
                     </button>
                   </div>
-                  <br><br>
                   <mat-divider></mat-divider>
                 </div>
               </div>
             </div>
           </mat-menu>
+          <mat-divider></mat-divider>
+
+          <button mat-menu-item [matMenuTriggerFor]="addTeamsMenu" #addTeamsTrigger="matMenuTrigger">Add teams</button>
+          <mat-menu #addTeamsMenu="matMenu" (closed)="resetAddTeam()">
+            <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+              <mat-form-field>
+                <mat-label>Team</mat-label>
+                <mat-select [(ngModel)]="newTeam">
+                  <mat-option *ngFor="let team of currentUser?.teams" [value]="team">
+                    {{team.name}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <br>
+              <button class="center white background-color-default transform-scale" mat-button
+                (click)="addTeam()">Add</button>
+              <p *ngIf="errorMessageNewTeam" class="error-message white">{{errorMessageNewTeam}}</p>
+            </div>
+          </mat-menu>
+
+          <button mat-menu-item [matMenuTriggerFor]="deleteTeamsMenu" #deleteTeamsTrigger="matMenuTrigger">Delete
+            teams</button>
+          <mat-menu #deleteTeamsMenu="matMenu">
+            <div (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+              <div *ngIf="board?.teams.length==0" class="menu-item-padding">
+                <h3 class="gray">No teams</h3>
+              </div>
+              <mat-divider *ngIf="board?.teams.length>0"></mat-divider>
+              <div *ngFor="let team of board?.teams; index as i">
+                <div class="text-align-right menu-item-margin">
+                  <div class="display-inline-block">
+                    <h3 class="text-align-left margin-0">{{team.name}}</h3>
+                  </div>
+                  &nbsp;
+                  <button class="delete" mat-icon-button matTooltip="Delete team" (click)="deleteTeamDialog(i)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+                <mat-divider></mat-divider>
+              </div>
+            </div>
+          </mat-menu>
+          <mat-divider></mat-divider>
+
+          <button mat-menu-item [matMenuTriggerFor]="createFromTemplateMenu" #createFromTemplateTrigger="matMenuTrigger">Create board from template</button>
+          <mat-menu #createFromTemplateMenu="matMenu" (closed)="resetCreateFromTemplate()">
+            <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+              <mat-form-field>
+                <mat-label>Template</mat-label>
+                <mat-select [(ngModel)]="template">
+                  <mat-option *ngFor="let template of currentUser?.templates" [value]="template">
+                    {{template.title}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <br>
+              <button class="center white background-color-default transform-scale" mat-button
+                (click)="createFromTemplate()">Create</button>
+              <p *ngIf="errorMessageNewTeam" class="error-message white">{{errorMessageCreateFromTemplate}}</p>
+            </div>
+          </mat-menu>
+
+          <button mat-menu-item (click)="addTemplate()">Save as a template</button>
 
           <mat-divider></mat-divider>
           <button mat-menu-item (click)="$event.stopPropagation();showAddList()">New list</button>

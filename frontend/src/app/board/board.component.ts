@@ -13,6 +13,8 @@ import { WebSocketService } from '../web-socket/web-socket.service';
 import { ColorsService } from '../shared/colors.service';
 import { DialogService } from '../shared/dialog.service';
 import { SnackBarService } from '../shared/snack-bar.service';
+import { Team } from '../models/team.model';
+import { TeamService } from '../teams/team.service';
 
 @Component({
   selector: 'app-board',
@@ -47,6 +49,12 @@ export class BoardComponent {
   newUser = "";
   errorMessageNewUser = undefined;
 
+  newTeam: Team;
+  errorMessageNewTeam = undefined;
+
+  template: Board;
+  errorMessageCreateFromTemplate = undefined;
+
   listTitleRename = "";
 
   selectedCopyAllCards;
@@ -65,7 +73,7 @@ export class BoardComponent {
 
   private wc;
 
-  constructor(private dialog: MatDialog, private route: ActivatedRoute, private boardService: BoardService, private webSocketService: WebSocketService, private userService: UserService, private authService: AuthService, private router: Router, private colorsService: ColorsService, private dialogService: DialogService, private snackBarService: SnackBarService) { }
+  constructor(private dialog: MatDialog, private route: ActivatedRoute, private boardService: BoardService, private webSocketService: WebSocketService, private userService: UserService, private authService: AuthService, private router: Router, private colorsService: ColorsService, private dialogService: DialogService, private snackBarService: SnackBarService, private teamService: TeamService) { }
 
   ngOnInit() {
     let id = this.route.snapshot.paramMap.get("id");
@@ -103,7 +111,7 @@ export class BoardComponent {
     this.wc.connect({}, () => {
       this.wc.subscribe("/topic/boards/update/" + id, (msg) => {
         if (JSON.parse(msg.body).statusCodeValue == 204) {
-          const dialogRef = this.dialogService.openDialog(DialogOkComponent, "Content Deleted", "The owner has deleted the content");
+          const dialogRef = this.dialogService.openDialog(DialogOkComponent, "Content Deleted", "The owner has deleted the board");
 
           dialogRef.afterClosed().subscribe(result => {
             this.router.navigate(['/boards']);
@@ -113,6 +121,15 @@ export class BoardComponent {
         else {
           let data = JSON.parse(msg.body).body;
           this.board = data;
+
+          if (!this.board.users.some(user => user.id == this.currentUser.id)) {
+            const dialogRef = this.dialogService.openDialog(DialogOkComponent, "Content not available", "You have been deleted from board");
+
+            dialogRef.afterClosed().subscribe(result => {
+              this.router.navigate(['/boards']);
+            });
+          }
+
           if (this.dialogRef && this.dialogRef.componentInstance) {
             if (this.board.lists[this.dialogRef.componentInstance.data.listIndex].cards[this.dialogRef.componentInstance.data.cardIndex] == undefined || this.board.lists[this.dialogRef.componentInstance.data.listIndex].cards[this.dialogRef.componentInstance.data.cardIndex].id != this.dialogRef.componentInstance.data.board.lists[this.dialogRef.componentInstance.data.listIndex].cards[this.dialogRef.componentInstance.data.cardIndex].id) {
               this.dialogRef.close();
@@ -316,6 +333,10 @@ export class BoardComponent {
 
   leaveBoard() {
     this.userService.leaveBoard(this.board.id, this.currentUser.id).subscribe(data => {
+      let index = this.board.users.findIndex((user) => user.id == this.currentUser.id);
+      this.board.users.splice(index, 1);
+      this.updateBoard();
+      this.wc.disconnect();
       this.router.navigate(['/boards']);
     });
   }
@@ -367,12 +388,18 @@ export class BoardComponent {
 
   deleteUser(index) {
     this.userService.leaveBoard(this.board.id, this.board.users[index].id).subscribe(data => {
+      this.wc.send("/app/users/update/" + this.board.users[index].email, {}, JSON.stringify(this.board.users[index]));
       this.board.lists.forEach((list, listIndex) => {
         list.cards.forEach((card, cardIndex) => {
+members_loop:
           for (let memberIndex = 0; memberIndex < card.members.length; memberIndex++) {
             if (card.members[memberIndex].id == this.board.users[index].id) {
-              this.board.lists[listIndex].cards[cardIndex].members.splice(memberIndex, 1);
-              break;
+              for (let teamIndex = 0; teamIndex < this.board.teams.length; teamIndex++) {
+                if (!this.board.teams[teamIndex].members.some(member => card.members[memberIndex].id == member.id)) {
+                  this.board.lists[listIndex].cards[cardIndex].members.splice(memberIndex, 1);
+                  break members_loop;
+                }
+              }
             }
           }
         })
@@ -392,6 +419,125 @@ export class BoardComponent {
         this.deleteUser(index);
       }
     });
+  }
+
+  addTeam() {
+    if (this.newTeam != undefined) {
+      this.teamService.getOne(this.newTeam.id, this.currentUser.email).subscribe(data => {
+        if (data) {
+          this.errorMessageNewTeam = undefined;
+          this.board.teams.forEach(team => {
+            if (team.id == data.id) {
+              this.errorMessageNewTeam = "That team already exists";
+            }
+          });
+          if (this.errorMessageNewTeam) {
+            return;
+          }
+          this.board.teams.push(data);
+          this.updateBoard();
+          this.board.teams = []
+          data.boards.push(this.board);
+          this.wc.send("/app/teams/update/" + data.id, {}, JSON.stringify(data));
+          this.resetAddTeam();
+          this.snackBarService.openSnackBar("Successfully added", "X");
+        }
+      }, error => {
+        this.errorMessageNewTeam = "That team does not exist"
+      });
+    }
+    else {
+      this.resetAddTeam();
+    }
+  }
+
+  resetAddTeam() {
+    this.newTeam = undefined;
+    this.errorMessageNewTeam = undefined;
+  }
+
+  deleteTeam(index) {
+    this.board.lists.forEach((list, listIndex) => {
+      list.cards.forEach((card, cardIndex) => {
+        for (let memberIndex = 0; memberIndex < card.members.length; memberIndex++) {
+          for (let teamIndex = 0; teamIndex < this.board.teams.length; teamIndex++) {
+            if (this.board.teams[teamIndex].members.some(member => card.members[memberIndex].id == member.id)) {
+              if (!this.board.users.some(user => user.id == this.board.lists[listIndex].cards[cardIndex].members[memberIndex].id)) {
+                this.board.lists[listIndex].cards[cardIndex].members.splice(memberIndex, 1);
+                break;
+              }
+            }
+          }
+        }
+      })
+    })
+    this.teamService.leaveBoard(this.board.id, this.board.teams[index].id).subscribe();
+    this.board.teams.splice(index, 1);
+    this.updateBoard();
+    this.snackBarService.openSnackBar("Successfully deleted", "X");
+
+  }
+
+  deleteTeamDialog(index) {
+    const dialogRef = this.dialogService.openDialog(DialogSaveChanges, "Confirmation", "Delete this team");
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.deleteTeam(index);
+      }
+    });
+  }
+
+  createFromTemplate(){
+    if(this.template){
+      this.template.id = this.board.id;
+      this.template.title = this.board.title;
+      this.board = this.template;
+      if (this.dialogRef && this.dialogRef.componentInstance) {
+        if (this.board.lists[this.dialogRef.componentInstance.data.listIndex].cards[this.dialogRef.componentInstance.data.cardIndex] == undefined || this.board.lists[this.dialogRef.componentInstance.data.listIndex].cards[this.dialogRef.componentInstance.data.cardIndex].id != this.dialogRef.componentInstance.data.board.lists[this.dialogRef.componentInstance.data.listIndex].cards[this.dialogRef.componentInstance.data.cardIndex].id) {
+          this.dialogRef.close();
+        }
+        this.dialogRef.componentInstance.data.board = this.board;
+        this.dialogRef.componentInstance.data.checkedNumber = this.calculateCheckedTasks(this.dialogRef.componentInstance.data.listIndex, this.dialogRef.componentInstance.data.cardIndex);
+      }
+      this.connectedTo = [];
+      for (let list of this.board.lists) {
+        this.connectedTo.push(list.id);
+      };
+      this.boardDescription = this.board.description;
+      this.boardTitle = this.board.title;
+      this.boardBackground = this.board.background;
+      this.lightBackground = this.colorsService.checkBackground(this.boardBackground);
+
+      this.board.lists.forEach(list => {
+        list.cards.forEach(card => {
+          let done = 0;
+          let size = 0;
+          card.checklists.forEach(checklist => {
+            checklist.tasks.forEach(task => {
+              size += 1;
+              if (task.done) {
+                done += 1;
+              }
+            });
+          })
+          this.tasksDoneNumber[card.id] = done + "/" + size;
+        })
+      })
+      this.updateBoard();
+      this.resetCreateFromTemplate();
+    }
+  }
+
+  resetCreateFromTemplate() {
+    this.template = undefined;
+    this.errorMessageCreateFromTemplate = undefined;
+  }
+
+  addTemplate(){
+    this.currentUser.templates.push(this.board);
+    this.wc.send("/app/users/update/" + this.currentUser.email, {}, JSON.stringify(this.currentUser));
+    this.snackBarService.openSnackBar("Successfully saved", "X");
   }
 
   renameList(index) {

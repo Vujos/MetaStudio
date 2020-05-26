@@ -79,4 +79,14 @@ public class TeamService {
         }
     }
 
+    public void leaveBoard(String boardId, String teamId) {
+        Query query = Query.query( Criteria.where( "$id" ).is( new ObjectId(boardId) ) );
+        Update update = new Update().pull("boards", query );
+        mongoTemplate.updateMulti( Query.query( Criteria.where( "_id" ).is( new ObjectId(teamId) ) ), update, "teams" );
+
+        query = Query.query( Criteria.where( "$id" ).is( new ObjectId(teamId) ) );
+        update = new Update().pull("teams", query );
+        mongoTemplate.updateMulti( Query.query( Criteria.where( "_id" ).is( new ObjectId(boardId) ) ), update, "boards" );
+    }
+
 }

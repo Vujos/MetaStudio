@@ -112,10 +112,13 @@
         </ng-template>
     </div>
     &nbsp;&nbsp;&nbsp;
-    <div cdkDropList class="example-list-members" (cdkDropListDropped)="dropMember($event)">
+    <div class="example-list-members">
         <mat-spinner class="spinner" *ngIf="loading else loadedMembers"></mat-spinner>
         <ng-template #loadedMembers>
-            <div class="example-box-members" *ngFor="let member of team.members" cdkDrag>
+            <div class="example-box-members" *ngFor="let member of team.members; index as i">
+                <button *ngIf="i != 0" mat-icon-button class="delete-member close" [matTooltip]="currentUser?.id == member.id ? 'Leave team' : 'Delete member'" (click)="currentUser?.id == member.id ? leaveTeamDialog(i) : deleteMemberDialog(i)">
+                    <mat-icon>close</mat-icon>
+                </button>
                 <h3>{{member.fullName}}</h3>
                 <p>{{member.email}}</p>
             </div>

@@ -40,7 +40,29 @@
       </div>
       <mat-divider></mat-divider>
       <button mat-menu-item [routerLink]="['/profile']">Profile</button>
+      <mat-divider></mat-divider>
       <button *ngIf="!showTeams" mat-menu-item (click)="showTeams = true">Teams</button>
+      <button mat-menu-item [matMenuTriggerFor]="templatesMenu" #templatesTrigger="matMenuTrigger">Templates</button>
+      <mat-menu #templatesMenu="matMenu">
+        <div (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+          <div *ngIf="currentUser?.templates.length==0" class="menu-item-padding">
+            <h3 class="gray">No templates</h3>
+          </div>
+          <mat-divider *ngIf="currentUser?.templates.length>0"></mat-divider>
+          <div *ngFor="let template of currentUser?.templates; index as i">
+            <div class="text-align-right menu-item-margin">
+              <div class="display-inline-block">
+                <h3 class="text-align-left margin-0">{{template.title}}</h3>
+              </div>
+              &nbsp;
+              <button class="delete" mat-icon-button matTooltip="Delete template" (click)="deleteTemplateDialog(i)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+            <mat-divider></mat-divider>
+          </div>
+        </div>
+      </mat-menu>
       <mat-divider></mat-divider>
       <button mat-menu-item (click)="logout()">Logout</button>
     </span>

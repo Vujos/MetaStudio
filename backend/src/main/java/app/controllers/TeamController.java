@@ -91,4 +91,15 @@ public class TeamController {
         return new ResponseEntity<Team>(HttpStatus.NO_CONTENT);
     }
 
+    @RequestMapping(value = "/leaveBoard/{boardId}/{teamId}", method = RequestMethod.DELETE)
+    public ResponseEntity<User> leaveBoard(@PathVariable String boardId, @PathVariable String teamId) {
+        try {
+            teamService.leaveBoard(boardId, teamId);
+        } catch (Exception e) {
+            return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<User>(HttpStatus.NO_CONTENT);
+    }
+
 }
