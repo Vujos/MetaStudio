@@ -61,4 +61,8 @@ export class UserService {
   leaveTeam(teamId: string, userId: string) {
     return this.http.delete(this.userUrl + `/leaveTeam/${teamId}/${userId}`);
   }
+
+  userInitials(currentUser){
+    return currentUser.fullName.split(" ").map((word)=>word[0].toUpperCase()).join("");
+  }
 }

@@ -1,6 +1,6 @@
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { Component, ElementRef, Input, ViewChild, ViewChildren, ViewEncapsulation } from '@angular/core';
-import { MatDialog, MatDialogRef, MatMenuTrigger } from '@angular/material';
+import { MatDialog, MatDialogRef, MatMenuTrigger, ThemePalette } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { Board } from '../models/board.model';
@@ -30,6 +30,8 @@ export class BoardComponent {
   @Input() data: any;
 
   private dialogRef: MatDialogRef<CardDetailsComponent>;
+
+  checkboxColor: ThemePalette = 'warn';
 
   loading = true;
 
@@ -68,6 +70,10 @@ export class BoardComponent {
 
   showAddCardBool = false;
   cardTitle = {};
+
+  selectedTeam: Team;
+  checkedTeamMembers = [];
+  errorMessageNewUsersFromTeam = undefined;
 
   checked: number[] = [];
 
@@ -391,7 +397,7 @@ export class BoardComponent {
       this.wc.send("/app/users/update/" + this.board.users[index].email, {}, JSON.stringify(this.board.users[index]));
       this.board.lists.forEach((list, listIndex) => {
         list.cards.forEach((card, cardIndex) => {
-members_loop:
+          members_loop:
           for (let memberIndex = 0; memberIndex < card.members.length; memberIndex++) {
             if (card.members[memberIndex].id == this.board.users[index].id) {
               for (let teamIndex = 0; teamIndex < this.board.teams.length; teamIndex++) {
@@ -488,8 +494,8 @@ members_loop:
     });
   }
 
-  createFromTemplate(){
-    if(this.template){
+  createFromTemplate() {
+    if (this.template) {
       this.template.id = this.board.id;
       this.template.title = this.board.title;
       this.board = this.template;
@@ -534,7 +540,7 @@ members_loop:
     this.errorMessageCreateFromTemplate = undefined;
   }
 
-  addTemplate(){
+  addTemplate() {
     this.currentUser.templates.push(this.board);
     this.wc.send("/app/users/update/" + this.currentUser.email, {}, JSON.stringify(this.currentUser));
     this.snackBarService.openSnackBar("Successfully saved", "X");
@@ -692,8 +698,45 @@ members_loop:
     return checkedNumber;
   }
 
-  openCardDetailsDialog(listIndex, cardIndex) {
-    this.dialogRef = this.dialog.open(CardDetailsComponent, { data: { board: this.board, listIndex: listIndex, cardIndex: cardIndex, checkedNumber: this.calculateCheckedTasks(listIndex, cardIndex) }, autoFocus: false, width: '50%' });
+  addUsersFromTeam() {
+    for (let index = 0; index < this.checkedTeamMembers.length; index++) {
+      if (this.checkedTeamMembers[index]) {
+        let newUser = this.selectedTeam.members[index];
+
+        let userExists = false;
+        this.board.users.forEach(user => {
+          if (user.id == newUser.id) {
+            userExists = true;
+          }
+        });
+        if (userExists) {
+          continue;
+        }
+        this.board.users.push(newUser);
+        this.updateBoard();
+        this.board.users = []
+        newUser.boards.push(this.board);
+        this.wc.send("/app/users/update/" + newUser.email, {}, JSON.stringify(newUser));
+        this.resetAddUsersFromTeam();
+        this.snackBarService.openSnackBar("Successfully added", "X");
+      }
+    }
+  }
+
+  setTeamMembersChecked() {
+    this.checkedTeamMembers = [];
+    this.selectedTeam.members.forEach(member => {
+      this.checkedTeamMembers.push(true);
+    })
+  }
+
+  resetAddUsersFromTeam() {
+    this.selectedTeam = undefined;
+    this.errorMessageNewUsersFromTeam = undefined;
+  }
+
+  openCardDetailsDialog(listIndex, cardIndex, tabIndex = 0) {
+    this.dialogRef = this.dialog.open(CardDetailsComponent, { data: { board: this.board, listIndex: listIndex, cardIndex: cardIndex, checkedNumber: this.calculateCheckedTasks(listIndex, cardIndex), tabIndex: tabIndex }, autoFocus: false, width: '50%' });
   }
 
   updateBoard() {

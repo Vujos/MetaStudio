@@ -39,6 +39,11 @@ public class BoardController {
         return new ResponseEntity<Iterable<Board>>(boardService.getBoards(), HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/common/{id}/{email}", method = RequestMethod.GET)
+    public ResponseEntity<Iterable<Board>> getCommonBoards(@PathVariable String id, @PathVariable String email) {
+        return new ResponseEntity<Iterable<Board>>(boardService.getCommonBoards(id, email), HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/{id}/{email}", method = RequestMethod.GET)
     public ResponseEntity<Board> getBoardById(@PathVariable String id, @PathVariable String email) {
         Optional<Board> board = boardService.getBoardById(id, email);

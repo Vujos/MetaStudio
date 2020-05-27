@@ -36,7 +36,8 @@
     </span>
   </div>
   <div mat-dialog-content>
-    <mat-tab-group mat-align-tabs="center" (selectedTabChange)="editLabels=false" [dynamicHeight]='true'>
+    <mat-tab-group [selectedIndex]="data.tabIndex" mat-align-tabs="center" (selectedTabChange)="editLabels=false"
+      [dynamicHeight]='true'>
       <mat-tab label="General">
         <br>
         <button class="white background-color-default" mat-button [matMenuTriggerFor]="labelsMenu"
@@ -123,7 +124,7 @@
               <mat-icon>edit</mat-icon>
             </button>
             <button class="delete" mat-icon-button matTooltip="Delete checklist" (click)="deleteChecklist(i)">
-              <mat-icon>delete</mat-icon>
+              <mat-icon>delete_outline</mat-icon>
             </button>
           </div>
           <br>
@@ -139,7 +140,7 @@
             </mat-checkbox>
             <button class="delete" mat-icon-button matTooltip="Delete checkbox" (click)="deleteTask(i, j)"
               *ngIf="editChecklist">
-              <mat-icon>delete</mat-icon>
+              <mat-icon>delete_outline</mat-icon>
             </button>
           </div>
           <br>
@@ -187,11 +188,11 @@
           <br>
           <div class="text-align-right">
             <div class="float-left">
-              <h3 class="text-align-left margin-0">{{member.fullName}}</h3>
+              <h3 class="text-align-left margin-0 link" [routerLink]="['/board', data.board?.id, member.id]" mat-dialog-close>{{member.fullName}}</h3>
               <p class="text-align-left">{{member.email}}</p>
             </div>
             <button class="delete" mat-icon-button matTooltip="Delete member" (click)="deleteMemberDialog(i)">
-              <mat-icon>delete</mat-icon>
+              <mat-icon>delete_outline</mat-icon>
             </button>
           </div>
           <br><br>

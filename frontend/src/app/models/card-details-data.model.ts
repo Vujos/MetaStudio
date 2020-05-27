@@ -5,4 +5,5 @@ export interface CardDetailsData {
   listIndex: string;
   cardIndex: string;
   checkedNumber: number[];
+  tabIndex: number;
 }

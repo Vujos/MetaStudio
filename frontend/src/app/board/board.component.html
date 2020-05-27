@@ -48,18 +48,49 @@
           <mat-divider></mat-divider>
 
           <button mat-menu-item [matMenuTriggerFor]="addUsersMenu" #addUsersTrigger="matMenuTrigger">Add users</button>
-          <mat-menu #addUsersMenu="matMenu" (closed)="resetAddUser()">
-            <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
-              <mat-form-field>
-                <mat-label>Email address or username</mat-label>
-                <input #addUsersInput placeholder="Enter email address or username" matInput [(ngModel)]="newUser"
-                  (keyup.enter)="addUser()">
-              </mat-form-field>
-              <br>
-              <button class="center white background-color-default transform-scale" mat-button
-                (click)="addUser()">Add</button>
-              <p *ngIf="errorMessageNewUser" class="error-message white">{{errorMessageNewUser}}</p>
-            </div>
+          <mat-menu #addUsersMenu="matMenu">
+
+            <button mat-menu-item [matMenuTriggerFor]="addIndividualUsersMenu"
+              #addIndividualUsersTrigger="matMenuTrigger">Add individual
+              users</button>
+            <mat-menu #addIndividualUsersMenu="matMenu" (closed)="resetAddUser()">
+              <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                <mat-form-field>
+                  <mat-label>Email address or username</mat-label>
+                  <input #addUsersInput placeholder="Enter email address or username" matInput [(ngModel)]="newUser"
+                    (keyup.enter)="addUser()">
+                </mat-form-field>
+                <br>
+                <button class="center white background-color-default transform-scale" mat-button
+                  (click)="addUser()">Add</button>
+                <p *ngIf="errorMessageNewUser" class="error-message white">{{errorMessageNewUser}}</p>
+              </div>
+            </mat-menu>
+
+            <button mat-menu-item [matMenuTriggerFor]="addUsersFromTeamMenu"
+              #addUsersFromTeamTrigger="matMenuTrigger">Add
+              users from team</button>
+            <mat-menu #addUsersFromTeamMenu="matMenu" (closed)="resetAddUsersFromTeam()">
+              <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                <mat-form-field>
+                  <mat-label>Team</mat-label>
+                  <mat-select [(ngModel)]="selectedTeam" (selectionChange)="setTeamMembersChecked()">
+                    <mat-option *ngFor="let team of currentUser?.teams" [value]="team">
+                      {{team.name}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <div *ngFor="let member of selectedTeam?.members; index as k">
+                  <br>
+                  <mat-checkbox [color]="checkboxColor" [(ngModel)]="checkedTeamMembers[k]">{{member.fullName}}
+                    ({{member.username}})</mat-checkbox>
+                </div>
+                <br>
+                <button class="center white background-color-default transform-scale" mat-button
+                  (click)="addUsersFromTeam()">Add</button>
+                <p *ngIf="errorMessageNewUsersFromTeam" class="error-message white">{{errorMessageNewUsersFromTeam}}</p>
+              </div>
+            </mat-menu>
           </mat-menu>
 
           <button mat-menu-item [matMenuTriggerFor]="deleteUsersMenu" #deleteUsersTrigger="matMenuTrigger">Delete
@@ -75,12 +106,12 @@
                   <br>
                   <div class="text-align-right menu-item-margin">
                     <div class="display-inline-block">
-                      <h3 class="text-align-left margin-0">{{user.fullName}}</h3>
+                      <h3 class="text-align-left margin-0 link" [routerLink]="['/board', board?.id, user?.id]">{{user.fullName}}</h3>
                       <p class="text-align-left">{{user.email}}</p>
                     </div>
                     &nbsp;
                     <button class="delete" mat-icon-button matTooltip="Delete user" (click)="deleteUserDialog(i)">
-                      <mat-icon>delete</mat-icon>
+                      <mat-icon>delete_outline</mat-icon>
                     </button>
                   </div>
                   <mat-divider></mat-divider>
@@ -123,7 +154,7 @@
                   </div>
                   &nbsp;
                   <button class="delete" mat-icon-button matTooltip="Delete team" (click)="deleteTeamDialog(i)">
-                    <mat-icon>delete</mat-icon>
+                    <mat-icon>delete_outline</mat-icon>
                   </button>
                 </div>
                 <mat-divider></mat-divider>
@@ -132,7 +163,8 @@
           </mat-menu>
           <mat-divider></mat-divider>
 
-          <button mat-menu-item [matMenuTriggerFor]="createFromTemplateMenu" #createFromTemplateTrigger="matMenuTrigger">Create board from template</button>
+          <button mat-menu-item [matMenuTriggerFor]="createFromTemplateMenu"
+            #createFromTemplateTrigger="matMenuTrigger">Create board from template</button>
           <mat-menu #createFromTemplateMenu="matMenu" (closed)="resetCreateFromTemplate()">
             <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
               <mat-form-field>
@@ -330,14 +362,20 @@
                 </span>
                 <div>{{item?.title}}</div>
                 <span class="done-tasks">
-                  <span *ngIf="item?.members.length>0" matTooltip="Members" class="done-tasks">
-                    <mat-icon>person_outline</mat-icon>
-                    {{item?.members.length}}
-                  </span>
-                  &nbsp;&nbsp;
-                  <span *ngIf="item.checklists[0]?.tasks.length>0" matTooltip="Completed items" class="done-tasks">
+                  <span *ngIf="item.checklists[0]?.tasks.length>0" matTooltip="Completed items" class="done-tasks"
+                    (click)="openCardDetailsDialog(i, j, 1); $event.stopPropagation()">
                     <mat-icon>check_circle_outline</mat-icon>
                     {{tasksDoneNumber[item?.id]}}
+                  </span>
+                  &nbsp;&nbsp;
+                  <span *ngIf="item?.members.length==1" [matTooltip]="item?.members[0].fullName + ' (' + item?.members[0].username + ') '" class="done-tasks"
+                    (click)="openCardDetailsDialog(i, j, 2); $event.stopPropagation()">
+                    <div class="profile-picture"><b>{{userService.userInitials(item?.members[0])}}</b></div>
+                  </span>
+                  <span *ngIf="item?.members.length>1" matTooltip="Members" class="done-tasks"
+                    (click)="openCardDetailsDialog(i, j, 2); $event.stopPropagation()">
+                    <mat-icon>people_outline</mat-icon>
+                    {{item?.members.length}}
                   </span>
                 </span>
               </div>

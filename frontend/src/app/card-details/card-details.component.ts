@@ -54,6 +54,8 @@ export class CardDetailsComponent implements OnInit {
   newUser = "";
   errorMessageNewUser = undefined;
 
+  currentUser = undefined;
+
   private wc;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: CardDetailsData, private fb: FormBuilder, private dialogRef: MatDialogRef<CardDetailsComponent>, private webSocketService: WebSocketService, private userService: UserService, private authService: AuthService, private boardService: BoardService, private router: Router, private snackBarService: SnackBarService, private dialogService: DialogService) { }
@@ -69,6 +71,10 @@ export class CardDetailsComponent implements OnInit {
     this.cardTitle = this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title;
 
     this.wc = this.webSocketService.getClient();
+
+    this.userService.getByQuery(this.authService.getCurrentUser()).subscribe(currentUser => {
+      this.currentUser = currentUser;
+    })
   }
 
   addLabel() {

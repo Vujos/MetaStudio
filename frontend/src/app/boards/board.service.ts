@@ -31,4 +31,8 @@ export class BoardService {
   update(id:string, board:Board) {
     return this.http.put(this.boardUrl+`/${id}`, board)
   }
+
+  getCommonBoards(id:string, email:string){
+    return this.http.get<Board[]>(this.boardUrl+`/common/${id}/${email}`);
+  }
 }

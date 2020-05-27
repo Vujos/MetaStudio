@@ -122,6 +122,14 @@ public class UserService {
         return user.get().getBoards();
     }
 
+    public Iterable<Board> getBoardsByUserId(String id) {
+        Optional<User> user = userRepo.findById(id);
+        if(user.isPresent()){
+            user.get().getBoards().removeIf(obj -> obj.getDeleted() == true);
+        }
+        return user.get().getBoards();
+    }
+
     public void leaveBoard(String boardId, String userId) {
         Query query = Query.query( Criteria.where( "$id" ).is( new ObjectId(boardId) ) );
         Update update = new Update().pull("boards", query );

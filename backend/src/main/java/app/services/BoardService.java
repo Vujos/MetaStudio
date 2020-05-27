@@ -1,6 +1,9 @@
 package app.services;
 
+import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +33,9 @@ public class BoardService {
     @Autowired
     private ListService listService;
 
+    @Autowired
+    private UserService userService;
+
     public BoardService() {
     }
 
@@ -37,9 +43,18 @@ public class BoardService {
         return boardRepo.findAll();
     }
 
+    public Iterable<Board> getCommonBoards(String id, String email) {
+        Iterable<Board> boards = this.userService.getBoards(email);
+        Iterable<Board> boards_2 = this.userService.getBoardsByUserId(id);
+        Set<String> ids = ((Collection<Board>) boards_2).stream().map(obj -> obj.getId()).collect(Collectors.toSet());
+        java.util.List<Board> intersection = ((Collection<Board>) boards).stream()
+                .filter(obj -> ids.contains(obj.getId())).collect(Collectors.toList());
+        return intersection;
+    }
+
     public Optional<Board> getBoardByIdInternalServer(String id) {
-        Optional<Board> board =  boardRepo.findById(id);
-        if(board.isPresent()){
+        Optional<Board> board = boardRepo.findById(id);
+        if (board.isPresent()) {
             board.get().getLists().removeIf(obj -> obj.getDeleted() == true);
             for (List list : board.get().getLists()) {
                 list.getCards().removeIf(obj -> obj.getDeleted() == true);
@@ -56,9 +71,9 @@ public class BoardService {
 
     public Optional<Board> getBoardById(String id, String email) {
         Optional<Board> board = boardRepo.findByIdAndDeleted(id, false);
-        if(board.isPresent()){
+        if (board.isPresent()) {
             for (User user : board.get().getUsers()) {
-                if(user.getEmail().equals(email)){
+                if (user.getEmail().equals(email)) {
                     board.get().getLists().removeIf(obj -> obj.getDeleted() == true);
                     for (List list : board.get().getLists()) {
                         list.getCards().removeIf(obj -> obj.getDeleted() == true);
@@ -86,11 +101,12 @@ public class BoardService {
 
     public void removeBoard(String id) {
         Optional<Board> board = boardRepo.findByIdAndDeleted(id, false);
-        if(board.isPresent()){
+        if (board.isPresent()) {
             for (User user : board.get().getUsers()) {
-                Query query = Query.query( Criteria.where( "$id" ).is( new ObjectId(board.get().getId()) ) );
-                Update update = new Update().pull("boards", query );
-                mongoTemplate.updateMulti( Query.query( Criteria.where( "_id" ).is( new ObjectId(user.getId()) ) ), update, "users" );
+                Query query = Query.query(Criteria.where("$id").is(new ObjectId(board.get().getId())));
+                Update update = new Update().pull("boards", query);
+                mongoTemplate.updateMulti(Query.query(Criteria.where("_id").is(new ObjectId(user.getId()))), update,
+                        "users");
             }
         }
     }

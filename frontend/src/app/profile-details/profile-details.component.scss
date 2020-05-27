@@ -1,0 +1,39 @@
+.profile {
+    //display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    max-width: 100%;
+    height: 100%;
+    background-color: white;
+    overflow: auto;
+}
+
+.mat-elevation-z8 {
+    max-width: 100%;
+    height: auto;
+    padding: 15px;
+    background-color: #f4f4f4;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+.profile-picture {
+    display: flex;
+    margin: 0 auto;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    background: #e1e1e1;
+}
+
+.vertical-align-icon{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}

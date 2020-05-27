@@ -5,7 +5,8 @@
             <!--<img src="" alt="logo">-->
             <br>
             <h3>{{currentUser?.fullName}}</h3>
-            <p>{{currentUser?.username}}</p>
+            <!-- <p>{{currentUser?.username}}</p> -->
+            <div class="profile-picture"><h1>{{userService.userInitials(currentUser)}}</h1></div>
             <br>
             <div [formGroup]="form">
                 <mat-form-field>

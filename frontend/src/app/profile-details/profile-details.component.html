@@ -1,0 +1,24 @@
+<mat-spinner class="spinner" *ngIf="loadingData else loaded"></mat-spinner>
+<ng-template #loaded>
+    <div class="profile">
+        <div class="mat-elevation-z8">
+
+            <!--<img src="" alt="logo">-->
+            <div class="profile-picture">
+                <h1>{{userService.userInitials(currentUser)}}</h1>
+            </div>
+            <h3>{{currentUser?.fullName}}</h3>
+            <div class="vertical-align-icon" matTooltip="Username">
+                <mat-icon>person_outline</mat-icon>&nbsp;<span>{{currentUser?.username}}</span>
+            </div>
+            &nbsp;
+            <div class="vertical-align-icon" matTooltip="Email address">
+                <mat-icon>mail_outline</mat-icon>&nbsp;<span>{{currentUser?.email}}</span>
+            </div>
+        </div>
+        <mat-tab-group mat-align-tabs="center">
+            <mat-tab label="Activity">Activity</mat-tab>
+            <mat-tab label="Cards">Cards</mat-tab>
+        </mat-tab-group>
+    </div>
+</ng-template>
