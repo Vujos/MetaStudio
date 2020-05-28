@@ -2,23 +2,61 @@
 <ng-template #loaded>
     <div class="profile">
         <div class="mat-elevation-z8">
-
             <!--<img src="" alt="logo">-->
             <div class="profile-picture">
                 <h1>{{userService.userInitials(currentUser)}}</h1>
             </div>
             <h3>{{currentUser?.fullName}}</h3>
             <div class="vertical-align-icon" matTooltip="Username">
-                <mat-icon>person_outline</mat-icon>&nbsp;<span>{{currentUser?.username}}</span>
+                <mat-icon>person_outline</mat-icon>&nbsp;<span>@{{currentUser?.username}}</span>
             </div>
             &nbsp;
             <div class="vertical-align-icon" matTooltip="Email address">
                 <mat-icon>mail_outline</mat-icon>&nbsp;<span>{{currentUser?.email}}</span>
             </div>
         </div>
-        <mat-tab-group mat-align-tabs="center">
+        <mat-tab-group mat-align-tabs="center" class="mat-tab-profile-details">
             <mat-tab label="Activity">Activity</mat-tab>
-            <mat-tab label="Cards">Cards</mat-tab>
+            <mat-tab label="Cards">
+                <div *ngFor="let board of boards" class="project-manager"
+                    [ngStyle]="{'background-color':board.background, 'height':board.lists.length > 0?'100%':'auto'}" [routerLink]="['/board', board.id]">
+                    <div class="project-manager-menu">
+                        <div class="project-manager-menu-padding">
+                            <span *ngIf="!loading" class="board-title"><b>{{board?.title}}</b></span>
+                        </div>
+                    </div>
+                    <table cellspacing="0" class="lists" *ngIf="board?.lists.length > 0">
+                        <tr class="example-list-lists">
+                            <td class="example-container-lists example-box-lists"
+                                *ngFor="let list of board?.lists; index as i"
+                                [ngStyle]="{'display' : list.cards.length > 0 ? 'initial' : 'none'}">
+                                <div id="{{list.id}}" class="example-list">
+                                    <div class="list-header">
+                                        <h3 class="list-title">{{list.title}}</h3>
+                                    </div>
+                                    <div class="list-content">
+                                        <div class="example-box" *ngFor="let item of list.cards; index as j"
+                                            [routerLink]="['/board', board.id, i, j]" (click)="$event.stopPropagation()"
+                                            [ngStyle]="{'background-color':colorsService.checkBackground(board.background) ?'lightgray':'white'}">
+                                            <span *ngFor="let label of item?.labels">
+                                                <span class="label" [ngStyle]="{'background-color':label}"></span>
+                                                &nbsp;
+                                            </span>
+                                            <div>{{item?.title}}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="placeholder" *ngIf="board?.lists.length == 0">
+                        <h1 class="no-lists"
+                            [ngStyle]="{'color': colorsService.checkBackground(board.background) ? 'gray' : 'white'}">
+                            No
+                            cards</h1>
+                    </div>
+                </div>
+            </mat-tab>
         </mat-tab-group>
     </div>
 </ng-template>

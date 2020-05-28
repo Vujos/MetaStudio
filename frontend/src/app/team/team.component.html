@@ -1,10 +1,10 @@
 <div class="team-menu" [ngStyle]="{'background-color':team?.background}">
-    <button mat-icon-button class="team-home transform-scale" [routerLink]="['/boards']" matTooltip="Home">
-        <mat-icon>home</mat-icon>
-    </button>
-    <button mat-icon-button class="team-more-hidden">
-        <mat-icon>more_vert</mat-icon>
-    </button>
+    <div class="team-home-wrapper">
+        <button mat-icon-button class="team-home transform-scale" [routerLink]="['/boards']" matTooltip="Home">
+            <mat-icon>home</mat-icon>
+        </button>
+    </div>
+
     <div class="add-board">
         <mat-form-field *ngIf="!loading" [ngClass]="lightBackground ? 'add-black' : 'add'">
             <mat-label [ngClass]="lightBackground ? 'black-important' : 'white'">Enter board title</mat-label>
@@ -16,7 +16,7 @@
             Add board
         </button>
     </div>
-    &nbsp;&nbsp;&nbsp;
+    <div class="width-2"></div>
     <div class="add-member">
         <mat-form-field *ngIf="!loading" [ngClass]="lightBackground ? 'add-black' : 'add'">
             <mat-label [ngClass]="lightBackground ? 'black-important' : 'white'">Enter email address or username
@@ -29,13 +29,12 @@
             Add member
         </button>
     </div>
-    <button mat-icon-button class="team-more" #teamMoreButton [matMenuTriggerFor]="teamMoreMenu"
-        #teamMoreTrigger="matMenuTrigger" [ngStyle]="{'color': lightBackground ? 'black' : 'white'}">
-        <mat-icon>more_vert</mat-icon>
-    </button>
-    <button mat-icon-button class="home-hidden">
-        <mat-icon>home</mat-icon>
-    </button>
+    <div class="team-more-wrapper">
+        <button mat-icon-button class="team-more" #teamMoreButton [matMenuTriggerFor]="teamMoreMenu"
+            #teamMoreTrigger="matMenuTrigger" [ngStyle]="{'color': lightBackground ? 'black' : 'white'}">
+            <mat-icon>more_vert</mat-icon>
+        </button>
+    </div>
     <mat-menu class="padding-top-0" #teamMoreMenu="matMenu">
         <span>
             <div class="menu-header">
@@ -98,9 +97,15 @@
 </div>
 
 <div class="boards" [ngStyle]="{'background-color':team?.background}">
+    <div class="team-name">
+        <h1 class="margin-0-auto" [ngStyle]="{'color': lightBackground ? 'black' : 'white'}">{{team?.name}}</h1>
+    </div>
     <div cdkDropList class="example-list-boards" (cdkDropListDropped)="dropBoard($event)">
         <mat-spinner class="spinner" *ngIf="loading else loadedBoards"></mat-spinner>
         <ng-template #loadedBoards>
+            <div class="title-list-items">
+                <h3 class="margin-0">Boards</h3>
+            </div>
             <div class="example-box-boards" *ngFor="let board of team.boards" cdkDrag
                 [routerLink]="['/board', board.id]"
                 [ngStyle]="{'background-color':board.background, 'color': colorsService.checkBackground(board.background) ? 'black' : 'white'}">
@@ -111,20 +116,29 @@
             </div>
         </ng-template>
     </div>
-    &nbsp;&nbsp;&nbsp;
+    <div class="width-2"></div>
     <div class="example-list-members">
         <mat-spinner class="spinner" *ngIf="loading else loadedMembers"></mat-spinner>
         <ng-template #loadedMembers>
+            <div class="title-list-items">
+                <h3 class="margin-0">Members</h3>
+            </div>
             <div class="example-box-members" *ngFor="let member of team.members; index as i">
-                <button *ngIf="i != 0" mat-icon-button class="delete-member close" [matTooltip]="currentUser?.id == member.id ? 'Leave team' : 'Delete member'" (click)="currentUser?.id == member.id ? leaveTeamDialog(i) : deleteMemberDialog(i)">
+                <button *ngIf="i != 0" mat-icon-button class="delete-member close"
+                    [matTooltip]="currentUser?.id == member.id ? 'Leave team' : 'Delete member'"
+                    (click)="currentUser?.id == member.id ? leaveTeamDialog(i) : deleteMemberDialog(i)">
                     <mat-icon>close</mat-icon>
                 </button>
-                <h3>{{member.fullName}}</h3>
-                <p>{{member.email}}</p>
+                <h3 class="link member-full-name" [routerLink]="['/profile', member.id]">{{member.fullName}}</h3>
+                <br>
+                <p class="member-username" matTooltip="Username">@{{member.username}}</p>
             </div>
             <div class="placeholder" *ngIf="team.members?.length==0">
                 <h1 class="no-members">No members</h1>
             </div>
         </ng-template>
+    </div>
+    <div class="team-name-hidden">
+        <h1 class="margin-0-auto" [ngStyle]="{'color': lightBackground ? 'black' : 'white'}">{{team?.name}}</h1>
     </div>
 </div>

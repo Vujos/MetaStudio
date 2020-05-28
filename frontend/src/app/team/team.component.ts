@@ -135,7 +135,11 @@ export class TeamComponent implements OnInit {
   }
 
   addMember() {
-    if (this.newMember.trim() != "") {
+    this.newMember = this.newMember.trim();
+    if (this.newMember != "") {
+      if(this.newMember.startsWith("@")){
+        this.newMember = this.newMember.slice(1);
+      }
       this.userService.getByQuery(this.newMember).subscribe(data => {
         if (data) {
           let errorMessageNewUser = undefined;
@@ -145,7 +149,7 @@ export class TeamComponent implements OnInit {
             }
           });
           if (errorMessageNewUser) {
-            this.snackBarService.openSnackBar(errorMessageNewUser, "X");
+            this.snackBarService.openErrorSnackBar(errorMessageNewUser, "X");
             return;
           }
           data.teams.push(this.team);
@@ -155,10 +159,10 @@ export class TeamComponent implements OnInit {
           this.updateTeam();
           this.newMember = "";
           this.newMemberElement.nativeElement.focus();
-          this.snackBarService.openSnackBar("Successfully added", "X");
+          this.snackBarService.openSuccessSnackBar("Successfully added", "X");
         }
       }, error => {
-        this.snackBarService.openSnackBar("That user does not exist", "X");
+        this.snackBarService.openErrorSnackBar("That user does not exist", "X");
       });
     }
     else {
@@ -184,7 +188,7 @@ export class TeamComponent implements OnInit {
       })
       this.team.members.splice(index, 1);
       this.updateTeam();
-      this.snackBarService.openSnackBar("Successfully deleted", "X");
+      this.snackBarService.openSuccessSnackBar("Successfully deleted", "X");
     });
 
   }
@@ -203,7 +207,7 @@ export class TeamComponent implements OnInit {
     this.team.description = this.teamDescription.trim();
     this.teamDescription = this.team.description;
     this.updateTeam();
-    this.snackBarService.openSnackBar("Successfully saved", "X");
+    this.snackBarService.openSuccessSnackBar("Successfully saved", "X");
   }
 
   renameTeam() {
@@ -211,7 +215,7 @@ export class TeamComponent implements OnInit {
       this.team.name = this.teamName.trim();
       this.teamName = this.team.name;
       this.updateTeam();
-      this.snackBarService.openSnackBar("Successfully saved", "X");
+      this.snackBarService.openSuccessSnackBar("Successfully saved", "X");
     }
     else {
       this.teamName = this.team.name;

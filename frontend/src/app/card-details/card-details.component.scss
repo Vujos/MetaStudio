@@ -80,3 +80,25 @@
   cursor: pointer;
   text-decoration: underline;
 }
+
+.dialog-content {
+    margin: 0;
+    padding: 0;
+}
+
+.correct-dialog-margins {
+    margin: -24px;
+}
+
+.dialog-padding {
+    padding: 5%;
+}
+
+.width-4 {
+    display: inline-block;
+    width: 4%;
+}
+
+.width-48 {
+    width: 48%;
+}

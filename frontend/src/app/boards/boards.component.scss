@@ -166,7 +166,7 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 100%;
+  height: 92%;
 }
 
 .no-boards{
@@ -213,4 +213,31 @@
 
 .margin-0{
   margin: 0;
+}
+
+.title-list-items {
+  background-color: #f0f0f0;
+  padding: 10px;
+  color: #777;
+  width:100%;
+  display:flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.width-2{
+  width: 2%;
+  display: inline-block;
+}
+
+.width-9{
+  width: 9%;
+  display: inline-block;
+}
+
+.boards-more-wrapper {
+  width: 9%;
+  max-width: 9%;
+  display: inline-flex;
+  justify-content: flex-end;
 }

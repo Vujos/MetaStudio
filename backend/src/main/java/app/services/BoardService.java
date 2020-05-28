@@ -44,8 +44,8 @@ public class BoardService {
     }
 
     public Iterable<Board> getCommonBoards(String id, String email) {
-        Iterable<Board> boards = this.userService.getBoards(email);
-        Iterable<Board> boards_2 = this.userService.getBoardsByUserId(id);
+        Iterable<Board> boards = this.userService.getAllBoards(email);
+        Iterable<Board> boards_2 = this.userService.getAllBoardsByUserId(id);
         Set<String> ids = ((Collection<Board>) boards_2).stream().map(obj -> obj.getId()).collect(Collectors.toSet());
         java.util.List<Board> intersection = ((Collection<Board>) boards).stream()
                 .filter(obj -> ids.contains(obj.getId())).collect(Collectors.toList());

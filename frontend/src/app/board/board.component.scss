@@ -4,13 +4,13 @@
 
 .project-manager-menu {
   text-align:center;
-  height: 13%;
+  height: 11%;
   border-radius: 4px;
   overflow: auto;
 }
 
 .project-manager-menu-padding{
-  padding: 10px 10px 0 10px;
+  padding-left: 10px;
 }
 
 .lists {
@@ -18,8 +18,8 @@
   max-width: 100%; 
   overflow:auto;
   display:block;
-  height: 87%;
-  min-height: 87%;
+  height: 89%;
+  min-height: 89%;
 }
 
 .example-container {
@@ -38,6 +38,8 @@
   background: rgb(235, 235, 235);
   border-radius: 4px;
   display: block;
+  height: 98%;
+  max-height: 98%;
 }
 
 .list-title{
@@ -301,6 +303,10 @@ td {
 .link:hover{
   cursor: pointer;
   text-decoration: underline;
+}
+
+.margin-top-10 {
+  margin-top: 10px !important;
 }
 /*
 .mat-input-element {

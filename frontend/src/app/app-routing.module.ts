@@ -16,7 +16,8 @@ const routes: Routes = [
   { path: 'boards', component: BoardsComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'board/:id', component: BoardComponent },
-  { path: 'board/:idBoard/:idUser', component: ProfileDetailsComponent },
+  { path: 'board/:id/:listIndex/:cardIndex', component: BoardComponent },
+  { path: 'profile/:idUser', component: ProfileDetailsComponent },
   { path: 'team/:id', component: TeamComponent },
   { path: '**', redirectTo: '', pathMatch: 'full' }
 ];

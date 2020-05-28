@@ -1,6 +1,11 @@
 package app.services;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import app.models.Board;
+import app.models.Card;
+import app.models.List;
 import app.models.Team;
 import app.models.User;
 import app.repositories.UserRepository;
@@ -38,7 +45,7 @@ public class UserService {
 
     public Optional<User> getUserById(String id) {
         Optional<User> user = userRepo.findById(id);
-        if(user.isPresent()){
+        if (user.isPresent()) {
             user.get().getBoards().removeIf(obj -> obj.getDeleted() == true);
         }
         return user;
@@ -46,7 +53,7 @@ public class UserService {
 
     public Optional<User> getUserByUsername(String username) {
         Optional<User> user = userRepo.findByUsername(username);
-        if(user.isPresent()){
+        if (user.isPresent()) {
             user.get().getBoards().removeIf(obj -> obj.getDeleted() == true);
         }
         return user;
@@ -54,7 +61,7 @@ public class UserService {
 
     public Optional<User> getUserByEmail(String email) {
         Optional<User> user = userRepo.findByEmail(email);
-        if(user.isPresent()){
+        if (user.isPresent()) {
             user.get().getBoards().removeIf(obj -> obj.getDeleted() == true);
         }
         return user;
@@ -116,46 +123,106 @@ public class UserService {
 
     public Iterable<Board> getBoards(String email) {
         Optional<User> user = userRepo.findByEmail(email);
-        if(user.isPresent()){
+        if (user.isPresent()) {
             user.get().getBoards().removeIf(obj -> obj.getDeleted() == true);
         }
         return user.get().getBoards();
+    }
+
+    public Iterable<Board> getAllBoards(String email) {
+        ArrayList<Board> boards = new ArrayList<>();
+        Optional<User> user = userRepo.findByEmail(email);
+        if (user.isPresent()) {
+            user.get().getBoards().removeIf(obj -> obj.getDeleted() == true);
+            Set<String> ids = ((Collection<Board>) user.get().getBoards()).stream().map(obj -> obj.getId())
+                    .collect(Collectors.toSet());
+            boards = user.get().getBoards();
+            for (Team team : user.get().getTeams()) {
+                java.util.List<Board> complement = ((Collection<Board>) team.getBoards()).stream()
+                        .filter(obj -> !ids.contains(obj.getId())).collect(Collectors.toList());
+                boards.addAll(complement);
+            }
+        }
+        for (Board board : boards) {
+            for (List list : board.getLists()) {
+                Iterator<Card> i = list.getCards().iterator();
+                while (i.hasNext()) {
+                    java.util.List<User> users = ((Collection<User>) i.next().getMembers()).stream()
+                            .filter(obj -> email.equals(obj.getEmail())).collect(Collectors.toList());
+                    if (users.size() == 0) {
+                        i.remove();
+                    }
+                }
+            }
+            board.getLists().removeIf(obj -> obj.getCards().size() == 0);
+        }
+        return boards;
     }
 
     public Iterable<Board> getBoardsByUserId(String id) {
         Optional<User> user = userRepo.findById(id);
-        if(user.isPresent()){
+        if (user.isPresent()) {
             user.get().getBoards().removeIf(obj -> obj.getDeleted() == true);
         }
         return user.get().getBoards();
     }
 
-    public void leaveBoard(String boardId, String userId) {
-        Query query = Query.query( Criteria.where( "$id" ).is( new ObjectId(boardId) ) );
-        Update update = new Update().pull("boards", query );
-        mongoTemplate.updateMulti( Query.query( Criteria.where( "_id" ).is( new ObjectId(userId) ) ), update, "users" );
+    public Iterable<Board> getAllBoardsByUserId(String id) {
+        ArrayList<Board> boards = new ArrayList<>();
+        Optional<User> user = userRepo.findById(id);
+        if (user.isPresent()) {
+            user.get().getBoards().removeIf(obj -> obj.getDeleted() == true);
+            Set<String> ids = ((Collection<Board>) user.get().getBoards()).stream().map(obj -> obj.getId())
+                    .collect(Collectors.toSet());
+            boards = user.get().getBoards();
+            for (Team team : user.get().getTeams()) {
+                java.util.List<Board> complement = ((Collection<Board>) team.getBoards()).stream()
+                        .filter(obj -> !ids.contains(obj.getId())).collect(Collectors.toList());
+                boards.addAll(complement);
+            }
+        }
+        for (Board board : boards) {
+            for (List list : board.getLists()) {
+                Iterator<Card> i = list.getCards().iterator();
+                while (i.hasNext()) {
+                    java.util.List<User> users = ((Collection<User>) i.next().getMembers()).stream()
+                            .filter(obj -> id.equals(obj.getId())).collect(Collectors.toList());
+                    if (users.size() == 0) {
+                        i.remove();
+                    }
+                }
+            }
+            board.getLists().removeIf(obj -> obj.getCards().size() == 0);
+        }
+        return boards;
+    }
 
-        query = Query.query( Criteria.where( "$id" ).is( new ObjectId(userId) ) );
-        update = new Update().pull("users", query );
-        mongoTemplate.updateMulti( Query.query( Criteria.where( "_id" ).is( new ObjectId(boardId) ) ), update, "boards" );
+    public void leaveBoard(String boardId, String userId) {
+        Query query = Query.query(Criteria.where("$id").is(new ObjectId(boardId)));
+        Update update = new Update().pull("boards", query);
+        mongoTemplate.updateMulti(Query.query(Criteria.where("_id").is(new ObjectId(userId))), update, "users");
+
+        query = Query.query(Criteria.where("$id").is(new ObjectId(userId)));
+        update = new Update().pull("users", query);
+        mongoTemplate.updateMulti(Query.query(Criteria.where("_id").is(new ObjectId(boardId))), update, "boards");
     }
 
     public Iterable<Team> getTeams(String email) {
         Optional<User> user = userRepo.findByEmail(email);
-        if(user.isPresent()){
+        if (user.isPresent()) {
             user.get().getTeams().removeIf(obj -> obj.getDeleted() == true);
         }
         return user.get().getTeams();
     }
 
     public void leaveTeam(String teamId, String userId) {
-        Query query = Query.query( Criteria.where( "$id" ).is( new ObjectId(teamId) ) );
-        Update update = new Update().pull("teams", query );
-        mongoTemplate.updateMulti( Query.query( Criteria.where( "_id" ).is( new ObjectId(userId) ) ), update, "users" );
+        Query query = Query.query(Criteria.where("$id").is(new ObjectId(teamId)));
+        Update update = new Update().pull("teams", query);
+        mongoTemplate.updateMulti(Query.query(Criteria.where("_id").is(new ObjectId(userId))), update, "users");
 
-        query = Query.query( Criteria.where( "$id" ).is( new ObjectId(userId) ) );
-        update = new Update().pull("members", query );
-        mongoTemplate.updateMulti( Query.query( Criteria.where( "_id" ).is( new ObjectId(teamId) ) ), update, "teams" );
+        query = Query.query(Criteria.where("$id").is(new ObjectId(userId)));
+        update = new Update().pull("members", query);
+        mongoTemplate.updateMulti(Query.query(Criteria.where("_id").is(new ObjectId(teamId))), update, "teams");
     }
 
 }

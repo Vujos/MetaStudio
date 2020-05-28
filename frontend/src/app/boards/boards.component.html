@@ -1,8 +1,6 @@
 <div class="boards-menu">
-  <button mat-icon-button class="boards-more-hidden">
-    <mat-icon>more_vert</mat-icon>
-  </button>
-  <div class="add-board">
+  <div class="width-9"></div>
+  <div class="add-board" [ngStyle]="{'width':showTeams?'50%':'80%'}">
     <mat-form-field *ngIf="!loading" [ngClass]="lightBackground ? 'add-black' : 'add'">
       <mat-label [ngClass]="lightBackground ? 'black-important' : 'white'">Enter board title</mat-label>
       <input #boardTitleInput [ngClass]="lightBackground ? 'black-important' : 'white'" matInput
@@ -13,7 +11,7 @@
       Add board
     </button>
   </div>
-  &nbsp;&nbsp;&nbsp;
+  <div class="width-2"></div>
   <div class="add-team" *ngIf="showTeams">
     <mat-form-field *ngIf="!loading" [ngClass]="lightBackground ? 'add-black' : 'add'">
       <mat-label [ngClass]="lightBackground ? 'black-important' : 'white'">Enter team name</mat-label>
@@ -25,10 +23,12 @@
       Add team
     </button>
   </div>
-  <button mat-icon-button class="boards-more" #boardsMoreButton [matMenuTriggerFor]="boardsMoreMenu"
-    #boardsMoreTrigger="matMenuTrigger" [ngStyle]="{'color': lightBackground ? 'black' : 'white'}">
-    <mat-icon>more_vert</mat-icon>
-  </button>
+  <div class="boards-more-wrapper">
+    <button mat-icon-button class="boards-more" #boardsMoreButton [matMenuTriggerFor]="boardsMoreMenu"
+      #boardsMoreTrigger="matMenuTrigger" [ngStyle]="{'color': lightBackground ? 'black' : 'white'}">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+  </div>
   <mat-menu class="padding-top-0" #boardsMoreMenu="matMenu">
     <span>
       <div class="menu-header">
@@ -73,6 +73,9 @@
   <div cdkDropList class="example-list-boards" (cdkDropListDropped)="dropBoard($event)">
     <mat-spinner class="spinner" *ngIf="loading else loadedBoards"></mat-spinner>
     <ng-template #loadedBoards>
+      <div class="title-list-items">
+        <h3 class="margin-0">Boards</h3>
+      </div>
       <div class="example-box-boards" *ngFor="let board of boards" cdkDrag [routerLink]="['/board', board.id]"
         [ngStyle]="{'background-color':board.background, 'color': colorsService.checkBackground(board.background) ? 'black' : 'white'}">
         {{board.title}}
@@ -82,10 +85,13 @@
       </div>
     </ng-template>
   </div>
-  &nbsp;&nbsp;&nbsp;
+  <div class="width-2"></div>
   <div *ngIf="showTeams" cdkDropList class="example-list-teams" (cdkDropListDropped)="dropTeam($event)">
     <mat-spinner class="spinner" *ngIf="loading else loadedTeams"></mat-spinner>
     <ng-template #loadedTeams>
+      <div class="title-list-items">
+        <h3 class="margin-0">Teams</h3>
+      </div>
       <div class="example-box-teams" *ngFor="let team of teams" cdkDrag [routerLink]="['/team', team.id]"
         [ngStyle]="{'background-color':team.background, 'color': colorsService.checkBackground(team.background) ? 'black' : 'white'}">
         {{team.name}}

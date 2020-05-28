@@ -1,210 +1,213 @@
-<div>
-  <button mat-icon-button class="close" mat-dialog-close [autofocus]="false">
-    <mat-icon>close</mat-icon>
-  </button>
-  <div mat-dialog-title>
-    <h3 class="title" matTooltip="Click to rename" [matMenuTriggerFor]="cardRenameMenu"
-      #cardRenameTrigger="matMenuTrigger" (menuOpened)="cardRenameInput.focus()">
-      {{data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.title}}</h3>
-    <mat-menu #cardRenameMenu="matMenu" (closed)="saveCardTitleDialog()">
-      <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
-        <mat-form-field>
-          <mat-label>Title</mat-label>
-          <input #cardRenameInput placeholder="Enter card title" matInput [(ngModel)]="cardTitle"
-            (keyup.enter)="renameCard()">
-        </mat-form-field>
-        <br>
-        <button class="center transform-scale white background-color-default" mat-button
-          (click)="renameCard();cardRenameInput.focus()">Save</button>
-      </div>
-    </mat-menu>
-    <span *ngFor="let label of data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.labels; index as i">
-      <span class="label transform-scale"
-        [ngStyle]="{'background-color':label, 'padding-top':editLabels ? 0 : '10px','padding-bottom':editLabels ? 0 : '10px'}"
-        [matMenuTriggerFor]="labelUpdateMenu" #labelUpdateTrigger="matMenuTrigger"
-        [matTooltip]="editLabels ? 'Click to delete': 'Click to change'"
-        (click)="editLabels ? deleteLabel(i) : labelUpdate = label"><span *ngIf="editLabels">X</span></span>&nbsp;
-      <mat-menu #labelUpdateMenu="matMenu">
+<div class="correct-dialog-margins">
+  <div class="dialog-padding">
+    <button mat-icon-button class="close" mat-dialog-close [autofocus]="false">
+      <mat-icon>close</mat-icon>
+    </button>
+    <div mat-dialog-title>
+      <h3 class="title" matTooltip="Click to rename" [matMenuTriggerFor]="cardRenameMenu"
+        #cardRenameTrigger="matMenuTrigger" (menuOpened)="cardRenameInput.focus()">
+        {{data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.title}}</h3>
+      <mat-menu #cardRenameMenu="matMenu" (closed)="saveCardTitleDialog()">
         <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
           <mat-form-field>
-            <mat-label>Label</mat-label>
-            <input value="label" #labelUpdateInput type="color" matInput [(ngModel)]="labelUpdate"
-              (change)="updateLabel(i)">
+            <mat-label>Title</mat-label>
+            <input #cardRenameInput placeholder="Enter card title" matInput [(ngModel)]="cardTitle"
+              (keyup.enter)="renameCard()">
           </mat-form-field>
+          <br>
+          <button class="center transform-scale white background-color-default" mat-button
+            (click)="renameCard();cardRenameInput.focus()">Save</button>
         </div>
       </mat-menu>
-    </span>
-  </div>
-  <div mat-dialog-content>
-    <mat-tab-group [selectedIndex]="data.tabIndex" mat-align-tabs="center" (selectedTabChange)="editLabels=false"
-      [dynamicHeight]='true'>
-      <mat-tab label="General">
-        <br>
-        <button class="white background-color-default" mat-button [matMenuTriggerFor]="labelsMenu"
-          #labelsTrigger="matMenuTrigger">Add Labels</button>
-        <mat-menu #labelsMenu="matMenu">
+      <span *ngFor="let label of data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.labels; index as i">
+        <span class="label transform-scale"
+          [ngStyle]="{'background-color':label, 'padding-top':editLabels ? 0 : '10px','padding-bottom':editLabels ? 0 : '10px'}"
+          [matMenuTriggerFor]="labelUpdateMenu" #labelUpdateTrigger="matMenuTrigger"
+          [matTooltip]="editLabels ? 'Click to delete': 'Click to change'"
+          (click)="editLabels ? deleteLabel(i) : labelUpdate = label"><span *ngIf="editLabels">X</span></span>&nbsp;
+        <mat-menu #labelUpdateMenu="matMenu">
           <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
             <mat-form-field>
               <mat-label>Label</mat-label>
-              <input #labelInput type="color" matInput [(ngModel)]="label" (change)="addLabel()">
+              <input value="label" #labelUpdateInput type="color" matInput [(ngModel)]="labelUpdate"
+                (change)="updateLabel(i)">
             </mat-form-field>
           </div>
         </mat-menu>
-        &nbsp;
-        <mat-slide-toggle [checked]="editLabels" [color]="deleteLabelsColor"
-          *ngIf="data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.labels.length>0"
-          (toggleChange)="editLabels=!editLabels">
-          Delete labels</mat-slide-toggle>
-        <br><br>
-        <mat-divider></mat-divider>
-        <br>
-        <div [formGroup]="cardForm">
-          <mat-form-field class="width-100">
-            <mat-label>Description</mat-label>
-            <textarea cdkTextareaAutosize #cardDescriptionAutosize="cdkTextareaAutosize" cdkAutosizeMinRows="1"
-              cdkAutosizeMaxRows="5" matInput placeholder="Enter card description" #cardDescriptionInput
-              formControlName="description" (focusout)="saveCardDescription()"
-              [value]="this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].description"></textarea>
-          </mat-form-field>
+      </span>
+    </div>
+    <div mat-dialog-content class="dialog-content">
+      <mat-tab-group [selectedIndex]="data.tabIndex" mat-align-tabs="center" (selectedTabChange)="editLabels=false"
+        [dynamicHeight]='true'>
+        <mat-tab label="General">
           <br>
-          <mat-form-field>
-            <mat-label>Start date</mat-label>
-            <input formControlName="startDate" matInput type="datetime-local" (focusout)="saveStartDate()"
-              [value]="this.toDateString(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].startDate)">
-          </mat-form-field>
+          <button class="white background-color-default" mat-button [matMenuTriggerFor]="labelsMenu"
+            #labelsTrigger="matMenuTrigger">Add Labels</button>
+          <mat-menu #labelsMenu="matMenu">
+            <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+              <mat-form-field>
+                <mat-label>Label</mat-label>
+                <input #labelInput type="color" matInput [(ngModel)]="label" (change)="addLabel()">
+              </mat-form-field>
+            </div>
+          </mat-menu>
           &nbsp;
-          <mat-form-field>
-            <mat-label>Due date</mat-label>
-            <input formControlName="endDate" matInput type="datetime-local" (focusout)="saveEndDate()"
-              [value]="this.toDateString(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].endDate)">
-          </mat-form-field>
-        </div>
-        <br>
-      </mat-tab>
-      <mat-tab label="Checklists">
-        <br>
-        <button class="white background-color-default" mat-button [matMenuTriggerFor]="checklistMenu"
-          #checklistTrigger="matMenuTrigger" (menuOpened)="checklistInput.focus()">Add Checklists</button>
-        <mat-menu #checklistMenu="matMenu" (closed)="checklistTitle = ''">
-          <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
-            <mat-form-field>
-              <mat-label>Title</mat-label>
-              <input #checklistInput placeholder="Enter checklist title" matInput [(ngModel)]="checklistTitle"
-                (keyup.enter)="addChecklist()">
+          <mat-slide-toggle [checked]="editLabels" [color]="deleteLabelsColor"
+            *ngIf="data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.labels.length>0"
+            (toggleChange)="editLabels=!editLabels">
+            Delete labels</mat-slide-toggle>
+          <br><br>
+          <mat-divider></mat-divider>
+          <br>
+          <div [formGroup]="cardForm">
+            <mat-form-field class="width-100">
+              <mat-label>Description</mat-label>
+              <textarea cdkTextareaAutosize #cardDescriptionAutosize="cdkTextareaAutosize" cdkAutosizeMinRows="1"
+                cdkAutosizeMaxRows="5" matInput placeholder="Enter card description" #cardDescriptionInput
+                formControlName="description" (focusout)="saveCardDescription()"
+                [value]="this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].description"></textarea>
             </mat-form-field>
             <br>
-            <button class="center transform-scale white background-color-default" mat-button
-              (click)="addChecklist();checklistInput.focus()">Save</button>
-          </div>
-        </mat-menu>
-        <br><br>
-        <mat-divider></mat-divider>
-        <div
-          *ngFor="let checklist of data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.checklists; index as i">
-          <br>
-          <div class="text-align-right">
-            <h3 class="float-left cursor-pointer" matTooltip="Click to rename" [matMenuTriggerFor]="checklistRenameMenu"
-              #checklistRenameTrigger="matMenuTrigger"
-              (menuOpened)="checklistRenameTitle = checklist.title; checklistRenameInput.focus()">{{checklist.title}}
-            </h3>
-            <mat-menu #checklistRenameMenu="matMenu" (closed)="saveChecklistTitleDialog(i)">
-              <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
-                <mat-form-field>
-                  <mat-label>Title</mat-label>
-                  <input #checklistRenameInput placeholder="Enter checklist title" matInput
-                    [(ngModel)]="checklistRenameTitle" (keyup.enter)="renameChecklist(i)">
-                </mat-form-field>
-                <br>
-                <button class="center transform-scale white background-color-default" mat-button
-                  (click)="renameChecklist(i);checklistRenameInput.focus()">Save</button>
-              </div>
-            </mat-menu>
-            <button *ngIf="checklist.tasks.length>0" mat-icon-button matTooltip="Edit checklist"
-              (click)="editChecklist=!editChecklist">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button class="delete" mat-icon-button matTooltip="Delete checklist" (click)="deleteChecklist(i)">
-              <mat-icon>delete_outline</mat-icon>
-            </button>
+            <mat-form-field class="width-48">
+              <mat-label>Start date</mat-label>
+              <input formControlName="startDate" matInput type="datetime-local" (focusout)="saveStartDate()"
+                [value]="this.toDateString(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].startDate)">
+            </mat-form-field>
+            <span class="width-4"></span>
+            <mat-form-field class="width-48">
+              <mat-label>Due date</mat-label>
+              <input formControlName="endDate" matInput type="datetime-local" (focusout)="saveEndDate()"
+                [value]="this.toDateString(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].endDate)">
+            </mat-form-field>
           </div>
           <br>
-          <span
-            class="float-right">{{checklist.tasks.length>0 ? (data.checkedNumber[i]/checklist.tasks.length*100 | number:'1.0-0') : 0}}%</span>
-          <mat-progress-bar mode="determinate" [value]="data.checkedNumber[i]/checklist.tasks.length*100">
-          </mat-progress-bar>
-          <div *ngFor="let task of checklist.tasks; index as j">
-            <br>
-            <mat-checkbox [color]="checkboxColor"
-              [(ngModel)]="data.board.lists[data.listIndex].cards[data.cardIndex].checklists[i].tasks[j].done"
-              (change)="updateTask(i, j)">{{task.title}}
-            </mat-checkbox>
-            <button class="delete" mat-icon-button matTooltip="Delete checkbox" (click)="deleteTask(i, j)"
-              *ngIf="editChecklist">
-              <mat-icon>delete_outline</mat-icon>
-            </button>
-          </div>
+        </mat-tab>
+        <mat-tab label="Checklists">
           <br>
-          <button class="white background-color-default" mat-button [matMenuTriggerFor]="itemMenu"
-            #itemTrigger="matMenuTrigger" (menuOpened)="itemInput.focus()">Add
-            an item</button>
-          <mat-menu #itemMenu="matMenu" (closed)="itemTitle = ''">
+          <button class="white background-color-default" mat-button [matMenuTriggerFor]="checklistMenu"
+            #checklistTrigger="matMenuTrigger" (menuOpened)="checklistInput.focus()">Add Checklists</button>
+          <mat-menu #checklistMenu="matMenu" (closed)="checklistTitle = ''">
             <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
               <mat-form-field>
                 <mat-label>Title</mat-label>
-                <input #itemInput placeholder="Enter item title" matInput [(ngModel)]="itemTitle"
-                  (keyup.enter)="addItem(i)">
+                <input #checklistInput placeholder="Enter checklist title" matInput [(ngModel)]="checklistTitle"
+                  (keyup.enter)="addChecklist()">
               </mat-form-field>
               <br>
               <button class="center transform-scale white background-color-default" mat-button
-                (click)="addItem(i);itemInput.focus()">Save</button>
+                (click)="addChecklist();checklistInput.focus()">Save</button>
             </div>
           </mat-menu>
           <br><br>
           <mat-divider></mat-divider>
-        </div>
-        <br><br><br>
-      </mat-tab>
-      <mat-tab label="Members">
-        <br>
-        <button class="white background-color-default" mat-button [matMenuTriggerFor]="addUsersMenu"
-          #addUsersTrigger="matMenuTrigger" (menuOpened)="addUsersInput.focus()">Add members</button>
-        <mat-menu #addUsersMenu="matMenu" (closed)="resetAddUser()">
-          <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
-            <mat-form-field>
-              <mat-label>Email address or username</mat-label>
-              <input #addUsersInput placeholder="Enter email address or username" matInput [(ngModel)]="newUser"
-                (keyup.enter)="addUser()">
-            </mat-form-field>
+          <div
+            *ngFor="let checklist of data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.checklists; index as i">
             <br>
-            <button class="center transform-scale white background-color-default" mat-button
-              (click)="addUser()">Add</button>
-            <p *ngIf="errorMessageNewUser" class="error-message white">{{errorMessageNewUser}}</p>
-          </div>
-        </mat-menu>
-        <br><br>
-        <mat-divider></mat-divider>
-        <div
-          *ngFor="let member of data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.members; index as i">
-          <br>
-          <div class="text-align-right">
-            <div class="float-left">
-              <h3 class="text-align-left margin-0 link" [routerLink]="['/board', data.board?.id, member.id]" mat-dialog-close>{{member.fullName}}</h3>
-              <p class="text-align-left">{{member.email}}</p>
+            <div class="text-align-right">
+              <h3 class="float-left cursor-pointer" matTooltip="Click to rename"
+                [matMenuTriggerFor]="checklistRenameMenu" #checklistRenameTrigger="matMenuTrigger"
+                (menuOpened)="checklistRenameTitle = checklist.title; checklistRenameInput.focus()">{{checklist.title}}
+              </h3>
+              <mat-menu #checklistRenameMenu="matMenu" (closed)="saveChecklistTitleDialog(i)">
+                <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                  <mat-form-field>
+                    <mat-label>Title</mat-label>
+                    <input #checklistRenameInput placeholder="Enter checklist title" matInput
+                      [(ngModel)]="checklistRenameTitle" (keyup.enter)="renameChecklist(i)">
+                  </mat-form-field>
+                  <br>
+                  <button class="center transform-scale white background-color-default" mat-button
+                    (click)="renameChecklist(i);checklistRenameInput.focus()">Save</button>
+                </div>
+              </mat-menu>
+              <button *ngIf="checklist.tasks.length>0" mat-icon-button matTooltip="Edit checklist"
+                (click)="editChecklist=!editChecklist">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button class="delete" mat-icon-button matTooltip="Delete checklist" (click)="deleteChecklist(i)">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
             </div>
-            <button class="delete" mat-icon-button matTooltip="Delete member" (click)="deleteMemberDialog(i)">
-              <mat-icon>delete_outline</mat-icon>
-            </button>
+            <br>
+            <span
+              class="float-right">{{checklist.tasks.length>0 ? (data.checkedNumber[i]/checklist.tasks.length*100 | number:'1.0-0') : 0}}%</span>
+            <mat-progress-bar mode="determinate" [value]="data.checkedNumber[i]/checklist.tasks.length*100">
+            </mat-progress-bar>
+            <div *ngFor="let task of checklist.tasks; index as j">
+              <br>
+              <mat-checkbox [color]="checkboxColor"
+                [(ngModel)]="data.board.lists[data.listIndex].cards[data.cardIndex].checklists[i].tasks[j].done"
+                (change)="updateTask(i, j)">{{task.title}}
+              </mat-checkbox>
+              <button class="delete" mat-icon-button matTooltip="Delete checkbox" (click)="deleteTask(i, j)"
+                *ngIf="editChecklist">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </div>
+            <br>
+            <button class="white background-color-default" mat-button [matMenuTriggerFor]="itemMenu"
+              #itemTrigger="matMenuTrigger" (menuOpened)="itemInput.focus()">Add
+              an item</button>
+            <mat-menu #itemMenu="matMenu" (closed)="itemTitle = ''">
+              <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                <mat-form-field>
+                  <mat-label>Title</mat-label>
+                  <input #itemInput placeholder="Enter item title" matInput [(ngModel)]="itemTitle"
+                    (keyup.enter)="addItem(i)">
+                </mat-form-field>
+                <br>
+                <button class="center transform-scale white background-color-default" mat-button
+                  (click)="addItem(i);itemInput.focus()">Save</button>
+              </div>
+            </mat-menu>
+            <br><br>
+            <mat-divider></mat-divider>
           </div>
+          <br><br><br>
+        </mat-tab>
+        <mat-tab label="Members">
+          <br>
+          <button class="white background-color-default" mat-button [matMenuTriggerFor]="addUsersMenu"
+            #addUsersTrigger="matMenuTrigger" (menuOpened)="addUsersInput.focus()">Add members</button>
+          <mat-menu #addUsersMenu="matMenu" (closed)="resetAddUser()">
+            <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+              <mat-form-field>
+                <mat-label>Email address or username</mat-label>
+                <input #addUsersInput placeholder="Enter email address or username" matInput [(ngModel)]="newUser"
+                  (keyup.enter)="addUser()">
+              </mat-form-field>
+              <br>
+              <button class="center transform-scale white background-color-default" mat-button
+                (click)="addUser()">Add</button>
+              <p *ngIf="errorMessageNewUser" class="error-message white">{{errorMessageNewUser}}</p>
+            </div>
+          </mat-menu>
           <br><br>
           <mat-divider></mat-divider>
-        </div>
-        <br><br><br>
-      </mat-tab>
-    </mat-tab-group>
-  </div>
-  <div mat-dialog-actions class="actions" align="end">
-    <!--<button class="white background-color-default transform-scale" mat-button (click)="saveCardDetails()">Save</button>-->
-    <button class="white background-color-default" mat-button (click)="makeCardBoardDialog()">Make it a board</button>
-    <button class="white background-color-default delete" mat-button (click)="deleteCard()">Delete card</button>
+          <div
+            *ngFor="let member of data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.members; index as i">
+            <br>
+            <div class="text-align-right">
+              <div class="float-left">
+                <h3 class="text-align-left margin-0 link" [routerLink]="['/profile', member.id]" mat-dialog-close>
+                  {{member.fullName}}</h3>
+                <p class="text-align-left" matTooltip="Username">@{{member.username}}</p>
+              </div>
+              <button class="delete" mat-icon-button matTooltip="Delete member" (click)="deleteMemberDialog(i)">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </div>
+            <br><br>
+            <mat-divider></mat-divider>
+          </div>
+          <br><br><br>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+    <div mat-dialog-actions class="actions" align="end">
+      <!--<button class="white background-color-default transform-scale" mat-button (click)="saveCardDetails()">Save</button>-->
+      <button class="white background-color-default" mat-button (click)="makeCardBoardDialog()">Make it a board</button>
+      <button class="white background-color-default delete" mat-button (click)="deleteCard()">Delete card</button>
+    </div>
   </div>
 </div>

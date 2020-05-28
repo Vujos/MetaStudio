@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { AuthService } from 'src/app/auth/auth.service';
 import { UserService } from '../users/user.service';
 import { ActivatedRoute } from '@angular/router';
 import { BoardService } from '../boards/board.service';
+import { ColorsService } from '../shared/colors.service';
 
 @Component({
   selector: 'app-profile-details',
@@ -17,10 +18,9 @@ export class ProfileDetailsComponent implements OnInit {
 
   boards = [];
 
-  constructor(private authService: AuthService, private userService: UserService, private route: ActivatedRoute, private boardService: BoardService) { }
+  constructor(private authService: AuthService, private userService: UserService, private route: ActivatedRoute, private boardService: BoardService, private colorsService: ColorsService) { }
 
   ngOnInit() {
-    let idBoard = this.route.snapshot.paramMap.get("idBoard");
     let idUser = this.route.snapshot.paramMap.get("idUser");
     this.userService.getOne(idUser).subscribe(data => {
       this.loadingData = false;
@@ -29,7 +29,6 @@ export class ProfileDetailsComponent implements OnInit {
 
     this.boardService.getCommonBoards(idUser, this.authService.getCurrentUser()).subscribe(boards => {
       this.boards = boards;
-      console.log(boards)
     })
   }
 

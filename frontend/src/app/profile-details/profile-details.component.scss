@@ -11,14 +11,21 @@
 
 .mat-elevation-z8 {
     max-width: 100%;
-    height: auto;
-    padding: 15px;
+    height: 27%;
+    max-height: 27%;
+    //padding: 15px;
     background-color: #f4f4f4;
+    overflow: auto;
 }
 
 img {
     max-width: 100%;
     height: auto;
+}
+
+.mat-tab-profile-details {
+    height: 73%;
+    max-height: 73%;
 }
 
 .profile-picture {
@@ -27,8 +34,8 @@ img {
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    width: 100px;
-    height: 100px;
+    width: 70px;
+    height: 70px;
     background: #e1e1e1;
 }
 
@@ -36,4 +43,160 @@ img {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+}
+
+.project-manager {
+  height: 100%;
+  border-bottom: 40px solid white;
+  border-left: 40px solid white;
+  border-right: 40px solid white;
+  cursor: pointer;
+}
+
+.project-manager-menu {
+  text-align:center;
+  height: 15%;
+  border-radius: 4px;
+  overflow: auto;
+}
+
+.project-manager-menu-padding{
+  padding: 10px 10px 0 10px;
+}
+
+.lists {
+  width:100%;
+  max-width: 100%; 
+  overflow:auto;
+  display:block;
+  height: 85%;
+  min-height: 85%;
+}
+
+.example-container-lists {
+  min-width: 300px;
+  width: 300px;
+  max-width: 300px;
+  vertical-align: top;
+  margin-left: 10px;
+}
+
+.example-list {
+  min-width: 300px;
+  width: 300px;
+  max-width: 300px;
+  min-height: 60px;
+  background: rgb(235, 235, 235);
+  border-radius: 4px;
+  display: block;
+  height: 98%;
+  max-height: 98%;
+}
+
+.example-list-lists {
+  display: flex;
+  flex-direction: row;
+  overflow: auto;
+  height: 100%;
+}
+
+.board-title {
+  padding: 10px;
+  background-color: whitesmoke;
+  border-radius: 4px;
+  float: left;
+  max-width: 265px;
+  overflow: auto;
+  white-space: nowrap;
+}
+
+.list-title{
+  padding: 10px;
+  display: inline-block;
+  width: 200px;
+  white-space: nowrap;
+  margin: 0;
+}
+
+.example-box-list-header {
+  margin-left: 8px;
+  margin-right: 8px;
+  padding: 5px;
+  color: rgba(0, 0, 0, 0.87);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  background: white;
+  font-size: 14px;
+  height: 15%;
+  max-height: 15%;
+  overflow: auto;
+  border-bottom: 8px solid #ebebeb;
+}
+
+.example-box {
+  margin: 8px;
+  padding: 8px;
+  border-bottom: solid 1px #bbb;
+  color: rgba(0, 0, 0, 0.87);
+  align-items: center;
+  box-sizing: border-box;
+  background: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.example-box-lists {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  box-sizing: border-box;
+  flex-grow: 1;
+  flex-basis: 0;
+}
+
+.list-header {
+  max-height: 15%;
+  height: 15%;
+  overflow: auto;
+  cursor: pointer;
+}
+
+.list-content {
+  overflow: auto;
+  max-height: 85%;
+  border-radius: 4px;
+}
+
+.label {
+  display: inline-block;
+  border-radius: 50%;
+  padding: 5px;
+  border: 1px solid black;
+}
+
+.placeholder{
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.no-lists{
+  color: white;
+}
+
+.gray{
+  color: gray;
+}
+
+.white {
+  color: white !important;
+}
+
+td {
+  padding: 0;
 }

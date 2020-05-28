@@ -1,16 +1,38 @@
-html, body { height: 100%; overflow: hidden; }
+html, body { 
+  height: 100%; overflow: hidden; 
+}
 
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body { 
+  margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; 
+}
 
 .myapp-no-padding-dialog .mat-dialog-container {
   padding: 0;
 }
 
-.delete:hover{
+.delete:hover {
   background-color: red !important;
   color: white !important;
 }
 
 .spinner {
   margin: 0 auto;
+}
+
+.success-snackbar {
+  background-color: green !important;
+  color: white !important;
+}
+
+.error-snackbar {
+  background-color: red !important;
+  color: white !important;
+}
+
+.success-snackbar .mat-simple-snackbar-action {
+  color: white !important;
+}
+
+.error-snackbar .mat-simple-snackbar-action {
+  color: white !important;
 }

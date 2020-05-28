@@ -27,8 +27,8 @@ export class ProfileComponent implements OnInit {
   ngOnInit() {
     this.form = this.fb.group({
       fullName: ['', { validators: [Validators.required] }],
-      username: ['', { validators: [Validators.required] }],
-      email: ['', { validators: [Validators.required] }],
+      username: ['', { validators: [Validators.required, Validators.pattern("^(?!@.*$).*")] }],
+      email: ['', { validators: [Validators.required, Validators.email] }],
       oldPassword: ['', { validators: [Validators.required] }],
       newPassword: [''],
       repeatNewPassword: ['']
@@ -82,7 +82,7 @@ export class ProfileComponent implements OnInit {
           this.form.controls["oldPassword"].reset();
           this.form.controls["newPassword"].reset();
           this.form.controls["repeatNewPassword"].reset();
-          this.snackBarService.openSnackBar("Successfully saved", "X");
+          this.snackBarService.openSuccessSnackBar("Successfully saved", "X");
         });
     }, e => {
       if (!validOldPassword) {

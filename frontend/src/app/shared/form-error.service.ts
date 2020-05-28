@@ -9,7 +9,8 @@ export class FormErrorService {
         '^[0-9]{13}$': " must be 13 characters long",
         '^[a-zA-Z]{3,}$': " must have at least 3 characters, and can't contain white space",
         '^[0-9]$': " must be number",
-        '^[a-zA-Z]$': " must be letter"
+        '^[a-zA-Z]$': " must be letter",
+        "^(?!@.*$).*$": "must not start with @"
     }
 
     errorMap: {

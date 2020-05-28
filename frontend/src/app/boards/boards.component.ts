@@ -125,7 +125,7 @@ export class BoardsComponent implements OnInit {
             id: null,
             name: this.teamName.trim(),
             description: "",
-            background: "#808080",
+            background: "#55aa55",
             members: [currentUser],
             boards: [],
             date: new Date(),
@@ -152,7 +152,7 @@ export class BoardsComponent implements OnInit {
   deleteTemplate(index) {
     this.currentUser.templates.splice(index, 1);
     this.updateUser(this.currentUser);
-    this.snackBarService.openSnackBar("Successfully deleted", "X");
+    this.snackBarService.openSuccessSnackBar("Successfully deleted", "X");
 
   }
 

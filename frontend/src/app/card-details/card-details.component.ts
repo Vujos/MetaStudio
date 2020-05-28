@@ -252,7 +252,11 @@ export class CardDetailsComponent implements OnInit {
   }
 
   addUser() {
-    if (this.newUser.trim() != "") {
+    this.newUser = this.newUser.trim()
+    if (this.newUser != "") {
+      if(this.newUser.startsWith("@")){
+        this.newUser = this.newUser.slice(1);
+      }
       this.userService.getByQuery(this.newUser).subscribe(data => {
         if (data) {
           this.errorMessageNewUser = undefined;
@@ -289,7 +293,7 @@ export class CardDetailsComponent implements OnInit {
           this.data.board.users.push(data);
           this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].members.push(data);
           this.updateBoard();
-          this.snackBarService.openSnackBar("Successfully added", "X");
+          this.snackBarService.openSuccessSnackBar("Successfully added", "X");
         }
       }, error => {
         this.errorMessageNewUser = "That user does not exist"
@@ -303,7 +307,7 @@ export class CardDetailsComponent implements OnInit {
   deleteMember(index) {
     this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].members.splice(index, 1);
     this.updateBoard();
-    this.snackBarService.openSnackBar("Successfully deleted", "X");
+    this.snackBarService.openSuccessSnackBar("Successfully deleted", "X");
   }
 
   deleteMemberDialog(index) {

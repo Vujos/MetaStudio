@@ -83,6 +83,8 @@ export class BoardComponent {
 
   ngOnInit() {
     let id = this.route.snapshot.paramMap.get("id");
+    let listIndex = this.route.snapshot.paramMap.get("listIndex");
+    let cardIndex = this.route.snapshot.paramMap.get("cardIndex");
 
     this.boardService.getOne(id, this.authService.getCurrentUser()).subscribe(data => {
       this.loading = false;
@@ -111,6 +113,14 @@ export class BoardComponent {
           this.tasksDoneNumber[card.id] = done + "/" + size;
         })
       })
+
+      if (listIndex && cardIndex) {
+        this.openCardDetailsDialog(listIndex, cardIndex);
+      }
+    });
+
+    this.userService.getByQuery(this.authService.getCurrentUser()).subscribe(currentUser => {
+      this.currentUser = currentUser;
     });
 
     this.wc = this.webSocketService.getClient();
@@ -170,10 +180,6 @@ export class BoardComponent {
         }
 
       })
-    })
-
-    this.userService.getByQuery(this.authService.getCurrentUser()).subscribe(currentUser => {
-      this.currentUser = currentUser;
     })
   }
 
@@ -256,7 +262,7 @@ export class BoardComponent {
     this.board.description = this.boardDescription.trim();
     this.boardDescription = this.board.description;
     this.updateBoard();
-    this.snackBarService.openSnackBar("Successfully saved", "X");
+    this.snackBarService.openSuccessSnackBar("Successfully saved", "X");
   }
 
   deleteAllListsDialog() {
@@ -275,7 +281,7 @@ export class BoardComponent {
       this.board.title = this.boardTitle.trim();
       this.boardTitle = this.board.title;
       this.updateBoard();
-      this.snackBarService.openSnackBar("Successfully saved", "X");
+      this.snackBarService.openSuccessSnackBar("Successfully saved", "X");
     }
     else {
       this.boardTitle = this.board.title;
@@ -358,7 +364,11 @@ export class BoardComponent {
   }
 
   addUser() {
-    if (this.newUser.trim() != "") {
+    this.newUser = this.newUser.trim()
+    if (this.newUser != "") {
+      if(this.newUser.startsWith("@")){
+        this.newUser = this.newUser.slice(1);
+      }
       this.userService.getByQuery(this.newUser).subscribe(data => {
         if (data) {
           this.errorMessageNewUser = undefined;
@@ -376,7 +386,7 @@ export class BoardComponent {
           data.boards.push(this.board);
           this.wc.send("/app/users/update/" + data.email, {}, JSON.stringify(data));
           this.resetAddUser();
-          this.snackBarService.openSnackBar("Successfully added", "X");
+          this.snackBarService.openSuccessSnackBar("Successfully added", "X");
         }
       }, error => {
         this.errorMessageNewUser = "That user does not exist"
@@ -412,7 +422,7 @@ export class BoardComponent {
       })
       this.board.users.splice(index, 1);
       this.updateBoard();
-      this.snackBarService.openSnackBar("Successfully deleted", "X");
+      this.snackBarService.openSuccessSnackBar("Successfully deleted", "X");
     });
 
   }
@@ -446,7 +456,7 @@ export class BoardComponent {
           data.boards.push(this.board);
           this.wc.send("/app/teams/update/" + data.id, {}, JSON.stringify(data));
           this.resetAddTeam();
-          this.snackBarService.openSnackBar("Successfully added", "X");
+          this.snackBarService.openSuccessSnackBar("Successfully added", "X");
         }
       }, error => {
         this.errorMessageNewTeam = "That team does not exist"
@@ -480,7 +490,7 @@ export class BoardComponent {
     this.teamService.leaveBoard(this.board.id, this.board.teams[index].id).subscribe();
     this.board.teams.splice(index, 1);
     this.updateBoard();
-    this.snackBarService.openSnackBar("Successfully deleted", "X");
+    this.snackBarService.openSuccessSnackBar("Successfully deleted", "X");
 
   }
 
@@ -543,7 +553,7 @@ export class BoardComponent {
   addTemplate() {
     this.currentUser.templates.push(this.board);
     this.wc.send("/app/users/update/" + this.currentUser.email, {}, JSON.stringify(this.currentUser));
-    this.snackBarService.openSnackBar("Successfully saved", "X");
+    this.snackBarService.openSuccessSnackBar("Successfully saved", "X");
   }
 
   renameList(index) {
@@ -551,7 +561,7 @@ export class BoardComponent {
       this.board.lists[index].title = this.listTitleRename.trim();
       this.updateBoard();
       this.listTitleRename = this.board.lists[index].title;
-      this.snackBarService.openSnackBar("Successfully saved", "X");
+      this.snackBarService.openSuccessSnackBar("Successfully saved", "X");
     }
     else {
       this.listTitleRename = this.board.lists[index].title;
@@ -581,7 +591,7 @@ export class BoardComponent {
       this.board.lists[indexToList].cards = this.board.lists[indexToList].cards.concat(this.board.lists[indexFromList].cards);
       this.updateBoard();
       this.selectedCopyAllCards = undefined;
-      this.snackBarService.openSnackBar("Successfully copied", "X");
+      this.snackBarService.openSuccessSnackBar("Successfully copied", "X");
     }
   }
 
@@ -606,7 +616,7 @@ export class BoardComponent {
       this.board.lists[indexFromList].cards = [];
       this.updateBoard();
       this.selectedMoveAllCards = undefined;
-      this.snackBarService.openSnackBar("Successfully moved", "X");
+      this.snackBarService.openSuccessSnackBar("Successfully moved", "X");
     }
 
   }
@@ -658,7 +668,7 @@ export class BoardComponent {
       this.updateBoard();
       this.selectedMoveList = undefined;
       this.selectedMoveListPosition = undefined;
-      this.snackBarService.openSnackBar("Successfully moved", "X");
+      this.snackBarService.openSuccessSnackBar("Successfully moved", "X");
     }
 
   }
@@ -699,27 +709,37 @@ export class BoardComponent {
   }
 
   addUsersFromTeam() {
-    for (let index = 0; index < this.checkedTeamMembers.length; index++) {
-      if (this.checkedTeamMembers[index]) {
-        let newUser = this.selectedTeam.members[index];
+    if (this.selectedTeam) {
+      if (this.checkedTeamMembers.includes(true)) {
+        for (let index = 0; index < this.checkedTeamMembers.length; index++) {
+          if (this.checkedTeamMembers[index]) {
+            let newUser = this.selectedTeam.members[index];
 
-        let userExists = false;
-        this.board.users.forEach(user => {
-          if (user.id == newUser.id) {
-            userExists = true;
+            let userExists = false;
+            this.board.users.forEach(user => {
+              if (user.id == newUser.id) {
+                userExists = true;
+              }
+            });
+            if (userExists) {
+              continue;
+            }
+            this.board.users.push(newUser);
+            this.updateBoard();
+            this.board.users = []
+            newUser.boards.push(this.board);
+            this.wc.send("/app/users/update/" + newUser.email, {}, JSON.stringify(newUser));
           }
-        });
-        if (userExists) {
-          continue;
         }
-        this.board.users.push(newUser);
-        this.updateBoard();
-        this.board.users = []
-        newUser.boards.push(this.board);
-        this.wc.send("/app/users/update/" + newUser.email, {}, JSON.stringify(newUser));
         this.resetAddUsersFromTeam();
-        this.snackBarService.openSnackBar("Successfully added", "X");
+        this.snackBarService.openSuccessSnackBar("Successfully added", "X");
       }
+      else {
+        this.snackBarService.openErrorSnackBar("No users selected", "X");
+      }
+    }
+    else {
+      this.snackBarService.openErrorSnackBar("No team selected", "X");
     }
   }
 
