@@ -49,6 +49,10 @@ export class TeamComponent implements OnInit {
   constructor(private boardService: BoardService, private snackBarService: SnackBarService, private dialogService: DialogService, private route: ActivatedRoute, private authService: AuthService, private router: Router, private userService: UserService, private webSocketService: WebSocketService, private colorsService: ColorsService, private teamService: TeamService) { }
 
   ngOnInit() {
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return
+    }
     let id = this.route.snapshot.paramMap.get("id");
 
     this.teamService.getOne(id, this.authService.getCurrentUser()).subscribe(data => {
@@ -59,6 +63,8 @@ export class TeamComponent implements OnInit {
       this.teamName = this.team.name;
       this.teamBackground = this.team.background;
       this.lightBackground = this.colorsService.checkBackground(this.teamBackground);
+    }, error => {
+      this.router.navigate(['/']);
     });
 
     this.wc = this.webSocketService.getClient();
@@ -68,7 +74,7 @@ export class TeamComponent implements OnInit {
           const dialogRef = this.dialogService.openDialog(DialogOkComponent, "Content Deleted", "The owner has deleted the team");
 
           dialogRef.afterClosed().subscribe(result => {
-            this.router.navigate(['/boards']);
+            this.router.navigate(['/']);
           });
 
         }
@@ -80,7 +86,7 @@ export class TeamComponent implements OnInit {
             const dialogRef = this.dialogService.openDialog(DialogOkComponent, "Content not available", "You have been deleted from team");
 
             dialogRef.afterClosed().subscribe(result => {
-              this.router.navigate(['/boards']);
+              this.router.navigate(['/']);
             });
           }
 
@@ -99,7 +105,9 @@ export class TeamComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    this.wc.disconnect();
+    if(this.wc && this.authService.isLoggedIn()){
+      this.wc.disconnect();
+    }
   }
 
   addBoard() {
@@ -113,7 +121,7 @@ export class TeamComponent implements OnInit {
             description: "",
             background: "#55aa55",
             users: [currentUser],
-            teams: [],
+            teams: [this.team],
             lists: [],
             priority: 1,
             deleted: false
@@ -137,7 +145,7 @@ export class TeamComponent implements OnInit {
   addMember() {
     this.newMember = this.newMember.trim();
     if (this.newMember != "") {
-      if(this.newMember.startsWith("@")){
+      if (this.newMember.startsWith("@")) {
         this.newMember = this.newMember.slice(1);
       }
       this.userService.getByQuery(this.newMember).subscribe(data => {
@@ -264,7 +272,7 @@ export class TeamComponent implements OnInit {
   deleteTeam() {
     this.team.deleted = true;
     this.updateTeam();
-    this.router.navigate(['/boards']);
+    this.router.navigate(['/']);
   }
 
   deleteTeamDialog() {
@@ -285,7 +293,7 @@ export class TeamComponent implements OnInit {
       this.team.members.splice(index, 1);
       this.updateTeam();
       this.wc.disconnect();
-      this.router.navigate(['/boards']);
+      this.router.navigate(['/']);
     });
   }
 

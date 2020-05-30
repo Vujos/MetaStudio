@@ -360,7 +360,7 @@ export class CardDetailsComponent implements OnInit {
           this.wc.send("/app/users/update/" + user.email, {}, JSON.stringify(user));
         })
         this.dialogRef.close();
-        this.router.navigate(['/boards']);
+        this.router.navigate(['/']);
       });
     })
   }

@@ -16,7 +16,7 @@
             </div>
         </div>
         <mat-tab-group mat-align-tabs="center" class="mat-tab-profile-details">
-            <mat-tab label="Activity">Activity</mat-tab>
+            <!-- <mat-tab label="Activity">Activity</mat-tab> -->
             <mat-tab label="Cards">
                 <div *ngFor="let board of boards" class="project-manager"
                     [ngStyle]="{'background-color':board.background, 'height':board.lists.length > 0?'100%':'auto'}" [routerLink]="['/board', board.id]">
@@ -56,6 +56,12 @@
                             cards</h1>
                     </div>
                 </div>
+            </mat-tab>
+
+            <mat-tab label="Statistics">
+                Finished tasks: {{doneTasks.length}}
+                <br>
+                Unfinished tasks: {{tasks.length}}
             </mat-tab>
         </mat-tab-group>
     </div>

@@ -25,7 +25,11 @@ export class LoginComponent implements OnInit {
     this.loginForm = this.fb.group({
       emailInput: ['', { validators: [Validators.required] }],
       passwordInput: ['', { validators: [Validators.required] }]
-    })
+    });
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['/']);
+      return
+    }
   }
 
   onLogin() {
@@ -39,7 +43,7 @@ export class LoginComponent implements OnInit {
         if (response.token) {
           localStorage.setItem('token', response.token);
           this.message = "";
-          this.router.navigate(['/boards']);
+          this.router.navigate(['/']);
         } else {
           this.message = "Wrong email and/or password";
         }

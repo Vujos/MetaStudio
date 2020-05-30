@@ -50,6 +50,7 @@ export class BoardsComponent implements OnInit {
     }
     else {
       this.router.navigate(['/login']);
+      return;
     }
 
     this.wc = this.webSocketService.getClient();
@@ -80,7 +81,9 @@ export class BoardsComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    this.wc.disconnect();
+    if(this.wc && this.authService.isLoggedIn()){
+      this.wc.disconnect();
+    }
   }
 
   addBoard() {
@@ -170,6 +173,8 @@ export class BoardsComponent implements OnInit {
     this.userService.getBoards(this.authService.getCurrentUser()).subscribe(data => {
       this.loading = false;
       this.boards = data;
+    }, error => {
+      this.router.navigate(['/']);
     })
   }
 
@@ -183,6 +188,8 @@ export class BoardsComponent implements OnInit {
       else {
         this.showTeams = false;
       }
+    }, error => {
+      this.router.navigate(['/']);
     })
   }
 

@@ -2,7 +2,6 @@ package app.services;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,8 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import app.models.Board;
-import app.models.Card;
-import app.models.List;
 import app.models.Team;
 import app.models.User;
 import app.repositories.UserRepository;
@@ -143,19 +140,6 @@ public class UserService {
                 boards.addAll(complement);
             }
         }
-        for (Board board : boards) {
-            for (List list : board.getLists()) {
-                Iterator<Card> i = list.getCards().iterator();
-                while (i.hasNext()) {
-                    java.util.List<User> users = ((Collection<User>) i.next().getMembers()).stream()
-                            .filter(obj -> email.equals(obj.getEmail())).collect(Collectors.toList());
-                    if (users.size() == 0) {
-                        i.remove();
-                    }
-                }
-            }
-            board.getLists().removeIf(obj -> obj.getCards().size() == 0);
-        }
         return boards;
     }
 
@@ -180,19 +164,6 @@ public class UserService {
                         .filter(obj -> !ids.contains(obj.getId())).collect(Collectors.toList());
                 boards.addAll(complement);
             }
-        }
-        for (Board board : boards) {
-            for (List list : board.getLists()) {
-                Iterator<Card> i = list.getCards().iterator();
-                while (i.hasNext()) {
-                    java.util.List<User> users = ((Collection<User>) i.next().getMembers()).stream()
-                            .filter(obj -> id.equals(obj.getId())).collect(Collectors.toList());
-                    if (users.size() == 0) {
-                        i.remove();
-                    }
-                }
-            }
-            board.getLists().removeIf(obj -> obj.getCards().size() == 0);
         }
         return boards;
     }

@@ -82,6 +82,10 @@ export class BoardComponent {
   constructor(private dialog: MatDialog, private route: ActivatedRoute, private boardService: BoardService, private webSocketService: WebSocketService, private userService: UserService, private authService: AuthService, private router: Router, private colorsService: ColorsService, private dialogService: DialogService, private snackBarService: SnackBarService, private teamService: TeamService) { }
 
   ngOnInit() {
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return
+    }
     let id = this.route.snapshot.paramMap.get("id");
     let listIndex = this.route.snapshot.paramMap.get("listIndex");
     let cardIndex = this.route.snapshot.paramMap.get("cardIndex");
@@ -117,6 +121,8 @@ export class BoardComponent {
       if (listIndex && cardIndex) {
         this.openCardDetailsDialog(listIndex, cardIndex);
       }
+    }, error => {
+      this.router.navigate(['/']);
     });
 
     this.userService.getByQuery(this.authService.getCurrentUser()).subscribe(currentUser => {
@@ -130,7 +136,7 @@ export class BoardComponent {
           const dialogRef = this.dialogService.openDialog(DialogOkComponent, "Content Deleted", "The owner has deleted the board");
 
           dialogRef.afterClosed().subscribe(result => {
-            this.router.navigate(['/boards']);
+            this.router.navigate(['/']);
           });
 
         }
@@ -142,7 +148,7 @@ export class BoardComponent {
             const dialogRef = this.dialogService.openDialog(DialogOkComponent, "Content not available", "You have been deleted from board");
 
             dialogRef.afterClosed().subscribe(result => {
-              this.router.navigate(['/boards']);
+              this.router.navigate(['/']);
             });
           }
 
@@ -184,7 +190,9 @@ export class BoardComponent {
   }
 
   ngOnDestroy() {
-    this.wc.disconnect();
+    if(this.wc && this.authService.isLoggedIn()){
+      this.wc.disconnect();
+    }
   }
 
   drop(event: CdkDragDrop<string[]>) {
@@ -330,7 +338,7 @@ export class BoardComponent {
   deleteBoard() {
     this.board.deleted = true;
     this.updateBoard();
-    this.router.navigate(['/boards']);
+    this.router.navigate(['/']);
   }
 
   deleteBoardDialog() {
@@ -349,7 +357,7 @@ export class BoardComponent {
       this.board.users.splice(index, 1);
       this.updateBoard();
       this.wc.disconnect();
-      this.router.navigate(['/boards']);
+      this.router.navigate(['/']);
     });
   }
 
@@ -366,7 +374,7 @@ export class BoardComponent {
   addUser() {
     this.newUser = this.newUser.trim()
     if (this.newUser != "") {
-      if(this.newUser.startsWith("@")){
+      if (this.newUser.startsWith("@")) {
         this.newUser = this.newUser.slice(1);
       }
       this.userService.getByQuery(this.newUser).subscribe(data => {

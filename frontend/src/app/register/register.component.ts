@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { FormErrorService } from 'src/app/shared/form-error.service';
 import { User } from '../models/user.model';
 import { UserService } from '../users/user.service';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -19,7 +20,7 @@ export class RegisterComponent implements OnInit {
   message: string = "";
   hide = true;
 
-  constructor(private userService: UserService, public readonly formError: FormErrorService, private fb: FormBuilder, private router: Router) { }
+  constructor(private userService: UserService, private authService: AuthService, public readonly formError: FormErrorService, private fb: FormBuilder, private router: Router) { }
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -28,6 +29,10 @@ export class RegisterComponent implements OnInit {
       email: ['', { validators: [Validators.required, Validators.email] }],
       password: ['', { validators: [Validators.required] }]
     });
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['/']);
+      return
+    }
   }
 
   onRegister() {

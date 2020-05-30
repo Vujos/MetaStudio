@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import * as $ from 'jquery';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BoardsComponent } from './boards/boards.component';
@@ -16,8 +15,10 @@ import { MaterialModule } from './shared/material.module';
 import { SharedModule } from './shared/shared.module';
 import { TeamComponent } from './team/team.component';
 import { ProfileDetailsComponent } from './profile-details/profile-details.component';
-
-window['$'] = $;
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './auth/auth-interceptor';
+import { UrlSerializer } from '@angular/router';
+import { LowerCaseUrlSerializer } from './lower-case-url-serializer';
 
 @NgModule({
   declarations: [
@@ -45,6 +46,10 @@ window['$'] = $;
     DialogSaveChanges,
     CardDetailsComponent,
     DialogOkComponent
+  ], 
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: UrlSerializer, useClass: LowerCaseUrlSerializer }
   ],
   bootstrap: [AppComponent]
 })

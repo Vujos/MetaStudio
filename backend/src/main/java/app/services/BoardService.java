@@ -1,6 +1,7 @@
 package app.services;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ import app.models.Board;
 import app.models.Card;
 import app.models.Checklist;
 import app.models.List;
+import app.models.Team;
 import app.models.User;
 import app.repositories.BoardRepository;
 
@@ -49,6 +51,19 @@ public class BoardService {
         Set<String> ids = ((Collection<Board>) boards_2).stream().map(obj -> obj.getId()).collect(Collectors.toSet());
         java.util.List<Board> intersection = ((Collection<Board>) boards).stream()
                 .filter(obj -> ids.contains(obj.getId())).collect(Collectors.toList());
+        for (Board board : intersection) {
+            for (List list : board.getLists()) {
+                Iterator<Card> i = list.getCards().iterator();
+                while (i.hasNext()) {
+                    java.util.List<User> users = ((Collection<User>) i.next().getMembers()).stream()
+                            .filter(obj -> id.equals(obj.getId())).collect(Collectors.toList());
+                    if (users.size() == 0) {
+                        i.remove();
+                    }
+                }
+            }
+            board.getLists().removeIf(obj -> obj.getCards().size() == 0);
+        }
         return intersection;
     }
 
@@ -85,6 +100,23 @@ public class BoardService {
                         }
                     }
                     return board;
+                }
+            }
+            for (Team team : board.get().getTeams()) {
+                for (User user : team.getMembers()) {
+                    if (user.getEmail().equals(email)) {
+                        board.get().getLists().removeIf(obj -> obj.getDeleted() == true);
+                        for (List list : board.get().getLists()) {
+                            list.getCards().removeIf(obj -> obj.getDeleted() == true);
+                            for (Card card : list.getCards()) {
+                                card.getChecklists().removeIf(obj -> obj.getDeleted() == true);
+                                for (Checklist checklist : card.getChecklists()) {
+                                    checklist.getTasks().removeIf(obj -> obj.getDeleted() == true);
+                                }
+                            }
+                        }
+                        return board;
+                    }
                 }
             }
         }

@@ -41,7 +41,7 @@
                     <mat-error>{{formError.mapErrors(form.get('repeatNewPassword'), 'Repeat new password')}}</mat-error>
                 </mat-form-field>
                 <p class="message">{{message}}</p>
-                <button class="register-button" mat-raised-button [routerLink]="['/boards']">BACK</button>
+                <button class="register-button" mat-raised-button [routerLink]="['/']">BACK</button>
                 &nbsp;
                 <button [disabled]="loading ? true : false" class="register-button" mat-raised-button
                     (click)="onSave()">SAVE</button>

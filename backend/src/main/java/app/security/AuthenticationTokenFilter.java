@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,17 +29,26 @@ public class AuthenticationTokenFilter extends UsernamePasswordAuthenticationFil
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
 			throws IOException, ServletException {
-		HttpServletRequest httpRequest = (HttpServletRequest)req;
+		HttpServletRequest httpRequest = (HttpServletRequest) req;
+		HttpServletResponse httpResponse = (HttpServletResponse) res;
 		String authToken = httpRequest.getHeader("Authorization");
 		String username = tokenUtils.getUsername(authToken);
 
-		if((username != null) && (SecurityContextHolder.getContext().getAuthentication() == null)) {
+		if ((username != null) && (SecurityContextHolder.getContext().getAuthentication() == null)) {
 			UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
-			if(tokenUtils.validateToken(authToken, userDetails)) {
-				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+			if (tokenUtils.validateToken(authToken, userDetails)) {
+				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+						userDetails, null, userDetails.getAuthorities());
 				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
 				SecurityContextHolder.getContext().setAuthentication(authentication);
+			} else {
+				String expired = (String) httpRequest.getAttribute("expired");
+				if (expired != null) {
+					httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, expired);
+				} else {
+					httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Login details");
+				}
 			}
 		}
 		chain.doFilter(req, res);

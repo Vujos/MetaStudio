@@ -4,6 +4,7 @@ import { UserService } from '../users/user.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { FormErrorService } from 'src/app/shared/form-error.service';
 import { SnackBarService } from '../shared/snack-bar.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -22,9 +23,13 @@ export class ProfileComponent implements OnInit {
   message: string = "";
   hide = true;
 
-  constructor(private authService: AuthService, private userService: UserService, public readonly formError: FormErrorService, private fb: FormBuilder, private snackBarService: SnackBarService) { }
+  constructor(private authService: AuthService, private router: Router, private userService: UserService, public readonly formError: FormErrorService, private fb: FormBuilder, private snackBarService: SnackBarService) { }
 
   ngOnInit() {
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/']);
+      return
+    }
     this.form = this.fb.group({
       fullName: ['', { validators: [Validators.required] }],
       username: ['', { validators: [Validators.required, Validators.pattern("^(?!@.*$).*")] }],

@@ -1,7 +1,7 @@
 <div class="project-manager" [ngStyle]="{'background-color':boardBackground}">
   <div class="project-manager-menu">
     <div class="project-manager-menu-padding">
-      <button mat-icon-button class="home transform-scale margin-top-10" [routerLink]="['/boards']" matTooltip="Home">
+      <button mat-icon-button class="home transform-scale margin-top-10" [routerLink]="['/']" matTooltip="Home">
         <mat-icon>home</mat-icon>
       </button>
       <span *ngIf="!loading" class="board-title margin-top-10"><b>{{board?.title}}</b></span>
