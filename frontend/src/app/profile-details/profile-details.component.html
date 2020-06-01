@@ -31,7 +31,7 @@
                     [routerLink]="['/board', board.id]">
                     <div class="project-manager-menu-profile-details">
                         <div class="project-manager-menu-padding-profile-details">
-                            <span *ngIf="!loading" class="board-title-profile-details"><b>{{board?.title}}</b></span>
+                            <span class="board-title-profile-details"><b>{{board?.title}}</b></span>
                         </div>
                     </div>
                     <table cellspacing="0" class="lists-profile-details" *ngIf="board?.lists.length > 0">

@@ -32,7 +32,7 @@ export class ProfileDetailsComponent implements OnInit {
 
   selectedTabIndex = 0;
 
-  constructor(private authService: AuthService, private router: Router, private userService: UserService, private route: ActivatedRoute, private boardService: BoardService, private colorsService: ColorsService) {
+  constructor(private authService: AuthService, private router: Router, public userService: UserService, private route: ActivatedRoute, private boardService: BoardService, public colorsService: ColorsService) {
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
    }
 

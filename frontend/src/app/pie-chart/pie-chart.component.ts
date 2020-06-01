@@ -14,7 +14,7 @@ import { PieChartLegend } from '../models/pie-chart-legend.model';
 export class PieChartComponent implements OnInit {
   @Input() pieChartData: PieChartData;
 
-  private title;
+  public title;
   private labels;
   private values;
   private height;
@@ -36,9 +36,9 @@ export class PieChartComponent implements OnInit {
   private arcLabel: any;
   private texts: any;
 
-  private legend = [];
+  legend = [];
 
-  private noData: boolean = false;
+  noData: boolean = false;
 
   constructor(private service: DataService) { }
 

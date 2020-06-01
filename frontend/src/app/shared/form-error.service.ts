@@ -1,4 +1,4 @@
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormGroup, AbstractControl } from '@angular/forms';
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -14,20 +14,20 @@ export class FormErrorService {
     }
 
     errorMap: {
-        [key: string]: (c: FormControl, name: string) => string
+        [key: string]: (c: AbstractControl, name: string) => string
     } = {
-            'required': (c: FormControl, name: string) => `${name} is required`,
-            'email': (c: FormControl, name: string) => `${c.value} is not a valid email`,
-            'maxlength': (c: FormControl, name: string) => `${name} can't have more than ${c.errors['minlength']['requiredLength']} characters`,
-            'minlength': (c: FormControl, name: string) => `${name} must have at least ${c.errors['minlength']['requiredLength']} characters`,
-            'mustMatch': (c: FormControl, name: string) => `${name} must match password`,
-            'invalidMimeType': (c: FormControl, name: string) => `Invalid type, only png and jpg are supported for ${name}`,
-            'pattern'(c: FormControl, name: string) {
+            'required': (c: AbstractControl, name: string) => `${name} is required`,
+            'email': (c: AbstractControl, name: string) => `${c.value} is not a valid email`,
+            'maxlength': (c: AbstractControl, name: string) => `${name} can't have more than ${c.errors['minlength']['requiredLength']} characters`,
+            'minlength': (c: AbstractControl, name: string) => `${name} must have at least ${c.errors['minlength']['requiredLength']} characters`,
+            'mustMatch': (c: AbstractControl, name: string) => `${name} must match password`,
+            'invalidMimeType': (c: AbstractControl, name: string) => `Invalid type, only png and jpg are supported for ${name}`,
+            'pattern'(c: AbstractControl, name: string) {
                 return `${name} ${this.patternMap[c.errors['pattern']['requiredPattern']]}`
             }
         }
 
-    mapErrors(control: FormControl, name: string): string {
+    mapErrors(control: AbstractControl, name: string): string {
         for (let i = 0; i < Object.keys(control.errors || {}).length; i++) {
             if (this.errorMap[Object.keys(control.errors || {})[0]]) {
                 return this.errorMap[Object.keys(control.errors || {})[0]].bind(this)(control, name);

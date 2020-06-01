@@ -43,7 +43,7 @@ export class BoardsComponent implements OnInit {
 
   showTeams: boolean = false;
 
-  constructor(private boardService: BoardService, private snackBarService: SnackBarService, private dialogService: DialogService, private authService: AuthService, private router: Router, private userService: UserService, private webSocketService: WebSocketService, private colorsService: ColorsService, private teamService: TeamService, private routesService: RoutesService) { }
+  constructor(private boardService: BoardService, private snackBarService: SnackBarService, private dialogService: DialogService, private authService: AuthService, private router: Router, private userService: UserService, private webSocketService: WebSocketService, public colorsService: ColorsService, private teamService: TeamService, private routesService: RoutesService) { }
 
   ngOnInit() {
     if (this.authService.isLoggedIn()) {
