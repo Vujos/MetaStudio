@@ -260,6 +260,9 @@ export class BoardComponent {
         attachments: [],
         labels: [],
         checklists: [],
+        done: false,
+        doneDate: null,
+        activities: [],
         deleted: false
       });
       this.updateBoard();

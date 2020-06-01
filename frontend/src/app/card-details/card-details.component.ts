@@ -179,6 +179,8 @@ export class CardDetailsComponent implements OnInit {
   addItem(index) {
     if (this.itemTitle.trim() != "") {
       this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].tasks.push(new Task(null, this.itemTitle, false, new Date(), null, false));
+      this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].done = false;
+      this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].doneDate = null;
       this.updateBoard();
     }
     this.itemTitle = "";
@@ -254,7 +256,7 @@ export class CardDetailsComponent implements OnInit {
   addUser() {
     this.newUser = this.newUser.trim()
     if (this.newUser != "") {
-      if(this.newUser.startsWith("@")){
+      if (this.newUser.startsWith("@")) {
         this.newUser = this.newUser.slice(1);
       }
       this.userService.getByQuery(this.newUser).subscribe(data => {
@@ -279,10 +281,10 @@ export class CardDetailsComponent implements OnInit {
             }
           });
           for (let index = 0; index < data.teams.length; index++) {
-            if(this.data.board.teams.some(team => team.id == data.teams[index].id)){
+            if (this.data.board.teams.some(team => team.id == data.teams[index].id)) {
               userHasBoard = true;
             }
-            
+
           }
           if (userHasBoard) {
             return;
@@ -330,7 +332,7 @@ export class CardDetailsComponent implements OnInit {
     this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists.forEach(checklist => {
       let cards: Card[] = [];
       checklist.tasks.forEach(task => {
-        cards.push(new Card(null, task.title, new Date(), "", [], new Date(), new Date(), [], [], [], false));
+        cards.push(new Card(null, task.title, new Date(), "", [], new Date(), new Date(), [], [], [], false, null, [], false));
       })
       lists.push(new List(null, checklist.title, cards, 1, new Date(), false));
     })
@@ -351,6 +353,7 @@ export class CardDetailsComponent implements OnInit {
           teams: [],
           lists: lists,
           priority: 1,
+          activities: [],
           deleted: false
         }
       ).subscribe(data => {
@@ -371,6 +374,37 @@ export class CardDetailsComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.makeCardBoard()
+      }
+    });
+  }
+
+  doneCard() {
+    this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists.forEach((checklist, checklistIndex) => {
+      checklist.tasks.forEach(task => {
+        if(!task.done){
+          task.done = true;
+          task.doneDate = new Date();
+          this.checkedPlus(checklistIndex);
+        }
+      });
+    });
+    this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].doneDate = new Date();
+    this.updateBoard();
+  }
+
+  doneCardDialog() {
+    let dialogContent = "Mark this card as finished";
+    if(!this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].done){
+      dialogContent = "Mark this card as unfinished";
+    }
+    const dialogRef = this.dialogService.openDialog(DialogSaveChanges, "Confirmation", dialogContent);
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.doneCard()
+      }
+      else{
+        this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].done = !this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].done;
       }
     });
   }

@@ -1,6 +1,7 @@
 import { List } from './list.model';
 import { User } from './user.model';
 import { Team } from './team.model';
+import { Activity } from './activity.model';
 
 export class Board {
     id: string;
@@ -12,9 +13,10 @@ export class Board {
     teams: Team[];
     lists: List[];
     priority: number;
+    activities: Activity[];
     deleted: boolean;
 
-    constructor(id: string, title: string, date: Date, description: string, background: string, users: User[], teams: Team[], lists: List[], priority: number, deleted: boolean) {
+    constructor(id: string, title: string, date: Date, description: string, background: string, users: User[], teams: Team[], lists: List[], priority: number, activities: Activity[], deleted: boolean) {
         this.id = id;
         this.title = title;
         this.date = date;
@@ -24,6 +26,7 @@ export class Board {
         this.teams = teams;
         this.lists = lists;
         this.priority = priority;
+        this.activities = activities;
         this.deleted = deleted;
     }
 }

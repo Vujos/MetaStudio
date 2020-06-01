@@ -32,7 +32,9 @@ export class ProfileDetailsComponent implements OnInit {
 
   selectedTabIndex = 0;
 
-  constructor(private authService: AuthService, private router: Router, private userService: UserService, private route: ActivatedRoute, private boardService: BoardService, private colorsService: ColorsService) { }
+  constructor(private authService: AuthService, private router: Router, private userService: UserService, private route: ActivatedRoute, private boardService: BoardService, private colorsService: ColorsService) {
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+   }
 
   ngOnInit() {
     if (!this.authService.isLoggedIn()) {
@@ -58,7 +60,12 @@ export class ProfileDetailsComponent implements OnInit {
       this.boards.forEach(board => {
         board.lists.forEach(list => {
           list.cards.forEach(card => {
-            let unfinishedCardTasks = this.unfinishedTasks;
+            if(card.done){
+              this.finishedCards++;
+            }
+            else{
+              this.unfinishedCards++;
+            }
             card.checklists.forEach(checklist => {
               checklist.tasks.forEach(task => {
                 if (task.done) {
@@ -69,12 +76,6 @@ export class ProfileDetailsComponent implements OnInit {
                 }
               });
             });
-            if(unfinishedCardTasks!=this.unfinishedTasks){
-              this.unfinishedCards++;
-            }
-            else{
-              this.finishedCards++;
-            }
           });
         });
       });
@@ -92,5 +93,9 @@ export class ProfileDetailsComponent implements OnInit {
 
   selectedTabChange(event) {
     this.selectedTabIndex = event.index;
+  }
+
+  getLocaleDateTime(isoDate){
+    return new Date(isoDate).toLocaleString();
   }
 }

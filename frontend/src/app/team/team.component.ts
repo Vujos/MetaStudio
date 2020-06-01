@@ -124,6 +124,7 @@ export class TeamComponent implements OnInit {
             teams: [this.team],
             lists: [],
             priority: 1,
+            activities: [],
             deleted: false
           }
         ).subscribe(data => {

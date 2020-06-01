@@ -12,6 +12,8 @@ import { TeamService } from '../teams/team.service';
 import { DialogSaveChanges } from '../dialog/dialog-save-changes';
 import { DialogService } from '../shared/dialog.service';
 import { SnackBarService } from '../shared/snack-bar.service';
+import { Activity } from '../models/activity.model';
+import { RoutesService } from '../shared/routes.service';
 
 @Component({
   selector: 'app-boards',
@@ -41,7 +43,7 @@ export class BoardsComponent implements OnInit {
 
   showTeams: boolean = false;
 
-  constructor(private boardService: BoardService, private snackBarService: SnackBarService, private dialogService: DialogService, private authService: AuthService, private router: Router, private userService: UserService, private webSocketService: WebSocketService, private colorsService: ColorsService, private teamService: TeamService) { }
+  constructor(private boardService: BoardService, private snackBarService: SnackBarService, private dialogService: DialogService, private authService: AuthService, private router: Router, private userService: UserService, private webSocketService: WebSocketService, private colorsService: ColorsService, private teamService: TeamService, private routesService: RoutesService) { }
 
   ngOnInit() {
     if (this.authService.isLoggedIn()) {
@@ -88,7 +90,7 @@ export class BoardsComponent implements OnInit {
 
   addBoard() {
     if (this.boardTitle.trim() != "") {
-      this.userService.getByQuery(this.authService.getCurrentUser()).subscribe(currentUser => {
+      
         this.boardService.add(
           {
             id: null,
@@ -96,22 +98,26 @@ export class BoardsComponent implements OnInit {
             date: new Date(),
             description: "",
             background: "#55aa55",
-            users: [currentUser],
+            users: [this.currentUser],
             teams: [],
             lists: [],
             priority: 1,
+            activities: [],
             deleted: false
           }
         ).subscribe(data => {
           let newBoard: any = data;
-          currentUser.boards.push(newBoard);
-          this.userService.update(currentUser.id, currentUser).subscribe(_ => {
+          let activity = new Activity(null, this.currentUser.id, this.currentUser.fullName, "created board", this.routesService.getBoardRoute(newBoard.id), newBoard.title);
+          newBoard.activities.push(activity);
+          this.wc.send("/app/boards/update/" + newBoard.id, {}, JSON.stringify(newBoard));
+          this.currentUser.boards.push(newBoard);
+          this.currentUser.activities.push(activity);
+          this.userService.update(this.currentUser.id, this.currentUser).subscribe(_ => {
             this.loadBoards();
             this.boardTitle = "";
             this.boardTitleElement.nativeElement.focus();
           });
         });
-      })
     }
     else {
       this.boardTitle = "";

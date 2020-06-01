@@ -30,6 +30,9 @@ public class User {
     @DBRef(lazy = true)
     private ArrayList<Board> templates;
 
+    @DBRef
+    private ArrayList<Activity> activities;
+
     @NotNull
     private Boolean deleted = false;
 
@@ -37,7 +40,8 @@ public class User {
     }
 
     public User(String id, String fullName, String username, String email, String password, Date date,
-            ArrayList<Board> boards, ArrayList<Team> teams, ArrayList<Board> templates, @NotNull Boolean deleted) {
+            ArrayList<Board> boards, ArrayList<Team> teams, ArrayList<Board> templates, ArrayList<Activity> activities,
+            @NotNull Boolean deleted) {
         this.id = id;
         this.fullName = fullName;
         this.username = username;
@@ -47,6 +51,7 @@ public class User {
         this.boards = boards;
         this.teams = teams;
         this.templates = templates;
+        this.activities = activities;
         this.deleted = deleted;
     }
 
@@ -120,6 +125,14 @@ public class User {
 
     public void setTemplates(ArrayList<Board> templates) {
         this.templates = templates;
+    }
+
+    public ArrayList<Activity> getActivities() {
+        return activities;
+    }
+
+    public void setActivities(ArrayList<Activity> activities) {
+        this.activities = activities;
     }
 
     public Boolean getDeleted() {

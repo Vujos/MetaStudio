@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import app.models.Activity;
 import app.models.Card;
 import app.models.Checklist;
 import app.repositories.CardRepository;
@@ -18,6 +19,9 @@ public class CardService {
 
     @Autowired
     private ChecklistService checklistService;
+
+    @Autowired
+    private ActivityService activityService;
 
     public CardService() {
     }
@@ -55,6 +59,11 @@ public class CardService {
                 }
                 if (checklistId == null) {
                     checklistService.addChecklist(checklist);
+                }
+            }
+            for(Activity activity: card.getActivities()){
+                if(activity.getId() == null){
+                    activityService.addActivity(activity);
                 }
             }
             cardRepo.save(card);

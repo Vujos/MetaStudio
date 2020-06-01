@@ -363,7 +363,11 @@
                 </span>
                 <div>{{item?.title}}</div>
                 <span class="done-tasks">
-                  <span *ngIf="item.checklists[0]?.tasks.length>0" matTooltip="Completed items" class="done-tasks"
+                  <span *ngIf="item.done" matTooltip="Completed" class="done-tasks"
+                    (click)="openCardDetailsDialog(i, j); $event.stopPropagation()">
+                    <mat-icon>check_circle_outline</mat-icon>
+                  </span>
+                  <span *ngIf="item.checklists[0]?.tasks.length>0 && !item.done" matTooltip="Completed items" class="done-tasks"
                     (click)="openCardDetailsDialog(i, j, 1); $event.stopPropagation()">
                     <mat-icon>check_circle_outline</mat-icon>
                     {{tasksDoneNumber[item?.id]}}

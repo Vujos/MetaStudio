@@ -206,3 +206,42 @@ td {
 .opacity-06 {
   opacity: 0.6;
 }
+
+.link:hover{
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.activities{
+  padding: 20px;
+  text-align: left;
+  display: inline-block;
+}
+
+.activity-date{
+  color: #666;
+  font-size: 14px;
+}
+
+.link-active{
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.profile-picture-profile-details-activity {
+  display: inline-flex;
+  margin: 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  background: #e1e1e1;
+}
+
+.activity {
+  display: inline-block;
+  align-self: center;
+  vertical-align: middle;
+  text-align: left;
+}

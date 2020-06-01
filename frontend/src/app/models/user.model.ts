@@ -1,5 +1,6 @@
 import { Board } from './board.model';
 import { Team } from './team.model';
+import { Activity } from './activity.model';
 
 export class User {
     id: string;
@@ -11,6 +12,7 @@ export class User {
     boards: Board[];
     teams: Team[];
     templates: Board[];
+    activities: Activity[];
     deleted: boolean;
 
     constructor() {
@@ -18,6 +20,7 @@ export class User {
         this.boards = [];
         this.teams = [];
         this.templates = [];
+        this.activities = [];
         this.deleted = false;
     }
 }

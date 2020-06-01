@@ -15,6 +15,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import app.models.Activity;
 import app.models.Board;
 import app.models.Card;
 import app.models.Checklist;
@@ -34,6 +35,9 @@ public class BoardService {
 
     @Autowired
     private ListService listService;
+
+    @Autowired
+    private ActivityService activityService;
 
     @Autowired
     private UserService userService;
@@ -155,6 +159,11 @@ public class BoardService {
                 }
                 if (listId == null) {
                     listService.addList(list);
+                }
+            }
+            for(Activity activity: board.getActivities()){
+                if(activity.getId() == null){
+                    activityService.addActivity(activity);
                 }
             }
             boardRepo.save(board);

@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import app.models.Activity;
 import app.models.Board;
 import app.models.Team;
 import app.models.User;
@@ -32,6 +33,9 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private ActivityService activityService;
 
     public UserService() {
     }
@@ -96,6 +100,11 @@ public class UserService {
         if (oldUser.isPresent()) {
             user.setId(oldUser.get().getId());
             user.setPassword(oldUser.get().getPassword());
+            for(Activity activity: user.getActivities()){
+                if(activity.getId() == null){
+                    activityService.addActivity(activity);
+                }
+            }
             userRepo.save(user);
         }
     }
@@ -105,6 +114,11 @@ public class UserService {
         if (oldUser.isPresent()) {
             user.setId(oldUser.get().getId());
             user.setPassword(passwordEncoder.encode(user.getPassword()));
+            for(Activity activity: user.getActivities()){
+                if(activity.getId() == null){
+                    activityService.addActivity(activity);
+                }
+            }
             userRepo.save(user);
         }
     }

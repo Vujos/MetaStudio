@@ -6,7 +6,8 @@
     <div mat-dialog-title>
       <h3 class="title" matTooltip="Click to rename" [matMenuTriggerFor]="cardRenameMenu"
         #cardRenameTrigger="matMenuTrigger" (menuOpened)="cardRenameInput.focus()">
-        {{data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.title}}</h3>
+        {{data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.title}}
+      </h3>
       <mat-menu #cardRenameMenu="matMenu" (closed)="saveCardTitleDialog()">
         <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
           <mat-form-field>
@@ -19,6 +20,12 @@
             (click)="renameCard();cardRenameInput.focus()">Save</button>
         </div>
       </mat-menu>
+      &nbsp;
+      <mat-checkbox [color]="checkboxColor" matTooltip="Finished"
+        [(ngModel)]="data.board.lists[data.listIndex].cards[data.cardIndex].done"
+        (change)="doneCardDialog()">
+      </mat-checkbox>
+      <br>
       <span *ngFor="let label of data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.labels; index as i">
         <span class="label-card-details transform-scale"
           [ngStyle]="{'background-color':label, 'padding-top':editLabels ? 0 : '10px','padding-bottom':editLabels ? 0 : '10px'}"

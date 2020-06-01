@@ -37,15 +37,21 @@ public class Card {
     @DBRef
     private ArrayList<Checklist> checklists;
 
+    private Boolean done;
+    private Date doneDate;
+
+    @DBRef
+    private ArrayList<Activity> activities;
+
     @NotNull
-	private Boolean deleted = false;
+    private Boolean deleted = false;
 
     public Card() {
     }
 
     public Card(String id, String title, Date date, String description, ArrayList<User> members, Date startDate,
             Date endDate, ArrayList<String> attachments, ArrayList<String> labels, ArrayList<Checklist> checklists,
-            @NotNull Boolean deleted) {
+            Boolean done, Date doneDate, ArrayList<Activity> activities, @NotNull Boolean deleted) {
         this.id = id;
         this.title = title;
         this.date = date;
@@ -56,6 +62,9 @@ public class Card {
         this.attachments = attachments;
         this.labels = labels;
         this.checklists = checklists;
+        this.done = done;
+        this.doneDate = doneDate;
+        this.activities = activities;
         this.deleted = deleted;
     }
 
@@ -137,6 +146,30 @@ public class Card {
 
     public void setChecklists(ArrayList<Checklist> checklists) {
         this.checklists = checklists;
+    }
+
+    public Boolean getDone() {
+        return done;
+    }
+
+    public void setDone(Boolean done) {
+        this.done = done;
+    }
+
+    public Date getDoneDate() {
+        return doneDate;
+    }
+
+    public void setDoneDate(Date doneDate) {
+        this.doneDate = doneDate;
+    }
+
+    public ArrayList<Activity> getActivities() {
+        return activities;
+    }
+
+    public void setActivities(ArrayList<Activity> activities) {
+        this.activities = activities;
     }
 
     public Boolean getDeleted() {

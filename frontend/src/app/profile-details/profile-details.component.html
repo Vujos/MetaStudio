@@ -22,7 +22,6 @@
         </div>
         <mat-tab-group mat-align-tabs="center" class="mat-tab-profile-details"
             (selectedTabChange)="selectedTabChange($event)">
-            <!-- <mat-tab label="Activity">Activity</mat-tab> -->
             <mat-tab label="General" *ngIf="currentUser?.id == loggedUser?.id">
                 <app-profile></app-profile>
             </mat-tab>
@@ -37,7 +36,8 @@
                     </div>
                     <table cellspacing="0" class="lists-profile-details" *ngIf="board?.lists.length > 0">
                         <tr class="example-list-lists-profile-details">
-                            <td class="example-container-lists example-box-lists-profile-details" *ngFor="let list of board?.lists"
+                            <td class="example-container-lists example-box-lists-profile-details"
+                                *ngFor="let list of board?.lists"
                                 [ngStyle]="{'display' : list.cards.length > 0 ? 'initial' : 'none'}">
                                 <div id="{{list.id}}" class="example-list-profile-details">
                                     <div class="list-header-profile-details">
@@ -49,7 +49,8 @@
                                             (click)="$event.stopPropagation()"
                                             [ngStyle]="{'background-color':colorsService.checkBackground(board.background) ?'lightgray':'white'}">
                                             <span *ngFor="let label of item?.labels">
-                                                <span class="label-profile-details" [ngStyle]="{'background-color':label}"></span>
+                                                <span class="label-profile-details"
+                                                    [ngStyle]="{'background-color':label}"></span>
                                                 &nbsp;
                                             </span>
                                             <div>{{item?.title}}</div>
@@ -64,6 +65,29 @@
                             [ngStyle]="{'color': colorsService.checkBackground(board.background) ? 'gray' : 'white'}">
                             No
                             cards</h1>
+                    </div>
+                </div>
+            </mat-tab>
+
+            <mat-tab label="Activity">
+                <br>
+                <div class="activities">
+                    <div *ngFor="let activity of currentUser?.activities">
+                        <div class="profile-picture-profile-details-activity">
+                            <span><b>{{userService.userInitials({"fullName" : activity.performerFullName})}}</b></span>
+                        </div>
+                        &nbsp;&nbsp;
+                        <div class="activity">
+                            <b class="link"
+                                [routerLink]="['/profile', activity.performerId]">{{activity.performerFullName}}</b>
+                            {{activity.action}} <span class="link-active"
+                                [routerLink]="[activity.objectLink]">{{activity.objectName}}</span>
+                            <br>
+                            <span class="activity-date">{{getLocaleDateTime(activity.date)}}<span
+                                    *ngIf="activity.boardName" [routerLink]="['/board', activity.boardId]"> - on board
+                                    {{activity.boardName}}</span></span>
+                        </div>
+                        <br><br>
                     </div>
                 </div>
             </mat-tab>
@@ -84,9 +108,13 @@
                     </div>
                 </div>
                 <br><br><br>
-                <app-pie-chart class="inline-block" *ngIf="currentUser?.id == loggedUser?.id ? selectedTabIndex == 2 : selectedTabIndex == 1" [pieChartData]="pieChartCards">
+                <app-pie-chart class="inline-block"
+                    *ngIf="currentUser?.id == loggedUser?.id ? selectedTabIndex == 3 : selectedTabIndex == 2"
+                    [pieChartData]="pieChartCards">
                 </app-pie-chart>
-                <app-pie-chart class="inline-block" *ngIf="currentUser?.id == loggedUser?.id ? selectedTabIndex == 2 : selectedTabIndex == 1" [pieChartData]="pieChartTasks">
+                <app-pie-chart class="inline-block"
+                    *ngIf="currentUser?.id == loggedUser?.id ? selectedTabIndex == 3 : selectedTabIndex == 2"
+                    [pieChartData]="pieChartTasks">
                 </app-pie-chart>
             </mat-tab>
         </mat-tab-group>

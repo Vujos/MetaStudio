@@ -37,6 +37,9 @@ public class Board {
     private ArrayList<List> lists;
 
     private Integer priority;
+    
+    @DBRef
+    private ArrayList<Activity> activities;
 
     @NotNull
     private Boolean deleted = false;
@@ -45,7 +48,8 @@ public class Board {
     }
 
     public Board(String id, String title, Date date, String description, String background, ArrayList<User> users,
-            ArrayList<Team> teams, ArrayList<List> lists, Integer priority, @NotNull Boolean deleted) {
+            ArrayList<Team> teams, ArrayList<List> lists, Integer priority, ArrayList<Activity> activities,
+            @NotNull Boolean deleted) {
         this.id = id;
         this.title = title;
         this.date = date;
@@ -55,6 +59,7 @@ public class Board {
         this.teams = teams;
         this.lists = lists;
         this.priority = priority;
+        this.activities = activities;
         this.deleted = deleted;
     }
 
@@ -128,6 +133,14 @@ public class Board {
 
     public void setPriority(Integer priority) {
         this.priority = priority;
+    }
+
+    public ArrayList<Activity> getActivities() {
+        return activities;
+    }
+
+    public void setActivities(ArrayList<Activity> activities) {
+        this.activities = activities;
     }
 
     public Boolean getDeleted() {

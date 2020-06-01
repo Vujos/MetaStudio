@@ -74,7 +74,8 @@ export class PieChartComponent implements OnInit {
       .append('div').attr('class', 'item-pie-chart-tooltip').style('display', 'none').style('opacity', 0);
 
     this.labels.forEach((label, index) => {
-      this.legend.push(new PieChartLegend(label, this.color(index)));
+      // this.legend.push(new PieChartLegend(label, this.color(index)));
+      this.legend.unshift(new PieChartLegend(label, this.color(index)));
     });
   }
 
