@@ -24,9 +24,9 @@ import { TeamService } from '../teams/team.service';
 })
 export class BoardComponent {
   @ViewChildren('cardTitleInput') cardTitleElements: ElementRef;
-  @ViewChild('listTitleInput', { static: false }) listTitleElement: ElementRef;
-  @ViewChild('boardMoreTrigger', { static: false }) boardMoreTrigger: MatMenuTrigger;
-  @ViewChild('listMoreTrigger', { static: false }) listMoreTrigger: MatMenuTrigger;
+  @ViewChild('listTitleInput') listTitleElement: ElementRef;
+  @ViewChild('boardMoreTrigger') boardMoreTrigger: MatMenuTrigger;
+  @ViewChild('listMoreTrigger') listMoreTrigger: MatMenuTrigger;
   @Input() data: any;
 
   private dialogRef: MatDialogRef<CardDetailsComponent>;

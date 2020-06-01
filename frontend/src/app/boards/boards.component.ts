@@ -23,8 +23,8 @@ import { RoutesService } from '../shared/routes.service';
 })
 export class BoardsComponent implements OnInit {
 
-  @ViewChild('boardTitleInput', { static: false }) boardTitleElement: ElementRef;
-  @ViewChild('teamNameInput', { static: false }) teamNameElement: ElementRef;
+  @ViewChild('boardTitleInput') boardTitleElement: ElementRef;
+  @ViewChild('teamNameInput') teamNameElement: ElementRef;
 
   loading = true;
 

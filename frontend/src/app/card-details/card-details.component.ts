@@ -23,12 +23,12 @@ import { WebSocketService } from '../web-socket/web-socket.service';
 })
 export class CardDetailsComponent implements OnInit {
 
-  @ViewChild('checklistTrigger', { static: false }) checklistTrigger: MatMenuTrigger;
-  @ViewChild('labelsTrigger', { static: false }) labelsTrigger: MatMenuTrigger;
-  @ViewChild('labelUpdateTrigger', { static: false }) labelUpdateTrigger: MatMenuTrigger;
-  @ViewChild('cardRenameTrigger', { static: false }) cardRenameTrigger: MatMenuTrigger;
-  @ViewChild('checklistRenameTrigger', { static: false }) checklistRenameTrigger: MatMenuTrigger;
-  @ViewChild('addUsersTrigger', { static: false }) addUsersTrigger: MatMenuTrigger;
+  @ViewChild('checklistTrigger') checklistTrigger: MatMenuTrigger;
+  @ViewChild('labelsTrigger') labelsTrigger: MatMenuTrigger;
+  @ViewChild('labelUpdateTrigger') labelUpdateTrigger: MatMenuTrigger;
+  @ViewChild('cardRenameTrigger') cardRenameTrigger: MatMenuTrigger;
+  @ViewChild('checklistRenameTrigger') checklistRenameTrigger: MatMenuTrigger;
+  @ViewChild('addUsersTrigger') addUsersTrigger: MatMenuTrigger;
 
   public cardForm: FormGroup;
 

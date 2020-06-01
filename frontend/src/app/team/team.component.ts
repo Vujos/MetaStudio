@@ -22,8 +22,8 @@ import { WebSocketService } from '../web-socket/web-socket.service';
 })
 export class TeamComponent implements OnInit {
 
-  @ViewChild('boardTitleInput', { static: false }) boardTitleElement: ElementRef;
-  @ViewChild('newMemberInput', { static: false }) newMemberElement: ElementRef;
+  @ViewChild('boardTitleInput') boardTitleElement: ElementRef;
+  @ViewChild('newMemberInput') newMemberElement: ElementRef;
 
   loading = true;
 
