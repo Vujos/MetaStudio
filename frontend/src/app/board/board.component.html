@@ -358,7 +358,7 @@
               <div class="example-box" *ngFor="let item of list.cards; index as j" (click)="openCardDetailsDialog(i, j)"
                 [ngStyle]="{'background-color':lightBackground?'lightgray':'white'}" cdkDrag>
                 <span *ngFor="let label of item?.labels">
-                  <span class="label" [ngStyle]="{'background-color':label}"></span>
+                  <span class="label-board" [ngStyle]="{'background-color':label}"></span>
                   &nbsp;
                 </span>
                 <div>{{item?.title}}</div>
@@ -372,7 +372,7 @@
                   <span *ngIf="item?.members.length==1"
                     [matTooltip]="item?.members[0].fullName + ' (' + item?.members[0].username + ') '"
                     class="done-tasks" (click)="openCardDetailsDialog(i, j, 2); $event.stopPropagation()">
-                    <div class="profile-picture"><b>{{userService.userInitials(item?.members[0])}}</b></div>
+                    <div class="profile-picture-board"><b>{{userService.userInitials(item?.members[0])}}</b></div>
                   </span>
                   <span *ngIf="item?.members.length>1" matTooltip="Members" class="done-tasks"
                     (click)="openCardDetailsDialog(i, j, 2); $event.stopPropagation()">

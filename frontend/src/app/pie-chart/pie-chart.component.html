@@ -1,0 +1,21 @@
+<div class="pie">
+    <div><b>{{title}}</b></div>
+    <br>
+    <div [ngStyle]="{'display': noData? 'none' : 'initial'}">
+        <div id="pie">
+            <svg></svg>
+        </div>
+    </div>
+    <br>
+    <span *ngFor="let legendItem of legend; index as i">
+        <span class="label" [ngStyle]="{'background-color':legendItem.color}">
+        </span>
+        <span>
+            {{legendItem.label}}
+        </span>
+        &nbsp;
+    </span>
+    <div *ngIf="noData">
+        <h1 class="inline-block margin-0 opacity-06">0</h1>
+    </div>
+</div>

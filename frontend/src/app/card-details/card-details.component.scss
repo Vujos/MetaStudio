@@ -6,11 +6,12 @@
     padding: 0 16px;
   }
 
-.label {
+.label-card-details {
     cursor: pointer;
     text-align: center;
     display: inline-block;
     border-radius: 50%;
+    border: 1px solid black;
     padding: 10px;
     color: white;
     text-shadow: #000 0px 0px 1px, #000 0px 0px 1px,#000 0px 0px 1px,#000 0px 0px 1px,#000 0px 0px 1px,#000 0px 0px 1px;
@@ -101,4 +102,10 @@
 
 .width-48 {
     width: 48%;
+}
+
+.transform-scale:hover{
+  transform:scale(1.1,1.1);
+  -webkit-transform:scale(1.1,1.1);
+  -moz-transform:scale(1.1,1.1);
 }

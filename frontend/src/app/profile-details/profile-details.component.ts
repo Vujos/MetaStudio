@@ -1,25 +1,36 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/auth/auth.service';
 import { BoardService } from '../boards/board.service';
 import { ColorsService } from '../shared/colors.service';
 import { UserService } from '../users/user.service';
+import { PieChartData } from '../models/pie-chart-data.model';
 
 @Component({
   selector: 'app-profile-details',
   templateUrl: './profile-details.component.html',
-  styleUrls: ['./profile-details.component.scss']
+  styleUrls: ['./profile-details.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class ProfileDetailsComponent implements OnInit {
+
+  pieChartTasks: PieChartData;
+  pieChartCards: PieChartData;
 
   loadingData = true;
 
   currentUser = undefined;
+  loggedUser = undefined;
 
   boards = [];
 
-  doneTasks = [];
-  tasks = [];
+  finishedTasks = 0;
+  unfinishedTasks = 0;
+
+  finishedCards = 0;
+  unfinishedCards = 0;
+
+  selectedTabIndex = 0;
 
   constructor(private authService: AuthService, private router: Router, private userService: UserService, private route: ActivatedRoute, private boardService: BoardService, private colorsService: ColorsService) { }
 
@@ -28,6 +39,11 @@ export class ProfileDetailsComponent implements OnInit {
       this.router.navigate(['/']);
       return
     }
+
+    this.userService.getByQuery(this.authService.getCurrentUser()).subscribe(loggedUser => {
+      this.loggedUser = loggedUser;
+    });
+
     let idUser = this.route.snapshot.paramMap.get("idUser");
     this.userService.getOne(idUser).subscribe(data => {
       this.loadingData = false;
@@ -42,20 +58,39 @@ export class ProfileDetailsComponent implements OnInit {
       this.boards.forEach(board => {
         board.lists.forEach(list => {
           list.cards.forEach(card => {
+            let unfinishedCardTasks = this.unfinishedTasks;
             card.checklists.forEach(checklist => {
               checklist.tasks.forEach(task => {
                 if (task.done) {
-                  this.doneTasks.push(task);
+                  this.finishedTasks++;
                 }
                 else {
-                  this.tasks.push(task);
+                  this.unfinishedTasks++;
                 }
               });
             });
+            if(unfinishedCardTasks!=this.unfinishedTasks){
+              this.unfinishedCards++;
+            }
+            else{
+              this.finishedCards++;
+            }
           });
         });
       });
+
+      let labelsTasks = ["Finished", "Unfinished"];
+      let valuesTasks = [this.finishedTasks, this.unfinishedTasks];
+      this.pieChartTasks = new PieChartData("Tasks", labelsTasks, valuesTasks, 100, 100);
+
+      let labelsCards = ["Finished", "Unfinished"];
+      let valuesCards = [this.finishedCards, this.unfinishedCards];
+      this.pieChartCards = new PieChartData("Cards", labelsCards, valuesCards, 100, 100);
     });
+    
   }
 
+  selectedTabChange(event) {
+    this.selectedTabIndex = event.index;
+  }
 }

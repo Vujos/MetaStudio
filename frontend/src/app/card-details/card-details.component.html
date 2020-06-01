@@ -20,7 +20,7 @@
         </div>
       </mat-menu>
       <span *ngFor="let label of data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.labels; index as i">
-        <span class="label transform-scale"
+        <span class="label-card-details transform-scale"
           [ngStyle]="{'background-color':label, 'padding-top':editLabels ? 0 : '10px','padding-bottom':editLabels ? 0 : '10px'}"
           [matMenuTriggerFor]="labelUpdateMenu" #labelUpdateTrigger="matMenuTrigger"
           [matTooltip]="editLabels ? 'Click to delete': 'Click to change'"

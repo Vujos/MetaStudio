@@ -39,7 +39,7 @@
         </button>
       </div>
       <mat-divider></mat-divider>
-      <button mat-menu-item [routerLink]="['/profile']">Profile</button>
+      <button mat-menu-item [routerLink]="['/profile', currentUser?.id]">Profile</button>
       <mat-divider></mat-divider>
       <button *ngIf="!showTeams" mat-menu-item (click)="showTeams = true">Teams</button>
       <button mat-menu-item [matMenuTriggerFor]="templatesMenu" #templatesTrigger="matMenuTrigger">Templates</button>

@@ -87,8 +87,8 @@ export class BoardComponent {
       return
     }
     let id = this.route.snapshot.paramMap.get("id");
-    let listIndex = this.route.snapshot.paramMap.get("listIndex");
-    let cardIndex = this.route.snapshot.paramMap.get("cardIndex");
+    let listId = this.route.snapshot.paramMap.get("listId");
+    let cardId = this.route.snapshot.paramMap.get("cardId");
 
     this.boardService.getOne(id, this.authService.getCurrentUser()).subscribe(data => {
       this.loading = false;
@@ -118,7 +118,9 @@ export class BoardComponent {
         })
       })
 
-      if (listIndex && cardIndex) {
+      if (listId && cardId) {
+        let listIndex = this.board.lists.indexOf(this.board.lists.filter((list) => list.id == listId)[0]);
+        let cardIndex = this.board.lists[listIndex].cards.indexOf(this.board.lists[listIndex].cards.filter((card) => card.id == cardId)[0]);
         this.openCardDetailsDialog(listIndex, cardIndex);
       }
     }, error => {
@@ -190,7 +192,7 @@ export class BoardComponent {
   }
 
   ngOnDestroy() {
-    if(this.wc && this.authService.isLoggedIn()){
+    if (this.wc && this.authService.isLoggedIn()) {
       this.wc.disconnect();
     }
   }

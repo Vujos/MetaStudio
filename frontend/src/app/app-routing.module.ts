@@ -15,7 +15,7 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'board/:id', component: BoardComponent },
-  { path: 'board/:id/:listIndex/:cardIndex', component: BoardComponent },
+  { path: 'board/:id/:listId/:cardId', component: BoardComponent },
   { path: 'profile/:idUser', component: ProfileDetailsComponent },
   { path: 'team/:id', component: TeamComponent },
   { path: '**', redirectTo: '', pathMatch: 'full' }

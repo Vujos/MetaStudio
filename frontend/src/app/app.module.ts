@@ -19,6 +19,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './auth/auth-interceptor';
 import { UrlSerializer } from '@angular/router';
 import { LowerCaseUrlSerializer } from './lower-case-url-serializer';
+import { PieChartComponent } from './pie-chart/pie-chart.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { LowerCaseUrlSerializer } from './lower-case-url-serializer';
     ProfileComponent,
     DialogOkComponent,
     TeamComponent,
-    ProfileDetailsComponent
+    ProfileDetailsComponent,
+    PieChartComponent
   ],
   imports: [
     BrowserModule,

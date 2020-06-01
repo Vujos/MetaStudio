@@ -1,0 +1,64 @@
+.pie {
+    padding: 20px;
+}
+
+.label {
+    text-align: center;
+    display: inline-block;
+    border-radius: 50%;
+    padding: 10px;
+}
+
+.inline-block {
+  display: inline-block;
+}
+
+.margin-0 {
+  margin: 0;
+}
+
+.opacity-06 {
+  opacity: 0.6;
+}
+
+.item-pie-chart-tooltip {
+    position: absolute;
+    text-align: center;
+    padding: 8px;
+    font: 14px sans-serif;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 5px;
+    pointer-events: none;
+    vertical-align: middle;
+    z-index: 10;
+    /* -webkit-animation: fadein 0.5s;
+       -moz-animation: fadein 0.5s;
+        -ms-animation: fadein 0.5s;
+         -o-animation: fadein 0.5s;
+            animation: fadein 0.5s; */
+}
+
+/* @keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@-moz-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@-webkit-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@-ms-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@-o-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+} */
