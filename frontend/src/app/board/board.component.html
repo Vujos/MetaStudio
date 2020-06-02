@@ -5,8 +5,9 @@
         <mat-icon>home</mat-icon>
       </button>
       <span *ngIf="!loading" class="board-title margin-top-10"><b>{{board?.title}}</b></span>
-      <button *ngIf="!loading" mat-icon-button class="board-more margin-top-10" #boardMoreButton [matMenuTriggerFor]="boardMoreMenu"
-        #boardMoreTrigger="matMenuTrigger" [ngStyle]="{'color': lightBackground ? 'black' : 'whitesmoke'}">
+      <button *ngIf="!loading" mat-icon-button class="board-more margin-top-10" #boardMoreButton
+        [matMenuTriggerFor]="boardMoreMenu" #boardMoreTrigger="matMenuTrigger"
+        [ngStyle]="{'color': lightBackground ? 'black' : 'whitesmoke'}">
         <mat-icon>more_vert</mat-icon>
       </button>
       <mat-menu class="padding-top-0" #boardMoreMenu="matMenu">
@@ -43,6 +44,37 @@
                 <input #changeBackgroundInput type="color" matInput [(ngModel)]="boardBackground"
                   (change)="changeBackground()">
               </mat-form-field>
+            </div>
+          </mat-menu>
+
+          <button mat-menu-item [matMenuTriggerFor]="activityMenu" #activityTrigger="matMenuTrigger">Activity</button>
+          <mat-menu #activityMenu="matMenu">
+            <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+              <div *ngIf="board?.activities.length==0" class="menu-item-padding">
+                <h3 class="gray">No activities</h3>
+              </div>
+              <div class="activities-board" *ngIf="board?.activities.length>0">
+                <div *ngFor="let activity of board?.activities">
+                  <div class="profile-picture-board-activity">
+                    <span><b>{{userService.userInitials({"fullName" : activity.performerFullName})}}</b></span>
+                  </div>
+                  &nbsp;&nbsp;
+                  <div class="activity-board">
+                    <b class="link" [routerLink]="['/profile', activity.performerId]">{{activity.performerFullName}}</b>
+                    {{activity.action}} <span class="link-active-board"
+                      [routerLink]="[activity.objectLink]">{{activity.objectName}}</span><span> {{activity.location}}
+                    </span><span class="link-active-board"
+                      [routerLink]="[activity.locationObjectLink]">{{activity.locationObjectName}}</span>
+                    <br>
+                    <span class="activity-date-board">{{dateService.getLocaleDateTime(activity.date)}}<span
+                        *ngIf="activity.boardName"> - on
+                        board
+                        <span class="link-active-board"
+                          [routerLink]="['/board', activity.boardId]"><b>{{activity.boardName}}</b></span></span></span>
+                  </div>
+                  <br><br>
+                </div>
+              </div>
             </div>
           </mat-menu>
           <mat-divider></mat-divider>
@@ -93,7 +125,8 @@
             </mat-menu>
           </mat-menu>
 
-          <button mat-menu-item [matMenuTriggerFor]="deleteUsersMenu" #deleteUsersTrigger="matMenuTrigger">Delete
+          <button class="delete" mat-menu-item [matMenuTriggerFor]="deleteUsersMenu"
+            #deleteUsersTrigger="matMenuTrigger">Delete
             users</button>
           <mat-menu #deleteUsersMenu="matMenu">
             <div (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
@@ -140,7 +173,8 @@
             </div>
           </mat-menu>
 
-          <button mat-menu-item [matMenuTriggerFor]="deleteTeamsMenu" #deleteTeamsTrigger="matMenuTrigger">Delete
+          <button class="delete" mat-menu-item [matMenuTriggerFor]="deleteTeamsMenu"
+            #deleteTeamsTrigger="matMenuTrigger">Delete
             teams</button>
           <mat-menu #deleteTeamsMenu="matMenu">
             <div (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
@@ -367,8 +401,8 @@
                     (click)="openCardDetailsDialog(i, j); $event.stopPropagation()">
                     <mat-icon>check_circle_outline</mat-icon>
                   </span>
-                  <span *ngIf="item.checklists[0]?.tasks.length>0 && !item.done" matTooltip="Completed items" class="done-tasks"
-                    (click)="openCardDetailsDialog(i, j, 1); $event.stopPropagation()">
+                  <span *ngIf="item.checklists[0]?.tasks.length>0 && !item.done" matTooltip="Completed items"
+                    class="done-tasks" (click)="openCardDetailsDialog(i, j, 1); $event.stopPropagation()">
                     <mat-icon>check_circle_outline</mat-icon>
                     {{tasksDoneNumber[item?.id]}}
                   </span>

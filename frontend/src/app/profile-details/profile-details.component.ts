@@ -5,6 +5,7 @@ import { BoardService } from '../boards/board.service';
 import { ColorsService } from '../shared/colors.service';
 import { UserService } from '../users/user.service';
 import { PieChartData } from '../models/pie-chart-data.model';
+import { DateService } from '../shared/date.service';
 
 @Component({
   selector: 'app-profile-details',
@@ -32,7 +33,7 @@ export class ProfileDetailsComponent implements OnInit {
 
   selectedTabIndex = 0;
 
-  constructor(private authService: AuthService, private router: Router, public userService: UserService, private route: ActivatedRoute, private boardService: BoardService, public colorsService: ColorsService) {
+  constructor(private authService: AuthService, private router: Router, public userService: UserService, private route: ActivatedRoute, private boardService: BoardService, public colorsService: ColorsService, public dateService: DateService) {
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
    }
 
@@ -95,7 +96,4 @@ export class ProfileDetailsComponent implements OnInit {
     this.selectedTabIndex = event.index;
   }
 
-  getLocaleDateTime(isoDate){
-    return new Date(isoDate).toLocaleString();
-  }
 }

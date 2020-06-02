@@ -1,3 +1,7 @@
+.mat-menu-panel {
+  max-width: initial !important;
+}
+
 .project-manager {
   height: 100%;
 }
@@ -308,6 +312,41 @@ td {
 .margin-top-10 {
   margin-top: 10px !important;
 }
+
+.profile-picture-board-activity {
+  display: inline-flex;
+  margin: 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  background: #e1e1e1;
+}
+
+.activity-board {
+  display: inline-block;
+  align-self: center;
+  vertical-align: middle;
+  text-align: left;
+}
+
+.activity-date-board{
+  color: #666;
+  font-size: 14px;
+}
+
+.link-active-board{
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.activities-board{
+  padding: 20px;
+  text-align: left;
+  display: inline-block;
+}
+
 /*
 .mat-input-element {
   caret-color: black;

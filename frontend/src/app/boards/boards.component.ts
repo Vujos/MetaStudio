@@ -107,11 +107,11 @@ export class BoardsComponent implements OnInit {
           }
         ).subscribe(data => {
           let newBoard: any = data;
-          let activity = new Activity(null, this.currentUser.id, this.currentUser.fullName, "created board", this.routesService.getBoardRoute(newBoard.id), newBoard.title);
-          newBoard.activities.push(activity);
+          let activity = new Activity(null, this.currentUser.id, this.currentUser.fullName, "created board", null, null, this.routesService.getBoardRoute(newBoard.id), newBoard.title);
+          newBoard.activities.unshift(activity);
           this.wc.send("/app/boards/update/" + newBoard.id, {}, JSON.stringify(newBoard));
           this.currentUser.boards.push(newBoard);
-          this.currentUser.activities.push(activity);
+          this.currentUser.activities.unshift(activity);
           this.userService.update(this.currentUser.id, this.currentUser).subscribe(_ => {
             this.loadBoards();
             this.boardTitle = "";

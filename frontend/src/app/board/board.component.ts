@@ -17,6 +17,9 @@ import { DialogService } from '../shared/dialog.service';
 import { SnackBarService } from '../shared/snack-bar.service';
 import { Team } from '../models/team.model';
 import { TeamService } from '../teams/team.service';
+import { Activity } from '../models/activity.model';
+import { RoutesService } from '../shared/routes.service';
+import { DateService } from '../shared/date.service';
 
 @Component({
   selector: 'app-board',
@@ -81,7 +84,7 @@ export class BoardComponent {
 
   private wc;
 
-  constructor(private dialog: MatDialog, private route: ActivatedRoute, private boardService: BoardService, private webSocketService: WebSocketService, public userService: UserService, private authService: AuthService, private router: Router, private colorsService: ColorsService, private dialogService: DialogService, private snackBarService: SnackBarService, private teamService: TeamService) { }
+  constructor(private dialog: MatDialog, private route: ActivatedRoute, private routesService: RoutesService, private boardService: BoardService, private webSocketService: WebSocketService, public userService: UserService, private authService: AuthService, private router: Router, private colorsService: ColorsService, private dialogService: DialogService, private snackBarService: SnackBarService, private teamService: TeamService, public dateService: DateService) { }
 
   ngOnInit() {
     if (!this.authService.isLoggedIn()) {
@@ -237,7 +240,7 @@ export class BoardComponent {
           deleted: false
         }
       );
-      this.updateBoard();
+      this.addActivity(this.currentUser.id, this.currentUser.fullName, "added list", this.routesService.getBoardRoute(this.board.id), this.listTitle.trim(), "to board");
     }
     this.listTitle = "";
     this.listTitleElement.nativeElement.focus();
@@ -276,7 +279,7 @@ export class BoardComponent {
   saveBoardDescription() {
     this.board.description = this.boardDescription.trim();
     this.boardDescription = this.board.description;
-    this.updateBoard();
+    this.addActivity(this.currentUser.id, this.currentUser.fullName, "updated description of board");
     this.snackBarService.openSuccessSnackBar("Successfully saved", "X");
   }
 
@@ -295,7 +298,7 @@ export class BoardComponent {
     if (this.boardTitle.trim() != this.board.title && this.boardTitle.trim() != "") {
       this.board.title = this.boardTitle.trim();
       this.boardTitle = this.board.title;
-      this.updateBoard();
+      this.addActivity(this.currentUser.id, this.currentUser.fullName, "renamed board");
       this.snackBarService.openSuccessSnackBar("Successfully saved", "X");
     }
     else {
@@ -338,13 +341,13 @@ export class BoardComponent {
 
   changeBackground() {
     this.board.background = this.boardBackground;
-    this.updateBoard();
+    this.addActivity(this.currentUser.id, this.currentUser.fullName, "changed background of board");
     this.lightBackground = this.colorsService.checkBackground(this.boardBackground);
   }
 
   deleteBoard() {
     this.board.deleted = true;
-    this.updateBoard();
+    this.addActivity(this.currentUser.id, this.currentUser.fullName, "deleted board");
     this.router.navigate(['/']);
   }
 
@@ -362,7 +365,7 @@ export class BoardComponent {
     this.userService.leaveBoard(this.board.id, this.currentUser.id).subscribe(data => {
       let index = this.board.users.findIndex((user) => user.id == this.currentUser.id);
       this.board.users.splice(index, 1);
-      this.updateBoard();
+      this.addActivity(this.currentUser.id, this.currentUser.fullName, "left board");
       this.wc.disconnect();
       this.router.navigate(['/']);
     });
@@ -396,7 +399,7 @@ export class BoardComponent {
             return;
           }
           this.board.users.push(data);
-          this.updateBoard();
+          this.addActivity(this.currentUser.id, this.currentUser.fullName, "added user", this.routesService.getUserRoute(data.id), data.fullName, "to board");
           this.board.users = []
           data.boards.push(this.board);
           this.wc.send("/app/users/update/" + data.email, {}, JSON.stringify(data));
@@ -567,7 +570,7 @@ export class BoardComponent {
 
   addTemplate() {
     this.currentUser.templates.push(this.board);
-    this.wc.send("/app/users/update/" + this.currentUser.email, {}, JSON.stringify(this.currentUser));
+    this.userService.update(this.currentUser.id, this.currentUser).subscribe();
     this.snackBarService.openSuccessSnackBar("Successfully saved", "X");
   }
 
@@ -776,6 +779,14 @@ export class BoardComponent {
 
   updateBoard() {
     this.wc.send("/app/boards/update/" + this.board.id, {}, JSON.stringify(this.board));
+  }
+
+  addActivity(performerId: string, performerFullName: string, action: string, objectLink: string = null, objectName: string = null, location: string = null, locationObjectLink: string = null, locationObjectName: string = null){
+    let activity = new Activity(null, performerId, performerFullName, action, this.board.id, this.board.title, objectLink, objectName, location, locationObjectLink, locationObjectName);
+    this.board.activities.unshift(activity);
+    this.updateBoard();
+    this.currentUser.activities.unshift(activity);
+    this.userService.update(this.currentUser.id, this.currentUser).subscribe();
   }
 
   logout() {

@@ -13,7 +13,7 @@ export class Activity {
     boardName: string
     deleted: boolean;
 
-    constructor(id: string, performerId: string, performerFullName: string, action: string, objectLink: string, objectName: string, boardId: string = null, boardName: string = null, date: Date = new Date(), location: string = null, locationObjectLink: string = null, locationObjectName: string = null, deleted: boolean = false) {
+    constructor(id: string, performerId: string, performerFullName: string, action: string, boardId: string = null, boardName: string = null, objectLink: string = null, objectName: string = null, location: string = null, locationObjectLink: string = null, locationObjectName: string = null, date: Date = new Date(), deleted: boolean = false) {
         this.id = id;
         this.performerId = performerId;
         this.performerFullName = performerFullName;
