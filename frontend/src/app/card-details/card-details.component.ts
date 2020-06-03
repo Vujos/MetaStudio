@@ -253,10 +253,6 @@ export class CardDetailsComponent implements OnInit {
     this.data.checkedNumber[index]--;
   }
 
-  updateBoard() {
-    this.wc.send("/app/boards/update/" + this.data.board.id, {}, JSON.stringify(this.data.board));
-  }
-
   addUser() {
     this.newUser = this.newUser.trim()
     if (this.newUser != "") {
@@ -295,11 +291,11 @@ export class CardDetailsComponent implements OnInit {
             return;
           }
           data.boards.push(this.data.board);
-          this.wc.send("/app/users/update/" + data.email, {}, JSON.stringify(data));
+          this.webSocketService.updateUser(data, this.wc);
           data.boards = [];
           this.data.board.users.push(data);
           this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].members = cardMembers;
-          this.updateBoard();
+          this.webSocketService.updateBoard(this.data.board, this.wc);
           this.snackBarService.openSuccessSnackBar("Successfully added", "X");
         }
       }, error => {
@@ -366,7 +362,7 @@ export class CardDetailsComponent implements OnInit {
         let newBoard: any = data;
         users.forEach(user => {
           user.boards.push(newBoard);
-          this.wc.send("/app/users/update/" + user.email, {}, JSON.stringify(user));
+          this.webSocketService.updateUser(user, this.wc);
         })
         this.dialogRef.close();
         this.router.navigate(['/']);
@@ -422,8 +418,8 @@ export class CardDetailsComponent implements OnInit {
   addActivity(performerId: string, performerFullName: string, action: string, objectLink: string = null, objectName: string = null, location: string = null, locationObjectLink: string = null, locationObjectName: string = null, boardId: string = this.data.board.id, boardName: string = this.data.board.title) {
     let activity = new Activity(null, performerId, performerFullName, action, boardId, boardName, objectLink, objectName, location, locationObjectLink, locationObjectName);
     this.data.board.activities.unshift(activity);
-    this.updateBoard();
+    this.webSocketService.updateBoard(this.data.board, this.wc);
     this.currentUser.activities.unshift(activity);
-    this.userService.update(this.currentUser.id, this.currentUser).subscribe();
+    this.webSocketService.updateUser(this.currentUser, this.wc);
   }
 }

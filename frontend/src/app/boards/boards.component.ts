@@ -1,19 +1,19 @@
-import { Component, OnInit, ViewChild, ElementRef, ViewEncapsulation } from '@angular/core';
-import { BoardService } from './board.service';
-import { Board } from '../models/board.model';
-import { AuthService } from 'src/app/auth/auth.service';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/auth/auth.service';
+import { DialogSaveChanges } from '../dialog/dialog-save-changes';
+import { Activity } from '../models/activity.model';
+import { Board } from '../models/board.model';
+import { Team } from '../models/team.model';
+import { ColorsService } from '../shared/colors.service';
+import { DialogService } from '../shared/dialog.service';
+import { RoutesService } from '../shared/routes.service';
+import { SnackBarService } from '../shared/snack-bar.service';
+import { TeamService } from '../teams/team.service';
 import { UserService } from '../users/user.service';
 import { WebSocketService } from '../web-socket/web-socket.service';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { ColorsService } from '../shared/colors.service';
-import { Team } from '../models/team.model';
-import { TeamService } from '../teams/team.service';
-import { DialogSaveChanges } from '../dialog/dialog-save-changes';
-import { DialogService } from '../shared/dialog.service';
-import { SnackBarService } from '../shared/snack-bar.service';
-import { Activity } from '../models/activity.model';
-import { RoutesService } from '../shared/routes.service';
+import { BoardService } from './board.service';
 
 @Component({
   selector: 'app-boards',
@@ -55,69 +55,69 @@ export class BoardsComponent implements OnInit {
       return;
     }
 
-    this.wc = this.webSocketService.getClient();
-    this.wc.connect({}, () => {
-      this.wc.subscribe("/topic/users/update/" + this.authService.getCurrentUser(), (msg) => {
-        if (JSON.parse(msg.body).statusCodeValue == 204) {
-          this.loadBoards();
-          this.loadTeams();
-        }
-        else {
-          let data = JSON.parse(msg.body).body;
-          this.boards = data.boards;
-          this.teams = data.teams;
-          if (this.teams.length > 0) {
-            this.showTeams = true;
-          }
-          else {
-            this.showTeams = false;
-          }
-        }
-
-      })
-    })
-
     this.userService.getByQuery(this.authService.getCurrentUser()).subscribe(currentUser => {
       this.currentUser = currentUser;
+
+      this.wc = this.webSocketService.getClient();
+      this.wc.connect({}, () => {
+        this.wc.subscribe("/topic/users/update/" + this.authService.getCurrentUser(), (msg) => {
+          this.userService.getOne(this.currentUser.id).subscribe(user => {
+            let data = user;
+            this.boards = data.boards;
+            this.teams = data.teams;
+            if (this.teams.length > 0) {
+              this.showTeams = true;
+            }
+            else {
+              this.showTeams = false;
+            }
+          }, error => {
+            if (error.status == 204) {
+              this.loadBoards();
+              this.loadTeams();
+            }
+          })
+        })
+      })
     })
   }
 
   ngOnDestroy() {
-    if(this.wc && this.authService.isLoggedIn()){
+    if (this.wc && this.authService.isLoggedIn()) {
       this.wc.disconnect();
     }
   }
 
   addBoard() {
     if (this.boardTitle.trim() != "") {
-      
-        this.boardService.add(
-          {
-            id: null,
-            title: this.boardTitle.trim(),
-            date: new Date(),
-            description: "",
-            background: "#55aa55",
-            users: [this.currentUser],
-            teams: [],
-            lists: [],
-            priority: 1,
-            activities: [],
-            deleted: false
-          }
-        ).subscribe(data => {
-          let newBoard: any = data;
-          let activity = new Activity(null, this.currentUser.id, this.currentUser.fullName, "created board", null, null, this.routesService.getBoardRoute(newBoard.id), newBoard.title);
-          newBoard.activities.unshift(activity);
-          this.wc.send("/app/boards/update/" + newBoard.id, {}, JSON.stringify(newBoard));
-          this.currentUser.boards.push(newBoard);
-          this.currentUser.activities.unshift(activity);
-          this.userService.update(this.currentUser.id, this.currentUser).subscribe(_ => {
-            this.loadBoards();
-            this.boardTitle = "";
-            this.boardTitleElement.nativeElement.focus();
-          });
+
+      this.boardService.add(
+        {
+          id: null,
+          title: this.boardTitle.trim(),
+          date: new Date(),
+          description: "",
+          background: "#55aa55",
+          users: [this.currentUser],
+          teams: [],
+          lists: [],
+          priority: 1,
+          activities: [],
+          deleted: false
+        }
+      ).subscribe(data => {
+        let newBoard: any = data;
+        let activity = new Activity(null, this.currentUser.id, this.currentUser.fullName, "created board", null, null, this.routesService.getBoardRoute(newBoard.id), newBoard.title);
+        newBoard.activities.unshift(activity);
+        this.webSocketService.updateBoard(newBoard, this.wc)
+        this.currentUser.boards.push(newBoard);
+        this.currentUser.activities.unshift(activity);
+        this.userService.update(this.currentUser.id, this.currentUser).subscribe(_ => {
+          this.loadBoards();
+          this.boardTitle = "";
+          this.boardTitleElement.nativeElement.focus();
         });
+      });
     }
     else {
       this.boardTitle = "";
@@ -160,7 +160,7 @@ export class BoardsComponent implements OnInit {
 
   deleteTemplate(index) {
     this.currentUser.templates.splice(index, 1);
-    this.updateUser(this.currentUser);
+    this.webSocketService.updateUser(this.currentUser, this.wc);
     this.snackBarService.openSuccessSnackBar("Successfully deleted", "X");
 
   }
@@ -208,7 +208,7 @@ export class BoardsComponent implements OnInit {
     moveItemInArray(this.boards, event.previousIndex, event.currentIndex);
     this.userService.getByQuery(this.authService.getCurrentUser()).subscribe(currentUser => {
       currentUser.boards = this.boards;
-      this.updateUser(currentUser);
+      this.webSocketService.updateUser(currentUser, this.wc);
     })
   }
 
@@ -216,12 +216,8 @@ export class BoardsComponent implements OnInit {
     moveItemInArray(this.teams, event.previousIndex, event.currentIndex);
     this.userService.getByQuery(this.authService.getCurrentUser()).subscribe(currentUser => {
       currentUser.teams = this.teams;
-      this.updateUser(currentUser);
+      this.webSocketService.updateUser(currentUser, this.wc);
     })
-  }
-
-  updateUser(user) {
-    this.userService.update(user.id, user).subscribe();
   }
 
 }

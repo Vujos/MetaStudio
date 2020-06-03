@@ -7,8 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,9 +22,6 @@ import app.services.TeamService;
 @RestController
 @RequestMapping("/api/teams")
 public class TeamController {
-
-    @Autowired
-    private SimpMessagingTemplate template;
 
     @Autowired
     UserController userController;
@@ -55,28 +50,12 @@ public class TeamController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     public ResponseEntity<Team> updateTeam(@PathVariable String id, @RequestBody Team team) {
-        teamService.updateTeam(id, team);
-        return new ResponseEntity<Team>(team, HttpStatus.CREATED);
+        return teamService.updateTeamWebSocket(id, team);
     }
 
     @MessageMapping("/teams/update/{id}")
-    public ResponseEntity<Team> updateTeamWebSocket(@DestinationVariable String id, @Payload Team team)
-            throws Exception {
-        if (team.getDeleted() == true) {
-            this.teamService.removeTeam(id);
-            for (User user : team.getMembers()) {
-                this.template.convertAndSend("/topic/users/update/" + user.getEmail(),
-                        new ResponseEntity<>(HttpStatus.NO_CONTENT));
-            }
-            teamService.updateTeam(id, team);
-            return new ResponseEntity<Team>(HttpStatus.NO_CONTENT);
-        }
-        teamService.updateTeam(id, team);
-        Optional<Team> updatedTeam = this.teamService.getTeamByIdInternalServer(id);
-        if (updatedTeam.isPresent()) {
-            return new ResponseEntity<Team>(updatedTeam.get(), HttpStatus.CREATED);
-        }
-        return new ResponseEntity<Team>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<HttpStatus> updateTeamWebSocket(@DestinationVariable String id) throws Exception {
+        return new ResponseEntity<HttpStatus>(HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)

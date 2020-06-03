@@ -5,21 +5,21 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
-import { Board } from '../models/board.model';
 import { BoardService } from '../boards/board.service';
 import { CardDetailsComponent } from '../card-details/card-details.component';
 import { DialogOkComponent } from '../dialog-ok/dialog-ok.component';
 import { DialogSaveChanges } from '../dialog/dialog-save-changes';
+import { Activity } from '../models/activity.model';
+import { Board } from '../models/board.model';
+import { Team } from '../models/team.model';
+import { ColorsService } from '../shared/colors.service';
+import { DateService } from '../shared/date.service';
+import { DialogService } from '../shared/dialog.service';
+import { RoutesService } from '../shared/routes.service';
+import { SnackBarService } from '../shared/snack-bar.service';
+import { TeamService } from '../teams/team.service';
 import { UserService } from '../users/user.service';
 import { WebSocketService } from '../web-socket/web-socket.service';
-import { ColorsService } from '../shared/colors.service';
-import { DialogService } from '../shared/dialog.service';
-import { SnackBarService } from '../shared/snack-bar.service';
-import { Team } from '../models/team.model';
-import { TeamService } from '../teams/team.service';
-import { Activity } from '../models/activity.model';
-import { RoutesService } from '../shared/routes.service';
-import { DateService } from '../shared/date.service';
 
 @Component({
   selector: 'app-board',
@@ -84,7 +84,7 @@ export class BoardComponent {
 
   private wc;
 
-  constructor(private dialog: MatDialog, private route: ActivatedRoute, private routesService: RoutesService, private boardService: BoardService, private webSocketService: WebSocketService, public userService: UserService, private authService: AuthService, private router: Router, private colorsService: ColorsService, private dialogService: DialogService, private snackBarService: SnackBarService, private teamService: TeamService, public dateService: DateService) { 
+  constructor(private dialog: MatDialog, private route: ActivatedRoute, private routesService: RoutesService, private boardService: BoardService, private webSocketService: WebSocketService, public userService: UserService, private authService: AuthService, private router: Router, private colorsService: ColorsService, private dialogService: DialogService, private snackBarService: SnackBarService, private teamService: TeamService, public dateService: DateService) {
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
   }
 
@@ -148,59 +148,51 @@ export class BoardComponent {
     this.wc = this.webSocketService.getClient();
     this.wc.connect({}, () => {
       this.wc.subscribe("/topic/boards/update/" + id, (msg) => {
-        if (JSON.parse(msg.body).statusCodeValue == 204) {
+        if (JSON.parse(msg.body).statusCodeValue == 204 && this.board.users[0].id != this.currentUser.id) {
           const dialogRef = this.dialogService.openDialog(DialogOkComponent, "Content Deleted", "The owner has deleted the board");
-
           dialogRef.afterClosed().subscribe(result => {
             this.router.navigate(['/']);
           });
-
         }
         else {
-          let data = JSON.parse(msg.body).body;
-          this.board = data;
+          this.boardService.getOne(id, this.authService.getCurrentUser()).subscribe(board => {
+            this.board = board;
 
-          if (!this.board.users.some(user => user.id == this.currentUser.id)) {
-            const dialogRef = this.dialogService.openDialog(DialogOkComponent, "Content not available", "You have been deleted from board");
-
-            dialogRef.afterClosed().subscribe(result => {
-              this.router.navigate(['/']);
-            });
-          }
-
-          if (this.dialogRef && this.dialogRef.componentInstance) {
-            if (this.board.lists[this.dialogRef.componentInstance.data.listIndex].cards[this.dialogRef.componentInstance.data.cardIndex] == undefined || this.board.lists[this.dialogRef.componentInstance.data.listIndex].cards[this.dialogRef.componentInstance.data.cardIndex].id != this.dialogRef.componentInstance.data.board.lists[this.dialogRef.componentInstance.data.listIndex].cards[this.dialogRef.componentInstance.data.cardIndex].id) {
-              this.dialogRef.close();
+            if (this.dialogRef && this.dialogRef.componentInstance) {
+              if (this.board.lists[this.dialogRef.componentInstance.data.listIndex].cards[this.dialogRef.componentInstance.data.cardIndex] == undefined || this.board.lists[this.dialogRef.componentInstance.data.listIndex].cards[this.dialogRef.componentInstance.data.cardIndex].id != this.dialogRef.componentInstance.data.board.lists[this.dialogRef.componentInstance.data.listIndex].cards[this.dialogRef.componentInstance.data.cardIndex].id) {
+                this.dialogRef.close();
+              }
+              this.dialogRef.componentInstance.data.board = board;
+              this.dialogRef.componentInstance.data.checkedNumber = this.calculateCheckedTasks(this.dialogRef.componentInstance.data.listIndex, this.dialogRef.componentInstance.data.cardIndex);
             }
-            this.dialogRef.componentInstance.data.board = data;
-            this.dialogRef.componentInstance.data.checkedNumber = this.calculateCheckedTasks(this.dialogRef.componentInstance.data.listIndex, this.dialogRef.componentInstance.data.cardIndex);
-          }
-          this.connectedTo = [];
-          for (let list of this.board.lists) {
-            this.connectedTo.push(list.id);
-          };
-          this.boardDescription = this.board.description;
-          this.boardTitle = this.board.title;
-          this.boardBackground = this.board.background;
-          this.lightBackground = this.colorsService.checkBackground(this.boardBackground);
+            this.connectedTo = [];
+            for (let list of this.board.lists) {
+              this.connectedTo.push(list.id);
+            };
+            this.boardDescription = this.board.description;
+            this.boardTitle = this.board.title;
+            this.boardBackground = this.board.background;
+            this.lightBackground = this.colorsService.checkBackground(this.boardBackground);
 
-          this.board.lists.forEach(list => {
-            list.cards.forEach(card => {
-              let done = 0;
-              let size = 0;
-              card.checklists.forEach(checklist => {
-                checklist.tasks.forEach(task => {
-                  size += 1;
-                  if (task.done) {
-                    done += 1;
-                  }
-                });
+            this.board.lists.forEach(list => {
+              list.cards.forEach(card => {
+                let done = 0;
+                let size = 0;
+                card.checklists.forEach(checklist => {
+                  checklist.tasks.forEach(task => {
+                    size += 1;
+                    if (task.done) {
+                      done += 1;
+                    }
+                  });
+                })
+                this.tasksDoneNumber[card.id] = done + "/" + size;
               })
-              this.tasksDoneNumber[card.id] = done + "/" + size;
             })
+          }, error => {
+            this.router.navigate(['/']);
           })
         }
-
       })
     })
   }
@@ -214,19 +206,19 @@ export class BoardComponent {
   drop(event: CdkDragDrop<string[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-      this.updateBoard();
+      this.webSocketService.updateBoard(this.board, this.wc);
     } else {
       transferArrayItem(event.previousContainer.data,
         event.container.data,
         event.previousIndex,
         event.currentIndex);
-      this.updateBoard();
+      this.webSocketService.updateBoard(this.board, this.wc);
     }
   }
 
   dropList(event: CdkDragDrop<string[]>) {
     moveItemInArray(this.board.lists, event.previousIndex, event.currentIndex);
-    this.updateBoard();
+    this.webSocketService.updateBoard(this.board, this.wc);
   }
 
   showAddList() {
@@ -357,8 +349,8 @@ export class BoardComponent {
 
   deleteBoard() {
     this.board.deleted = true;
-    this.addActivity(this.currentUser.id, this.currentUser.fullName, "deleted board");
-    this.router.navigate(['/']);
+    this.addActivityWebSocketFromServer(this.currentUser.id, this.currentUser.fullName, "deleted board");
+    //this.router.navigate(['/']);
   }
 
   deleteBoardDialog() {
@@ -412,7 +404,7 @@ export class BoardComponent {
           this.addActivity(this.currentUser.id, this.currentUser.fullName, "added user", this.routesService.getUserRoute(data.id), data.fullName, "to board");
           this.board.users = []
           data.boards.push(this.board);
-          this.wc.send("/app/users/update/" + data.email, {}, JSON.stringify(data));
+          this.webSocketService.updateUser(data, this.wc);
           this.resetAddUser();
           this.snackBarService.openSuccessSnackBar("Successfully added", "X");
         }
@@ -432,7 +424,7 @@ export class BoardComponent {
 
   deleteUser(index) {
     this.userService.leaveBoard(this.board.id, this.board.users[index].id).subscribe(data => {
-      this.wc.send("/app/users/update/" + this.board.users[index].email, {}, JSON.stringify(this.board.users[index]));
+      this.webSocketService.notifyUser(this.board.users[index], this.wc);
       this.board.lists.forEach((list, listIndex) => {
         list.cards.forEach((card, cardIndex) => {
           members_loop:
@@ -483,7 +475,7 @@ export class BoardComponent {
           this.addActivity(this.currentUser.id, this.currentUser.fullName, "added team", this.routesService.getTeamRoute(this.newTeam.id), this.newTeam.name, "to board");
           this.board.teams = []
           data.boards.push(this.board);
-          this.wc.send("/app/teams/update/" + data.id, {}, JSON.stringify(data));
+          this.webSocketService.updateTeam(data, this.wc);
           this.resetAddTeam();
           this.snackBarService.openSuccessSnackBar("Successfully added", "X");
         }
@@ -581,7 +573,7 @@ export class BoardComponent {
 
   addTemplate() {
     this.currentUser.templates.push(this.board);
-    this.userService.update(this.currentUser.id, this.currentUser).subscribe();
+    this.webSocketService.updateUser(this.currentUser, this.wc);
     this.snackBarService.openSuccessSnackBar("Successfully saved", "X");
   }
 
@@ -683,7 +675,7 @@ export class BoardComponent {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.board.lists[index].deleted = true;
-        this.updateBoard();
+        this.webSocketService.updateBoard(this.board, this.wc);
       }
     });
   }
@@ -695,7 +687,7 @@ export class BoardComponent {
         index--;
       }
       this.board.lists.splice(index, 0, this.board.lists.splice(indexFromList, 1)[0]);
-      this.updateBoard();
+      this.webSocketService.updateBoard(this.board, this.wc);
       this.selectedMoveList = undefined;
       this.selectedMoveListPosition = undefined;
       this.snackBarService.openSuccessSnackBar("Successfully moved", "X");
@@ -762,7 +754,7 @@ export class BoardComponent {
             this.addActivity(this.currentUser.id, this.currentUser.fullName, activityAction, this.routesService.getTeamRoute(this.selectedTeam.id), this.selectedTeam.name);
             this.board.users = []
             newUser.boards.push(this.board);
-            this.wc.send("/app/users/update/" + newUser.email, {}, JSON.stringify(newUser));
+            this.webSocketService.updateUser(newUser, this.wc);
           }
         }
         this.resetAddUsersFromTeam();
@@ -793,16 +785,20 @@ export class BoardComponent {
     this.dialogRef = this.dialog.open(CardDetailsComponent, { data: { board: this.board, listIndex: listIndex, cardIndex: cardIndex, checkedNumber: this.calculateCheckedTasks(listIndex, cardIndex), tabIndex: tabIndex }, autoFocus: false, width: '50%' });
   }
 
-  updateBoard() {
-    this.wc.send("/app/boards/update/" + this.board.id, {}, JSON.stringify(this.board));
-  }
-
   addActivity(performerId: string, performerFullName: string, action: string, objectLink: string = null, objectName: string = null, location: string = null, locationObjectLink: string = null, locationObjectName: string = null, boardId: string = this.board.id, boardName: string = this.board.title) {
     let activity = new Activity(null, performerId, performerFullName, action, boardId, boardName, objectLink, objectName, location, locationObjectLink, locationObjectName);
     this.board.activities.unshift(activity);
-    this.updateBoard();
+    this.webSocketService.updateBoard(this.board, this.wc);
     this.currentUser.activities.unshift(activity);
-    this.userService.update(this.currentUser.id, this.currentUser).subscribe();
+    this.webSocketService.updateUser(this.currentUser, this.wc);
+  }
+
+  addActivityWebSocketFromServer(performerId: string, performerFullName: string, action: string, objectLink: string = null, objectName: string = null, location: string = null, locationObjectLink: string = null, locationObjectName: string = null, boardId: string = this.board.id, boardName: string = this.board.title) {
+    let activity = new Activity(null, performerId, performerFullName, action, boardId, boardName, objectLink, objectName, location, locationObjectLink, locationObjectName);
+    this.board.activities.unshift(activity);
+    this.boardService.update(this.board.id, this.board).subscribe();
+    this.currentUser.activities.unshift(activity);
+    this.webSocketService.updateUser(this.currentUser, this.wc);
   }
 
   logout() {

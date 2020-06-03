@@ -72,32 +72,25 @@ export class TeamComponent implements OnInit {
     this.wc = this.webSocketService.getClient();
     this.wc.connect({}, () => {
       this.wc.subscribe("/topic/teams/update/" + id, (msg) => {
-        if (JSON.parse(msg.body).statusCodeValue == 204) {
+        if (JSON.parse(msg.body).statusCodeValue == 204 && this.team.members[0].id != this.currentUser.id) {
           const dialogRef = this.dialogService.openDialog(DialogOkComponent, "Content Deleted", "The owner has deleted the team");
-
           dialogRef.afterClosed().subscribe(result => {
             this.router.navigate(['/']);
           });
-
         }
         else {
-          let data = JSON.parse(msg.body).body;
-          this.team = data;
+          this.teamService.getOne(id, this.authService.getCurrentUser()).subscribe(team => {
+            let data = team;
+            this.team = data;
 
-          if (!this.team.members.some(member => member.id == this.currentUser.id)) {
-            const dialogRef = this.dialogService.openDialog(DialogOkComponent, "Content not available", "You have been deleted from team");
-
-            dialogRef.afterClosed().subscribe(result => {
-              this.router.navigate(['/']);
-            });
-          }
-
-          this.teamDescription = this.team.description;
-          this.teamName = this.team.name;
-          this.teamBackground = this.team.background;
-          this.lightBackground = this.colorsService.checkBackground(this.teamBackground);
+            this.teamDescription = this.team.description;
+            this.teamName = this.team.name;
+            this.teamBackground = this.team.background;
+            this.lightBackground = this.colorsService.checkBackground(this.teamBackground);
+          }, error => {
+            this.router.navigate(['/']);
+          })
         }
-
       })
     })
 
@@ -133,9 +126,9 @@ export class TeamComponent implements OnInit {
           let newBoard: any = data;
           let activity = new Activity(null, this.currentUser.id, this.currentUser.fullName, "created board", null, null, this.routesService.getBoardRoute(newBoard.id), newBoard.title);
           newBoard.activities.unshift(activity);
-          this.wc.send("/app/boards/update/" + newBoard.id, {}, JSON.stringify(newBoard));
+          this.webSocketService.updateBoard(newBoard, this.wc);
           this.team.boards.push(newBoard);
-          this.updateTeam();
+          this.webSocketService.updateTeam(this.team, this.wc);
           this.boardTitle = "";
           this.boardTitleElement.nativeElement.focus();
         });
@@ -167,10 +160,10 @@ export class TeamComponent implements OnInit {
             return;
           }
           data.teams.push(this.team);
-          this.wc.send("/app/users/update/" + data.email, {}, JSON.stringify(data));
+          this.webSocketService.updateUser(data, this.wc);
           data.teams = [];
           this.team.members.push(data);
-          this.updateTeam();
+          this.webSocketService.updateTeam(this.team, this.wc);
           this.newMember = "";
           this.newMemberElement.nativeElement.focus();
           this.snackBarService.openSuccessSnackBar("Successfully added", "X");
@@ -187,7 +180,7 @@ export class TeamComponent implements OnInit {
 
   deleteMember(index) {
     this.userService.leaveTeam(this.team.id, this.team.members[index].id).subscribe(data => {
-      this.wc.send("/app/users/update/" + this.team.members[index].email, {}, JSON.stringify(this.team.members[index]));
+      this.webSocketService.notifyUser(this.team.members[index], this.wc);
       this.team.boards.forEach((board, boardIndex) => {
         board.lists.forEach((list, listIndex) => {
           list.cards.forEach((card, cardIndex) => {
@@ -201,7 +194,7 @@ export class TeamComponent implements OnInit {
         })
       })
       this.team.members.splice(index, 1);
-      this.updateTeam();
+      this.webSocketService.updateTeam(this.team, this.wc);
       this.snackBarService.openSuccessSnackBar("Successfully deleted", "X");
     });
 
@@ -220,7 +213,7 @@ export class TeamComponent implements OnInit {
   saveTeamDescription() {
     this.team.description = this.teamDescription.trim();
     this.teamDescription = this.team.description;
-    this.updateTeam();
+    this.webSocketService.updateTeam(this.team, this.wc);
     this.snackBarService.openSuccessSnackBar("Successfully saved", "X");
   }
 
@@ -228,7 +221,7 @@ export class TeamComponent implements OnInit {
     if (this.teamName.trim() != this.team.name && this.teamName.trim() != "") {
       this.team.name = this.teamName.trim();
       this.teamName = this.team.name;
-      this.updateTeam();
+      this.webSocketService.updateTeam(this.team, this.wc);
       this.snackBarService.openSuccessSnackBar("Successfully saved", "X");
     }
     else {
@@ -271,14 +264,14 @@ export class TeamComponent implements OnInit {
 
   changeBackground() {
     this.team.background = this.teamBackground;
-    this.updateTeam();
+    this.webSocketService.updateTeam(this.team, this.wc);
     this.lightBackground = this.colorsService.checkBackground(this.teamBackground);
   }
 
   deleteTeam() {
     this.team.deleted = true;
-    this.updateTeam();
-    this.router.navigate(['/']);
+    this.teamService.update(this.team.id, this.team).subscribe();
+    //this.router.navigate(['/']);
   }
 
   deleteTeamDialog() {
@@ -297,7 +290,7 @@ export class TeamComponent implements OnInit {
         index = this.team.members.findIndex((member) => member.id == this.currentUser.id);
       }
       this.team.members.splice(index, 1);
-      this.updateTeam();
+      this.webSocketService.updateTeam(this.team, this.wc);
       this.wc.disconnect();
       this.router.navigate(['/']);
     });
@@ -320,16 +313,12 @@ export class TeamComponent implements OnInit {
 
   dropBoard(event: CdkDragDrop<string[]>) {
     moveItemInArray(this.team.boards, event.previousIndex, event.currentIndex);
-    this.updateTeam();
+    this.webSocketService.updateTeam(this.team, this.wc);
   }
 
   /* dropMember(event: CdkDragDrop<string[]>) {
     moveItemInArray(this.team.members, event.previousIndex, event.currentIndex);
-    this.updateTeam();
+    this.webSocketService.updateTeam(this.team, this.wc);
   } */
-
-  updateTeam() {
-    this.wc.send("/app/teams/update/" + this.team.id, {}, JSON.stringify(this.team));
-  }
 
 }

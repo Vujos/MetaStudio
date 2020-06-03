@@ -100,8 +100,8 @@ public class UserService {
         if (oldUser.isPresent()) {
             user.setId(oldUser.get().getId());
             user.setPassword(oldUser.get().getPassword());
-            for(Activity activity: user.getActivities()){
-                if(activity.getId() == null){
+            for (Activity activity : user.getActivities()) {
+                if (activity.getId() == null) {
                     activityService.addActivity(activity);
                 }
             }
@@ -114,8 +114,8 @@ public class UserService {
         if (oldUser.isPresent()) {
             user.setId(oldUser.get().getId());
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            for(Activity activity: user.getActivities()){
-                if(activity.getId() == null){
+            for (Activity activity : user.getActivities()) {
+                if (activity.getId() == null) {
                     activityService.addActivity(activity);
                 }
             }

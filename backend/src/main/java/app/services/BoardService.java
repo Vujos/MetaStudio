@@ -13,6 +13,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import app.models.Activity;
@@ -41,6 +43,9 @@ public class BoardService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private SimpMessagingTemplate template;
 
     public BoardService() {
     }
@@ -161,13 +166,33 @@ public class BoardService {
                     listService.addList(list);
                 }
             }
-            for(Activity activity: board.getActivities()){
-                if(activity.getId() == null){
+            for (Activity activity : board.getActivities()) {
+                if (activity.getId() == null) {
                     activityService.addActivity(activity);
                 }
             }
             boardRepo.save(board);
         }
+    }
+
+    public ResponseEntity<HttpStatus> updateBoardWebSocket(String id, Board board) {
+        if (board.getDeleted() == true) {
+            removeBoard(id);
+            for (User user : board.getUsers()) {
+                template.convertAndSend("/topic/users/update/" + user.getEmail(),
+                        new ResponseEntity<HttpStatus>(HttpStatus.NO_CONTENT));
+            }
+            updateBoard(id, board);
+            template.convertAndSend("/topic/boards/update/" + id,
+                        new ResponseEntity<HttpStatus>(HttpStatus.NO_CONTENT));
+            return new ResponseEntity<HttpStatus>(HttpStatus.NO_CONTENT);
+        }
+        updateBoard(id, board);
+        Optional<Board> updatedBoard = getBoardByIdInternalServer(id);
+        if (updatedBoard.isPresent()) {
+            return new ResponseEntity<HttpStatus>(HttpStatus.CREATED);
+        }
+        return new ResponseEntity<HttpStatus>(HttpStatus.NOT_FOUND);
     }
 
 }

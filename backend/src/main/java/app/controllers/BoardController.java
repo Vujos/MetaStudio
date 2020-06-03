@@ -7,8 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,16 +15,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.models.Board;
-import app.models.User;
 import app.services.BoardService;
 
 @CrossOrigin(origins = { "http://localhost:4200" })
 @RestController
 @RequestMapping("/api/boards")
 public class BoardController {
-
-    @Autowired
-    private SimpMessagingTemplate template;
 
     @Autowired
     UserController userController;
@@ -59,28 +53,13 @@ public class BoardController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<Board> updateBoard(@PathVariable String id, @RequestBody Board board) {
-        boardService.updateBoard(id, board);
-        return new ResponseEntity<Board>(board, HttpStatus.CREATED);
+    public ResponseEntity<HttpStatus> updateBoard(@PathVariable String id, @RequestBody Board board) {
+        return boardService.updateBoardWebSocket(id, board);
     }
 
     @MessageMapping("/boards/update/{id}")
-    public ResponseEntity<Board> updateBoardWebSocket(@DestinationVariable String id, @Payload Board board)
-            throws Exception {
-        if (board.getDeleted() == true) {
-            this.boardService.removeBoard(id);
-            for (User user : board.getUsers()) {
-                this.template.convertAndSend("/topic/users/update/"+user.getEmail(), new ResponseEntity<>(HttpStatus.NO_CONTENT));
-            }
-            boardService.updateBoard(id, board);
-            return new ResponseEntity<Board>(HttpStatus.NO_CONTENT);
-        }
-        boardService.updateBoard(id, board);
-        Optional<Board> updatedBoard = this.boardService.getBoardByIdInternalServer(id);
-        if (updatedBoard.isPresent()) {
-            return new ResponseEntity<Board>(updatedBoard.get(), HttpStatus.CREATED);
-        }
-        return new ResponseEntity<Board>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<HttpStatus> updateBoardWebSocket(@DestinationVariable String id) throws Exception {
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)

@@ -30,7 +30,7 @@ public class User {
     @DBRef(lazy = true)
     private ArrayList<Board> templates;
 
-    @DBRef
+    @DBRef(lazy = true)
     private ArrayList<Activity> activities;
 
     @NotNull

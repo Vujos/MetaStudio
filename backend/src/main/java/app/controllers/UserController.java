@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,14 +30,14 @@ public class UserController {
     UserService userService;
 
     @Autowired
-	LoginService loginService;
+    LoginService loginService;
 
-	@RequestMapping(path = "/login", method = RequestMethod.POST)
-	public ResponseEntity<HashMap<String, String>> login(@RequestBody User user) {
-		return loginService.login(user);
+    @RequestMapping(path = "/login", method = RequestMethod.POST)
+    public ResponseEntity<HashMap<String, String>> login(@RequestBody User user) {
+        return loginService.login(user);
     }
-    
-    @RequestMapping(value="/register", method=RequestMethod.POST)
+
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
     public ResponseEntity<User> addUser(@RequestBody User Users) {
         return new ResponseEntity<User>(Users, userService.addUser(Users));
     }
@@ -79,10 +78,8 @@ public class UserController {
     }
 
     @MessageMapping("/users/update/{email}")
-    public ResponseEntity<User> updateUserWebSocket(@DestinationVariable String email, @Payload User user)
-            throws Exception {
-        userService.updateUserByEmail(email, user);
-        return new ResponseEntity<User>(user, HttpStatus.CREATED);
+    public ResponseEntity<HttpStatus> updateUserWebSocket(@DestinationVariable String email) throws Exception {
+        return new ResponseEntity<HttpStatus>(HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
