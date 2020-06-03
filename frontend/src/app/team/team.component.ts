@@ -5,10 +5,12 @@ import { AuthService } from '../auth/auth.service';
 import { BoardService } from '../boards/board.service';
 import { DialogOkComponent } from '../dialog-ok/dialog-ok.component';
 import { DialogSaveChanges } from '../dialog/dialog-save-changes';
+import { Activity } from '../models/activity.model';
 import { Board } from '../models/board.model';
 import { Team } from '../models/team.model';
 import { ColorsService } from '../shared/colors.service';
 import { DialogService } from '../shared/dialog.service';
+import { RoutesService } from '../shared/routes.service';
 import { SnackBarService } from '../shared/snack-bar.service';
 import { TeamService } from '../teams/team.service';
 import { UserService } from '../users/user.service';
@@ -46,7 +48,7 @@ export class TeamComponent implements OnInit {
 
   lightBackground = false;
 
-  constructor(private boardService: BoardService, private snackBarService: SnackBarService, private dialogService: DialogService, private route: ActivatedRoute, private authService: AuthService, private router: Router, private userService: UserService, private webSocketService: WebSocketService, public colorsService: ColorsService, private teamService: TeamService) { }
+  constructor(private boardService: BoardService, private routesService: RoutesService, private snackBarService: SnackBarService, private dialogService: DialogService, private route: ActivatedRoute, private authService: AuthService, private router: Router, private userService: UserService, private webSocketService: WebSocketService, public colorsService: ColorsService, private teamService: TeamService) { }
 
   ngOnInit() {
     if (!this.authService.isLoggedIn()) {
@@ -105,7 +107,7 @@ export class TeamComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    if(this.wc && this.authService.isLoggedIn()){
+    if (this.wc && this.authService.isLoggedIn()) {
       this.wc.disconnect();
     }
   }
@@ -129,6 +131,9 @@ export class TeamComponent implements OnInit {
           }
         ).subscribe(data => {
           let newBoard: any = data;
+          let activity = new Activity(null, this.currentUser.id, this.currentUser.fullName, "created board", null, null, this.routesService.getBoardRoute(newBoard.id), newBoard.title);
+          newBoard.activities.unshift(activity);
+          this.wc.send("/app/boards/update/" + newBoard.id, {}, JSON.stringify(newBoard));
           this.team.boards.push(newBoard);
           this.updateTeam();
           this.boardTitle = "";

@@ -24,6 +24,8 @@ export class ProfileDetailsComponent implements OnInit {
   loggedUser = undefined;
 
   boards = [];
+  filteredBoards = [];
+  selectedFilterBoards = "";
 
   finishedTasks = 0;
   unfinishedTasks = 0;
@@ -57,6 +59,7 @@ export class ProfileDetailsComponent implements OnInit {
 
     this.boardService.getCommonBoards(idUser, this.authService.getCurrentUser()).subscribe(boards => {
       this.boards = boards;
+      this.filteredBoards = boards;
 
       this.boards.forEach(board => {
         board.lists.forEach(list => {
@@ -94,6 +97,18 @@ export class ProfileDetailsComponent implements OnInit {
 
   selectedTabChange(event) {
     this.selectedTabIndex = event.index;
+  }
+
+  setFilterBoards(){
+    if(this.selectedFilterBoards=="all"){
+      this.filteredBoards = this.boards;
+    }
+    else if(this.selectedFilterBoards=="cards"){
+      this.filteredBoards = this.boards.filter(board => board.lists.length > 0);
+    }
+    else if(this.selectedFilterBoards=="noCards"){
+      this.filteredBoards = this.boards.filter(board => board.lists.length == 0);
+    }
   }
 
 }

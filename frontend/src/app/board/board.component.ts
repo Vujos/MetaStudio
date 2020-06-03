@@ -84,7 +84,9 @@ export class BoardComponent {
 
   private wc;
 
-  constructor(private dialog: MatDialog, private route: ActivatedRoute, private routesService: RoutesService, private boardService: BoardService, private webSocketService: WebSocketService, public userService: UserService, private authService: AuthService, private router: Router, private colorsService: ColorsService, private dialogService: DialogService, private snackBarService: SnackBarService, private teamService: TeamService, public dateService: DateService) { }
+  constructor(private dialog: MatDialog, private route: ActivatedRoute, private routesService: RoutesService, private boardService: BoardService, private webSocketService: WebSocketService, public userService: UserService, private authService: AuthService, private router: Router, private colorsService: ColorsService, private dialogService: DialogService, private snackBarService: SnackBarService, private teamService: TeamService, public dateService: DateService) { 
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+  }
 
   ngOnInit() {
     if (!this.authService.isLoggedIn()) {
@@ -94,6 +96,9 @@ export class BoardComponent {
     let id = this.route.snapshot.paramMap.get("id");
     let listId = this.route.snapshot.paramMap.get("listId");
     let cardId = this.route.snapshot.paramMap.get("cardId");
+    let listIndex = this.route.snapshot.paramMap.get("listIndex");
+    let cardIndex = this.route.snapshot.paramMap.get("cardIndex");
+    let tabIndex = this.route.snapshot.paramMap.get("tabIndex") ? +this.route.snapshot.paramMap.get("tabIndex") : 0;
 
     this.boardService.getOne(id, this.authService.getCurrentUser()).subscribe(data => {
       this.loading = false;
@@ -124,9 +129,13 @@ export class BoardComponent {
       })
 
       if (listId && cardId) {
-        let listIndex = this.board.lists.indexOf(this.board.lists.filter((list) => list.id == listId)[0]);
-        let cardIndex = this.board.lists[listIndex].cards.indexOf(this.board.lists[listIndex].cards.filter((card) => card.id == cardId)[0]);
-        this.openCardDetailsDialog(listIndex, cardIndex);
+        let listIndexFromId = this.board.lists.indexOf(this.board.lists.filter((list) => list.id == listId)[0]);
+        let cardIndexFromId = this.board.lists[listIndex].cards.indexOf(this.board.lists[listIndex].cards.filter((card) => card.id == cardId)[0]);
+        this.openCardDetailsDialog(listIndexFromId, cardIndexFromId);
+      }
+
+      if (listIndex && cardIndex) {
+        this.openCardDetailsDialog(listIndex, cardIndex, tabIndex);
       }
     }, error => {
       this.router.navigate(['/']);
@@ -270,7 +279,7 @@ export class BoardComponent {
         activities: [],
         deleted: false
       });
-      this.updateBoard();
+      this.addActivity(this.currentUser.id, this.currentUser.fullName, "added card", this.routesService.getCardRouteIndices(this.board.id, index, this.board.lists[index]['cards'].length - 1), this.cardTitle[index].trim(), `to list ${this.board.lists[index].title}`);
     }
     this.cardTitle[index] = "";
     this.cardTitleElements['_results'][index].nativeElement.focus();
@@ -289,16 +298,17 @@ export class BoardComponent {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.board.lists = [];
-        this.updateBoard();
+        this.addActivity(this.currentUser.id, this.currentUser.fullName, "deleted all lists");
       }
     });
   }
 
   renameBoard() {
     if (this.boardTitle.trim() != this.board.title && this.boardTitle.trim() != "") {
+      let oldBordTitle = this.board.title;
       this.board.title = this.boardTitle.trim();
       this.boardTitle = this.board.title;
-      this.addActivity(this.currentUser.id, this.currentUser.fullName, "renamed board");
+      this.addActivity(this.currentUser.id, this.currentUser.fullName, `renamed board ${oldBordTitle} to ${this.board.title}`);
       this.snackBarService.openSuccessSnackBar("Successfully saved", "X");
     }
     else {
@@ -438,8 +448,9 @@ export class BoardComponent {
           }
         })
       })
+      let oldUser = this.board.users[index];
       this.board.users.splice(index, 1);
-      this.updateBoard();
+      this.addActivity(this.currentUser.id, this.currentUser.fullName, "deleted user", this.routesService.getUserRoute(oldUser.id), oldUser.fullName, "from board");
       this.snackBarService.openSuccessSnackBar("Successfully deleted", "X");
     });
 
@@ -469,7 +480,7 @@ export class BoardComponent {
             return;
           }
           this.board.teams.push(data);
-          this.updateBoard();
+          this.addActivity(this.currentUser.id, this.currentUser.fullName, "added team", this.routesService.getTeamRoute(this.newTeam.id), this.newTeam.name, "to board");
           this.board.teams = []
           data.boards.push(this.board);
           this.wc.send("/app/teams/update/" + data.id, {}, JSON.stringify(data));
@@ -507,7 +518,7 @@ export class BoardComponent {
     })
     this.teamService.leaveBoard(this.board.id, this.board.teams[index].id).subscribe();
     this.board.teams.splice(index, 1);
-    this.updateBoard();
+    this.addActivity(this.currentUser.id, this.currentUser.fullName, "deleted team", this.routesService.getTeamRoute(this.board.teams[index].id), this.board.teams[index].name, "from board");
     this.snackBarService.openSuccessSnackBar("Successfully deleted", "X");
 
   }
@@ -558,7 +569,7 @@ export class BoardComponent {
           this.tasksDoneNumber[card.id] = done + "/" + size;
         })
       })
-      this.updateBoard();
+      this.addActivity(this.currentUser.id, this.currentUser.fullName, "created board", this.routesService.getBoardRoute(this.board.id), this.board.title, "from template", null, null, null, null);
       this.resetCreateFromTemplate();
     }
   }
@@ -576,8 +587,9 @@ export class BoardComponent {
 
   renameList(index) {
     if (this.listTitleRename.trim() != this.board.lists[index].title && this.listTitleRename.trim() != "") {
+      let oldListTitle = this.board.lists[index].title;
       this.board.lists[index].title = this.listTitleRename.trim();
-      this.updateBoard();
+      this.addActivity(this.currentUser.id, this.currentUser.fullName, `renamed list ${oldListTitle} to ${this.board.lists[index].title}`);
       this.listTitleRename = this.board.lists[index].title;
       this.snackBarService.openSuccessSnackBar("Successfully saved", "X");
     }
@@ -607,7 +619,7 @@ export class BoardComponent {
   copyAllCards(indexFromList, indexToList) {
     if (indexFromList != undefined && indexToList != undefined) {
       this.board.lists[indexToList].cards = this.board.lists[indexToList].cards.concat(this.board.lists[indexFromList].cards);
-      this.updateBoard();
+      this.addActivity(this.currentUser.id, this.currentUser.fullName, `copied all cards from list ${this.board.lists[indexFromList].title} to list ${this.board.lists[indexToList].title}`);
       this.selectedCopyAllCards = undefined;
       this.snackBarService.openSuccessSnackBar("Successfully copied", "X");
     }
@@ -632,7 +644,7 @@ export class BoardComponent {
     if (indexFromList != undefined && indexToList != undefined) {
       this.board.lists[indexToList].cards = this.board.lists[indexToList].cards.concat(this.board.lists[indexFromList].cards);
       this.board.lists[indexFromList].cards = [];
-      this.updateBoard();
+      this.addActivity(this.currentUser.id, this.currentUser.fullName, `moved all cards from list ${this.board.lists[indexFromList].title} to list ${this.board.lists[indexToList].title}`);
       this.selectedMoveAllCards = undefined;
       this.snackBarService.openSuccessSnackBar("Successfully moved", "X");
     }
@@ -660,7 +672,7 @@ export class BoardComponent {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.board.lists[index].cards = [];
-        this.updateBoard();
+        this.addActivity(this.currentUser.id, this.currentUser.fullName, `deleted all cards from list ${this.board.lists[index].title}`);
       }
     });
   }
@@ -743,7 +755,11 @@ export class BoardComponent {
               continue;
             }
             this.board.users.push(newUser);
-            this.updateBoard();
+            let activityAction = "added all users from team";
+            if (this.selectedTeam.members.length != this.checkedTeamMembers.length) {
+              activityAction = "added some users from team";
+            }
+            this.addActivity(this.currentUser.id, this.currentUser.fullName, activityAction, this.routesService.getTeamRoute(this.selectedTeam.id), this.selectedTeam.name);
             this.board.users = []
             newUser.boards.push(this.board);
             this.wc.send("/app/users/update/" + newUser.email, {}, JSON.stringify(newUser));
@@ -781,8 +797,8 @@ export class BoardComponent {
     this.wc.send("/app/boards/update/" + this.board.id, {}, JSON.stringify(this.board));
   }
 
-  addActivity(performerId: string, performerFullName: string, action: string, objectLink: string = null, objectName: string = null, location: string = null, locationObjectLink: string = null, locationObjectName: string = null){
-    let activity = new Activity(null, performerId, performerFullName, action, this.board.id, this.board.title, objectLink, objectName, location, locationObjectLink, locationObjectName);
+  addActivity(performerId: string, performerFullName: string, action: string, objectLink: string = null, objectName: string = null, location: string = null, locationObjectLink: string = null, locationObjectName: string = null, boardId: string = this.board.id, boardName: string = this.board.title) {
+    let activity = new Activity(null, performerId, performerFullName, action, boardId, boardName, objectLink, objectName, location, locationObjectLink, locationObjectName);
     this.board.activities.unshift(activity);
     this.updateBoard();
     this.currentUser.activities.unshift(activity);

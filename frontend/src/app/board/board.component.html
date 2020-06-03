@@ -51,7 +51,7 @@
           <mat-menu #activityMenu="matMenu">
             <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
               <div *ngIf="board?.activities.length==0" class="menu-item-padding">
-                <h3 class="gray">No activities</h3>
+                <h3 class="gray">No activity</h3>
               </div>
               <div class="activities-board" *ngIf="board?.activities.length>0">
                 <div *ngFor="let activity of board?.activities">

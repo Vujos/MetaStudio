@@ -78,13 +78,13 @@
             <mat-form-field class="width-48">
               <mat-label>Start date</mat-label>
               <input formControlName="startDate" matInput type="datetime-local" (focusout)="saveStartDate()"
-                [value]="this.toDateString(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].startDate)">
+                [value]="this.dateService.getAngularDateTimeLocal(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].startDate)">
             </mat-form-field>
             <span class="width-4"></span>
             <mat-form-field class="width-48">
               <mat-label>Due date</mat-label>
               <input formControlName="endDate" matInput type="datetime-local" (focusout)="saveEndDate()"
-                [value]="this.toDateString(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].endDate)">
+                [value]="this.dateService.getAngularDateTimeLocal(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].endDate)">
             </mat-form-field>
           </div>
           <br>

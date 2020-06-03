@@ -15,7 +15,23 @@ export class RoutesService {
     return `/board/${boardId}/${listId}/${cardId}`;
   }
 
+  getCardRouteIndices(boardId: string, listIndex: number, cardIndex: number) {
+    return `/card/${boardId}/${listIndex}/${cardIndex}`;
+  }
+
+  getCardRouteIndicesChecklists(boardId: string, listIndex: number, cardIndex: number) {
+    return `/card/${boardId}/${listIndex}/${cardIndex}/1`;
+  }
+
+  getCardRouteIndicesMembers(boardId: string, listIndex: number, cardIndex: number) {
+    return `/card/${boardId}/${listIndex}/${cardIndex}/2`;
+  }
+
   getUserRoute(userId) {
     return `/profile/${userId}`;
+  }
+  
+  getTeamRoute(teamId) {
+    return `/team/${teamId}`;
   }
 }

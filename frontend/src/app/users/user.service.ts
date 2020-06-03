@@ -63,6 +63,6 @@ export class UserService {
   }
 
   userInitials(currentUser){
-    return currentUser.fullName.split(" ").map((word)=>word[0].toUpperCase()).join("");
+    return currentUser.fullName.split(" ").map((word)=>word[0].toUpperCase()).join("").slice(0, 2);
   }
 }

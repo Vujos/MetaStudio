@@ -26,7 +26,22 @@
                 <app-profile></app-profile>
             </mat-tab>
             <mat-tab label="Cards">
-                <div *ngFor="let board of boards" class="project-manager-profile-details"
+                <br>
+                <mat-form-field>
+                    <mat-label>Filter boards</mat-label>
+                    <mat-select [(ngModel)]="selectedFilterBoards" (selectionChange)="setFilterBoards()">
+                        <mat-option [value]="'all'">
+                            All boards
+                        </mat-option>
+                        <mat-option [value]="'cards'">
+                            Boards with cards
+                        </mat-option>
+                        <mat-option [value]="'noCards'">
+                            Boards without cards
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <div *ngFor="let board of filteredBoards" class="project-manager-profile-details"
                     [ngStyle]="{'background-color':board.background, 'height':board.lists.length > 0?'100%':'auto'}"
                     [routerLink]="['/board', board.id]">
                     <div class="project-manager-menu-profile-details">
@@ -67,6 +82,13 @@
                             cards</h1>
                     </div>
                 </div>
+                <div>
+                    <div class="placeholder-profile-details" *ngIf="filteredBoards?.length == 0">
+                        <h1 class="gray">
+                            No
+                            boards</h1>
+                    </div>
+                </div>
             </mat-tab>
 
             <mat-tab label="Activity">
@@ -81,7 +103,9 @@
                             <b class="link"
                                 [routerLink]="['/profile', activity.performerId]">{{activity.performerFullName}}</b>
                             {{activity.action}} <span class="link-active"
-                                [routerLink]="[activity.objectLink]">{{activity.objectName}}</span><span> {{activity.location}} </span><span class="link-active" [routerLink]="[activity.locationObjectLink]">{{activity.locationObjectName}}</span>
+                                [routerLink]="[activity.objectLink]">{{activity.objectName}}</span><span>
+                                {{activity.location}} </span><span class="link-active"
+                                [routerLink]="[activity.locationObjectLink]">{{activity.locationObjectName}}</span>
                             <br>
                             <span class="activity-date">{{dateService.getLocaleDateTime(activity.date)}}<span
                                     *ngIf="activity.boardName"> - on board
@@ -89,6 +113,11 @@
                                         [routerLink]="['/board', activity.boardId]"><b>{{activity.boardName}}</b></span></span></span>
                         </div>
                         <br><br>
+                    </div>
+                    <div class="placeholder-profile-details" *ngIf="currentUser?.activities.length == 0">
+                        <h1 class="gray">
+                            No
+                            activity</h1>
                     </div>
                 </div>
             </mat-tab>

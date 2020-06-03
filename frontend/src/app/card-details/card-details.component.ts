@@ -7,13 +7,16 @@ import { Router } from '@angular/router';
 import { AuthService } from 'src/app/auth/auth.service';
 import { BoardService } from '../boards/board.service';
 import { DialogSaveChanges } from '../dialog/dialog-save-changes';
+import { Activity } from '../models/activity.model';
 import { CardDetailsData } from '../models/card-details-data.model';
 import { Card } from '../models/card.model';
 import { Checklist } from '../models/checklist.model';
 import { List } from '../models/list.model';
 import { Task } from '../models/task.model';
 import { User } from '../models/user.model';
+import { DateService } from '../shared/date.service';
 import { DialogService } from '../shared/dialog.service';
+import { RoutesService } from '../shared/routes.service';
 import { SnackBarService } from '../shared/snack-bar.service';
 import { UserService } from '../users/user.service';
 import { WebSocketService } from '../web-socket/web-socket.service';
@@ -60,13 +63,13 @@ export class CardDetailsComponent implements OnInit {
 
   private wc;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: CardDetailsData, private fb: FormBuilder, private dialogRef: MatDialogRef<CardDetailsComponent>, private webSocketService: WebSocketService, public userService: UserService, private authService: AuthService, private boardService: BoardService, private router: Router, private snackBarService: SnackBarService, private dialogService: DialogService) { }
+  constructor(@Inject(MAT_DIALOG_DATA) public data: CardDetailsData, public dateService: DateService, private fb: FormBuilder, private dialogRef: MatDialogRef<CardDetailsComponent>, private webSocketService: WebSocketService, public userService: UserService, private authService: AuthService, private boardService: BoardService, private router: Router, private snackBarService: SnackBarService, private dialogService: DialogService, private routesService: RoutesService) { }
 
   ngOnInit() {
     this.cardForm = this.fb.group({
       description: [this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].description],
-      startDate: [this.toDateString(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].startDate)],
-      endDate: [this.toDateString(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].endDate)]
+      startDate: [this.dateService.getAngularDateTimeLocal(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].startDate)],
+      endDate: [this.dateService.getAngularDateTimeLocal(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].endDate)]
     });
     this.cardForm.patchValue({ description: this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].description });
 
@@ -81,19 +84,19 @@ export class CardDetailsComponent implements OnInit {
 
   addLabel() {
     this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].labels.push(this.label);
-    this.updateBoard();
+    this.addActivity(this.currentUser.id, this.currentUser.fullName, "added label to card", this.routesService.getCardRouteIndices(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title);
     this.labelsTrigger.closeMenu();
   }
 
   updateLabel(index) {
     this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].labels[index] = this.labelUpdate;
-    this.updateBoard();
+    this.addActivity(this.currentUser.id, this.currentUser.fullName, "changed label on card", this.routesService.getCardRouteIndices(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title);
     this.labelUpdateTrigger.closeMenu();
   }
 
   deleteLabel(index) {
     this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].labels.splice(index, 1);
-    this.updateBoard();
+    this.addActivity(this.currentUser.id, this.currentUser.fullName, "deleted label from card", this.routesService.getCardRouteIndices(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title);
   }
 
   deleteCard() {
@@ -103,16 +106,17 @@ export class CardDetailsComponent implements OnInit {
       if (result) {
         this.dialogRef.close();
         this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].deleted = true;
-        this.updateBoard();
+        this.addActivity(this.currentUser.id, this.currentUser.fullName, "deleted card", this.routesService.getCardRouteIndices(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title);
       }
     });
   }
 
   renameCard() {
     if (this.cardTitle.trim() != this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title && this.cardTitle.trim() != "") {
+      let oldCardTitle = this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title;
       this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title = this.cardTitle.trim();
       this.cardTitle = this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title;
-      this.updateBoard();
+      this.addActivity(this.currentUser.id, this.currentUser.fullName, `renamed card ${oldCardTitle} to`, this.routesService.getCardRouteIndices(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.cardTitle);
       this.cardRenameTrigger.closeMenu();
     }
     else {
@@ -140,9 +144,10 @@ export class CardDetailsComponent implements OnInit {
 
   renameChecklist(index) {
     if (this.checklistRenameTitle.trim() != this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].title && this.checklistRenameTitle.trim() != "") {
+      let oldChecklistTitle = this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].title;
       this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].title = this.checklistRenameTitle.trim();
       this.checklistRenameTitle = this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].title;
-      this.updateBoard();
+      this.addActivity(this.currentUser.id, this.currentUser.fullName, `renamed checklist ${oldChecklistTitle} to`, this.routesService.getCardRouteIndicesChecklists(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.checklistRenameTitle, "on card", this.routesService.getCardRouteIndices(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title);
       this.checklistRenameTrigger.closeMenu();
     }
     else {
@@ -171,7 +176,7 @@ export class CardDetailsComponent implements OnInit {
   addChecklist() {
     if (this.checklistTitle.trim() != "") {
       this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists.push(new Checklist(null, this.checklistTitle, new Date(), [], false));
-      this.updateBoard();
+      this.addActivity(this.currentUser.id, this.currentUser.fullName, `added checklist`, this.routesService.getCardRouteIndicesChecklists(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.checklistTitle, "to card", this.routesService.getCardRouteIndices(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title);
       this.checklistTrigger.closeMenu();
       this.data.checkedNumber[this.data.checkedNumber.length] = 0;
     }
@@ -183,7 +188,7 @@ export class CardDetailsComponent implements OnInit {
       this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].tasks.push(new Task(null, this.itemTitle, false, new Date(), null, false));
       this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].done = false;
       this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].doneDate = null;
-      this.updateBoard();
+      this.addActivity(this.currentUser.id, this.currentUser.fullName, `added task`, this.routesService.getCardRouteIndicesChecklists(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.itemTitle, "to checklist", this.routesService.getCardRouteIndicesChecklists(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].title);
     }
     this.itemTitle = "";
   }
@@ -192,11 +197,12 @@ export class CardDetailsComponent implements OnInit {
     if (this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[checklistIndex].tasks[taskIndex].done) {
       this.checkedPlus(checklistIndex);
       this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[checklistIndex].tasks[taskIndex].doneDate = new Date();
+      this.addActivity(this.currentUser.id, this.currentUser.fullName, `finished task`, this.routesService.getCardRouteIndicesChecklists(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[checklistIndex].tasks[taskIndex].title, "on checklist", this.routesService.getCardRouteIndicesChecklists(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[checklistIndex].title);
     }
     else {
       this.checkedMinus(checklistIndex);
+      this.addActivity(this.currentUser.id, this.currentUser.fullName, `marked as unfinished task`, this.routesService.getCardRouteIndicesChecklists(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[checklistIndex].tasks[taskIndex].title, "on checklist", this.routesService.getCardRouteIndicesChecklists(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[checklistIndex].title);
     }
-    this.updateBoard();
   }
 
   deleteTask(checklistIndex, taskIndex) {
@@ -205,7 +211,7 @@ export class CardDetailsComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[checklistIndex].tasks[taskIndex].deleted = true;
-        this.updateBoard();
+        this.addActivity(this.currentUser.id, this.currentUser.fullName, `deleted task`, this.routesService.getCardRouteIndicesChecklists(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[checklistIndex].tasks[taskIndex].title, "from checklist", this.routesService.getCardRouteIndicesChecklists(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[checklistIndex].title);
       }
     });
   }
@@ -216,7 +222,7 @@ export class CardDetailsComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].deleted = true;
-        this.updateBoard();
+        this.addActivity(this.currentUser.id, this.currentUser.fullName, `deleted checklist`, this.routesService.getCardRouteIndicesChecklists(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].title, "from card", this.routesService.getCardRouteIndices(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title);
       }
     });
   }
@@ -224,23 +230,19 @@ export class CardDetailsComponent implements OnInit {
   saveCardDescription() {
     this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].description = this.cardForm.get("description").value.trim();
     this.cardForm.patchValue({ "description": this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].description });
-    this.updateBoard();
+    this.addActivity(this.currentUser.id, this.currentUser.fullName, `updated description of card`, this.routesService.getCardRouteIndices(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title);
   }
 
   saveStartDate() {
-    this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].startDate = this.cardForm.get("startDate").value.trim();
+    this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].startDate = new Date(this.cardForm.get("startDate").value.trim());
     this.cardForm.patchValue({ "startDate": this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].startDate });
-    this.updateBoard();
+    this.addActivity(this.currentUser.id, this.currentUser.fullName, `updated start date of card`, this.routesService.getCardRouteIndices(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title);
   }
 
   saveEndDate() {
-    this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].endDate = this.cardForm.get("endDate").value.trim();
+    this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].endDate = new Date(this.cardForm.get("endDate").value.trim());
     this.cardForm.patchValue({ "endDate": this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].endDate });
-    this.updateBoard();
-  }
-
-  toDateString(date: string): string {
-    return date.slice(0, -12);
+    this.addActivity(this.currentUser.id, this.currentUser.fullName, `updated due date of card`, this.routesService.getCardRouteIndices(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title);
   }
 
   checkedPlus(index) {
@@ -273,8 +275,9 @@ export class CardDetailsComponent implements OnInit {
             return;
           }
           this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].members.push(data);
-          this.updateBoard();
+          this.addActivity(this.currentUser.id, this.currentUser.fullName, `added member`, this.routesService.getUserRoute(data.id), data.fullName, "to card", this.routesService.getCardRouteIndices(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title);
           this.addUsersTrigger.closeMenu();
+          let cardMembers = this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].members;
           this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].members = [];
           let userHasBoard = false;
           data.boards.forEach(board => {
@@ -295,7 +298,7 @@ export class CardDetailsComponent implements OnInit {
           this.wc.send("/app/users/update/" + data.email, {}, JSON.stringify(data));
           data.boards = [];
           this.data.board.users.push(data);
-          this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].members.push(data);
+          this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].members = cardMembers;
           this.updateBoard();
           this.snackBarService.openSuccessSnackBar("Successfully added", "X");
         }
@@ -309,8 +312,9 @@ export class CardDetailsComponent implements OnInit {
   }
 
   deleteMember(index) {
+    let oldMember = this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].members[index];
     this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].members.splice(index, 1);
-    this.updateBoard();
+    this.addActivity(this.currentUser.id, this.currentUser.fullName, `deleted member`, this.routesService.getUserRoute(oldMember.id), oldMember.fullName, "from card", this.routesService.getCardRouteIndices(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title);
     this.snackBarService.openSuccessSnackBar("Successfully deleted", "X");
   }
 
@@ -383,7 +387,7 @@ export class CardDetailsComponent implements OnInit {
   doneCard() {
     this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists.forEach((checklist, checklistIndex) => {
       checklist.tasks.forEach(task => {
-        if(!task.done){
+        if (!task.done) {
           task.done = true;
           task.doneDate = new Date();
           this.checkedPlus(checklistIndex);
@@ -391,12 +395,16 @@ export class CardDetailsComponent implements OnInit {
       });
     });
     this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].doneDate = new Date();
-    this.updateBoard();
+    let action = "finished card";
+    if (!this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].done) {
+      let action = "marked as unfinished card";
+    }
+    this.addActivity(this.currentUser.id, this.currentUser.fullName, action, this.routesService.getCardRouteIndices(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title);
   }
 
   doneCardDialog() {
     let dialogContent = "Mark this card as finished";
-    if(!this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].done){
+    if (!this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].done) {
       dialogContent = "Mark this card as unfinished";
     }
     const dialogRef = this.dialogService.openDialog(DialogSaveChanges, "Confirmation", dialogContent);
@@ -405,9 +413,17 @@ export class CardDetailsComponent implements OnInit {
       if (result) {
         this.doneCard()
       }
-      else{
+      else {
         this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].done = !this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].done;
       }
     });
+  }
+
+  addActivity(performerId: string, performerFullName: string, action: string, objectLink: string = null, objectName: string = null, location: string = null, locationObjectLink: string = null, locationObjectName: string = null, boardId: string = this.data.board.id, boardName: string = this.data.board.title) {
+    let activity = new Activity(null, performerId, performerFullName, action, boardId, boardName, objectLink, objectName, location, locationObjectLink, locationObjectName);
+    this.data.board.activities.unshift(activity);
+    this.updateBoard();
+    this.currentUser.activities.unshift(activity);
+    this.userService.update(this.currentUser.id, this.currentUser).subscribe();
   }
 }

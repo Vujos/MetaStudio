@@ -2,6 +2,10 @@
   overflow-y: hidden;
 }
 
+.mat-tab-body-wrapper {
+  flex-grow: 1;
+}
+
 .profile-profile-details {
   //display: flex;
   justify-content: center;
@@ -55,10 +59,11 @@ img {
 
 .project-manager-profile-details {
   height: 100%;
-  border-bottom: 40px solid white;
-  border-left: 40px solid white;
-  border-right: 40px solid white;
+  margin-bottom: 40px;
+  margin-left: 40px;
+  margin-right: 40px;
   cursor: pointer;
+  border-radius: 10px;
 }
 
 .project-manager-menu-profile-details {
