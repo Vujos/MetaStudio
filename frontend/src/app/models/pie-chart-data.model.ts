@@ -7,7 +7,7 @@ export class PieChartData {
     innerRadiusInPercentage: number;
 
 
-    constructor(title: string, labels: string[], values: number[], height: number, width: number, innerRadiusInPercentage: number = 0) {
+    constructor(title: string, labels: string[], values: number[], height?: number, width?: number, innerRadiusInPercentage: number = 0) {
         this.title = title;
         this.labels = labels;
         this.values = values;

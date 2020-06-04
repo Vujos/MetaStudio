@@ -1,0 +1,11 @@
+<div>
+    <div><b>{{title}}</b></div>
+    <br>
+    <div [ngStyle]="{'display': noData? 'none' : 'initial'}">
+        <div id="bar"><svg></svg></div>
+    </div>
+    <br>
+    <div *ngIf="noData">
+        <h1 class="inline-block margin-0 opacity-06">0</h1>
+    </div>
+</div>

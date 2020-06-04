@@ -6,6 +6,7 @@ import { ColorsService } from '../shared/colors.service';
 import { UserService } from '../users/user.service';
 import { PieChartData } from '../models/pie-chart-data.model';
 import { DateService } from '../shared/date.service';
+import { BarChartData } from '../models/bar-chart-data.model';
 
 @Component({
   selector: 'app-profile-details',
@@ -18,6 +19,9 @@ export class ProfileDetailsComponent implements OnInit {
   pieChartTasks: PieChartData;
   pieChartCards: PieChartData;
 
+  barChartBoards: BarChartData;
+  barChartCards: BarChartData;
+
   loadingData = true;
 
   currentUser = undefined;
@@ -29,15 +33,19 @@ export class ProfileDetailsComponent implements OnInit {
 
   finishedTasks = 0;
   unfinishedTasks = 0;
-
   finishedCards = 0;
   unfinishedCards = 0;
+
+  cardsPerBoards = [];
+  boardsPerTeams = [];
+  cardsPerBoardsLabels = [];
+  boardsPerTeamsLabels = [];
 
   selectedTabIndex = 0;
 
   constructor(private authService: AuthService, private router: Router, public userService: UserService, private route: ActivatedRoute, private boardService: BoardService, public colorsService: ColorsService, public dateService: DateService) {
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-   }
+  }
 
   ngOnInit() {
     if (!this.authService.isLoggedIn()) {
@@ -62,12 +70,15 @@ export class ProfileDetailsComponent implements OnInit {
       this.filteredBoards = boards;
 
       this.boards.forEach(board => {
+        let cards = 0;
+        this.cardsPerBoardsLabels.push(board.title);
         board.lists.forEach(list => {
           list.cards.forEach(card => {
-            if(card.done){
+            cards++;
+            if (card.done) {
               this.finishedCards++;
             }
-            else{
+            else {
               this.unfinishedCards++;
             }
             card.checklists.forEach(checklist => {
@@ -82,31 +93,39 @@ export class ProfileDetailsComponent implements OnInit {
             });
           });
         });
+        this.cardsPerBoards.push(cards);
       });
+
+      this.boardsPerTeamsLabels = this.currentUser.teams.map(team => team.name);
+      this.boardsPerTeams = this.currentUser.teams.map(team => team.boards.length);
 
       let labelsTasks = ["Finished", "Unfinished"];
       let valuesTasks = [this.finishedTasks, this.unfinishedTasks];
       this.pieChartTasks = new PieChartData("Tasks", labelsTasks, valuesTasks, 100, 100);
 
+      this.barChartBoards = new BarChartData("Number of boards per teams", this.boardsPerTeamsLabels, this.boardsPerTeams);
+
       let labelsCards = ["Finished", "Unfinished"];
       let valuesCards = [this.finishedCards, this.unfinishedCards];
       this.pieChartCards = new PieChartData("Cards", labelsCards, valuesCards, 100, 100);
+
+      this.barChartCards = new BarChartData("Number of cards per boards", this.cardsPerBoardsLabels, this.cardsPerBoards);
     });
-    
+
   }
 
   selectedTabChange(event) {
     this.selectedTabIndex = event.index;
   }
 
-  setFilterBoards(){
-    if(this.selectedFilterBoards=="all"){
+  setFilterBoards() {
+    if (this.selectedFilterBoards == "all") {
       this.filteredBoards = this.boards;
     }
-    else if(this.selectedFilterBoards=="cards"){
+    else if (this.selectedFilterBoards == "cards") {
       this.filteredBoards = this.boards.filter(board => board.lists.length > 0);
     }
-    else if(this.selectedFilterBoards=="noCards"){
+    else if (this.selectedFilterBoards == "noCards") {
       this.filteredBoards = this.boards.filter(board => board.lists.length == 0);
     }
   }

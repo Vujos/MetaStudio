@@ -1,0 +1,65 @@
+rect:hover {
+   fill-opacity:0.7;
+}
+
+.inline-block {
+ display: inline-block;
+}
+
+.margin-0 {
+ margin: 0;
+}
+
+.opacity-06 {
+ opacity: 0.6;
+}
+
+svg text.bar-chart-label {
+   fill: black;
+   font: 15px;
+   font-weight: 400;
+   text-anchor: middle;
+}
+
+.item-bar-chart-tooltip {
+   position: absolute;
+   text-align: center;
+   padding: 8px;
+   font: 14px sans-serif;
+   background: rgba(255, 255, 255, 0.9);
+   border-radius: 5px;
+   pointer-events: none;
+   vertical-align: middle;
+   z-index: 10;
+   border: 1px solid black;
+   -webkit-animation: fadein 0.3s;
+   -moz-animation: fadein 0.3s;
+   -ms-animation: fadein 0.3s;
+   -o-animation: fadein 0.3s;
+      animation: fadein 0.3s;
+}
+
+@keyframes fadein {
+   from { opacity: 0; }
+   to   { opacity: 1; }
+}
+
+@-moz-keyframes fadein {
+   from { opacity: 0; }
+   to   { opacity: 1; }
+}
+
+@-webkit-keyframes fadein {
+   from { opacity: 0; }
+   to   { opacity: 1; }
+}
+
+@-ms-keyframes fadein {
+   from { opacity: 0; }
+   to   { opacity: 1; }
+}
+
+@-o-keyframes fadein {
+   from { opacity: 0; }
+   to   { opacity: 1; }
+}

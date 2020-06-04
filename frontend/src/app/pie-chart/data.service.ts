@@ -20,7 +20,7 @@ export class DataService {
     return Math.ceil(Math.random() * (end - start) + start);
   }
 
-  getData(labels: string[], values: number[]): PieChartItem[] {
+  getData(labels: string[], values: number[]) {
     const samples = [];
     for (let i = 0; i < values.length; i++) {
       samples.push({

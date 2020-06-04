@@ -130,7 +130,7 @@ export class BoardComponent {
 
       if (listId && cardId) {
         let listIndexFromId = this.board.lists.indexOf(this.board.lists.filter((list) => list.id == listId)[0]);
-        let cardIndexFromId = this.board.lists[listIndex].cards.indexOf(this.board.lists[listIndex].cards.filter((card) => card.id == cardId)[0]);
+        let cardIndexFromId = this.board.lists[listIndexFromId].cards.indexOf(this.board.lists[listIndexFromId].cards.filter((card) => card.id == cardId)[0]);
         this.openCardDetailsDialog(listIndexFromId, cardIndexFromId);
       }
 

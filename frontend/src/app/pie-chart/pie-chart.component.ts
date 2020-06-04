@@ -48,6 +48,10 @@ export class PieChartComponent implements OnInit {
     this.title = this.pieChartData.title;
     this.values = this.pieChartData.values;
     this.labels = this.pieChartData.labels;
+    if (!this.values || !this.labels) {
+      this.noData = true;
+      return;
+    }
     for (let index = 0; index < this.values.length; index++) {
       if(this.values[index]==0){
         this.values.splice(index, 1);
@@ -59,8 +63,8 @@ export class PieChartComponent implements OnInit {
       this.noData = true;
       return;
     }
-    this.height = this.pieChartData.height;
-    this.width = this.pieChartData.width;
+    this.height = this.pieChartData.height ? this.pieChartData.height : parseInt(d3.select('app-bar-chart').style('height'), 10);
+    this.width = this.pieChartData.width ? this.pieChartData.width : parseInt(d3.select('app-bar-chart').style('width'), 10);
     this.innerRadius = this.pieChartData.innerRadiusInPercentage;
     this.dataSource = this.service.getData(this.labels, this.values);
     this.total = this.dataSource.reduce((sum, it) => sum += Math.abs(it.value), 0);
