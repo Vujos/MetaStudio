@@ -80,7 +80,7 @@
         [ngStyle]="{'background-color':board.background, 'color': colorsService.checkBackground(board.background) ? 'black' : 'white'}">
         {{board.title}}
       </div>
-      <div class="placeholder" *ngIf="boards?.length==0">
+      <div class="placeholder-boards" *ngIf="boards?.length==0">
         <h1 class="no-boards">No boards</h1>
       </div>
     </ng-template>
@@ -96,7 +96,7 @@
         [ngStyle]="{'background-color':team.background, 'color': colorsService.checkBackground(team.background) ? 'black' : 'white'}">
         {{team.name}}
       </div>
-      <div class="placeholder" *ngIf="teams?.length==0">
+      <div class="placeholder-boards" *ngIf="teams?.length==0">
         <h1 class="no-teams">No teams</h1>
       </div>
     </ng-template>

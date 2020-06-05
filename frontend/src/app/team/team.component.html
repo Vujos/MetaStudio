@@ -111,7 +111,7 @@
                 [ngStyle]="{'background-color':board.background, 'color': colorsService.checkBackground(board.background) ? 'black' : 'white'}">
                 {{board.title}}
             </div>
-            <div class="placeholder" *ngIf="team.boards?.length==0">
+            <div class="placeholder-team" *ngIf="team.boards?.length==0">
                 <h1 class="no-boards">No boards</h1>
             </div>
         </ng-template>
@@ -133,7 +133,7 @@
                 <br>
                 <p class="member-username" matTooltip="Username">@{{member.username}}</p>
             </div>
-            <div class="placeholder" *ngIf="team.members?.length==0">
+            <div class="placeholder-team" *ngIf="team.members?.length==0">
                 <h1 class="no-members">No members</h1>
             </div>
         </ng-template>

@@ -64,6 +64,8 @@ export class BoardComponent {
 
   listTitleRename = "";
 
+  selectedCopyListPosition;
+  selectedCopyList;
   selectedCopyAllCards;
   selectedMoveAllCards;
   selectedMoveListPosition;
@@ -81,6 +83,9 @@ export class BoardComponent {
   errorMessageNewUsersFromTeam = undefined;
 
   checked: number[] = [];
+
+  selectedMoveBoard: Board;
+  allUserBoards: Board[];
 
   private wc;
 
@@ -143,6 +148,7 @@ export class BoardComponent {
 
     this.userService.getByQuery(this.authService.getCurrentUser()).subscribe(currentUser => {
       this.currentUser = currentUser;
+      this.allUserBoards = this.currentUser.boards.concat(...this.currentUser.teams.map(team => team.boards));
     });
 
     this.wc = this.webSocketService.getClient();
@@ -157,7 +163,6 @@ export class BoardComponent {
         else {
           this.boardService.getOne(id, this.authService.getCurrentUser()).subscribe(board => {
             this.board = board;
-
             if (this.dialogRef && this.dialogRef.componentInstance) {
               if (this.board.lists[this.dialogRef.componentInstance.data.listIndex].cards[this.dialogRef.componentInstance.data.cardIndex] == undefined || this.board.lists[this.dialogRef.componentInstance.data.listIndex].cards[this.dialogRef.componentInstance.data.cardIndex].id != this.dialogRef.componentInstance.data.board.lists[this.dialogRef.componentInstance.data.listIndex].cards[this.dialogRef.componentInstance.data.cardIndex].id) {
                 this.dialogRef.close();
@@ -188,7 +193,11 @@ export class BoardComponent {
                 })
                 this.tasksDoneNumber[card.id] = done + "/" + size;
               })
-            })
+            });
+            this.userService.getByQuery(this.authService.getCurrentUser()).subscribe(currentUser => {
+              this.currentUser = currentUser;
+              this.allUserBoards = this.currentUser.boards.concat(...this.currentUser.teams.map(team => team.boards));
+            });
           }, error => {
             this.router.navigate(['/']);
           })
@@ -572,7 +581,9 @@ export class BoardComponent {
   }
 
   addTemplate() {
-    this.currentUser.templates.push(this.board);
+    let newTemplate = this.board;
+    newTemplate.id = null;
+    this.currentUser.templates.push(newTemplate);
     this.webSocketService.updateUser(this.currentUser, this.wc);
     this.snackBarService.openSuccessSnackBar("Successfully saved", "X");
   }
@@ -608,53 +619,74 @@ export class BoardComponent {
     }
   }
 
-  copyAllCards(indexFromList, indexToList) {
-    if (indexFromList != undefined && indexToList != undefined) {
-      this.board.lists[indexToList].cards = this.board.lists[indexToList].cards.concat(this.board.lists[indexFromList].cards);
-      this.addActivity(this.currentUser.id, this.currentUser.fullName, `copied all cards from list ${this.board.lists[indexFromList].title} to list ${this.board.lists[indexToList].title}`);
+  copyAllCards(indexFromList, indexToList, selectedMoveBoard) {
+    if (indexFromList != undefined && indexToList != undefined && selectedMoveBoard != undefined) {
+      let newCards = this.board.lists[indexFromList].cards;
+      newCards.forEach(card => {
+        card.id = null;
+      })
+      selectedMoveBoard.lists[indexToList].cards = selectedMoveBoard.lists[indexToList].cards.concat(newCards);
+      this.addActivity(this.currentUser.id, this.currentUser.fullName, `copied all cards from list ${this.board.lists[indexFromList].title} to list ${selectedMoveBoard.lists[indexToList].title}` + " on board " + selectedMoveBoard.title);
+      this.webSocketService.updateBoard(selectedMoveBoard, this.wc);
       this.selectedCopyAllCards = undefined;
+      this.selectedMoveBoard = undefined;
       this.snackBarService.openSuccessSnackBar("Successfully copied", "X");
     }
   }
 
-  copyAllCardsDialog(indexFromList, indexToList) {
-    if (indexToList != undefined) {
-      const dialogRef = this.dialogService.openDialog(DialogSaveChanges, "Unsaved Changes", "Copy All Cards from " + this.board.lists[indexFromList].title + " to " + this.board.lists[indexToList].title);
+  copyAllCardsDialog(indexFromList, indexToList, selectedMoveBoard) {
+    if (indexFromList != undefined && indexToList != undefined && selectedMoveBoard != undefined) {
+      const dialogRef = this.dialogService.openDialog(DialogSaveChanges, "Unsaved Changes", "Copy All Cards from " + this.board.lists[indexFromList].title + " to " + selectedMoveBoard.lists[indexToList].title + " on board " + selectedMoveBoard.title);
 
       dialogRef.afterClosed().subscribe(result => {
         if (result) {
-          this.copyAllCards(indexFromList, indexToList);
+          this.copyAllCards(indexFromList, indexToList, selectedMoveBoard);
         }
         else {
           this.selectedCopyAllCards = undefined;
+          this.selectedMoveBoard = undefined;
         }
       });
     }
+    else {
+      this.selectedCopyAllCards = undefined;
+      this.selectedMoveBoard = undefined;
+    }
   }
 
-  moveAllCards(indexFromList, indexToList) {
-    if (indexFromList != undefined && indexToList != undefined) {
-      this.board.lists[indexToList].cards = this.board.lists[indexToList].cards.concat(this.board.lists[indexFromList].cards);
+  moveAllCards(indexFromList, indexToList, selectedMoveBoard) {
+    if (indexFromList != undefined && indexToList != undefined && selectedMoveBoard != undefined) {
+      selectedMoveBoard.lists[indexToList].cards = selectedMoveBoard.lists[indexToList].cards.concat(this.board.lists[indexFromList].cards);
       this.board.lists[indexFromList].cards = [];
-      this.addActivity(this.currentUser.id, this.currentUser.fullName, `moved all cards from list ${this.board.lists[indexFromList].title} to list ${this.board.lists[indexToList].title}`);
+      this.addActivity(this.currentUser.id, this.currentUser.fullName, `moved all cards from list ${this.board.lists[indexFromList].title} to list ${selectedMoveBoard.lists[indexToList].title}` + " on board " + selectedMoveBoard.title);
+      if (this.board.id == selectedMoveBoard.id) {
+        selectedMoveBoard.lists[indexFromList].cards = [];
+      }
+      this.webSocketService.updateBoard(selectedMoveBoard, this.wc);
       this.selectedMoveAllCards = undefined;
+      this.selectedMoveBoard = undefined;
       this.snackBarService.openSuccessSnackBar("Successfully moved", "X");
     }
 
   }
 
-  moveAllCardsDialog(indexFromList, indexToList) {
-    if (indexToList != undefined) {
-      const dialogRef = this.dialogService.openDialog(DialogSaveChanges, "Unsaved Changes", "Move All Cards from " + this.board.lists[indexFromList].title + " to " + this.board.lists[indexToList].title);
+  moveAllCardsDialog(indexFromList, indexToList, selectedMoveBoard) {
+    if (indexToList != undefined && selectedMoveBoard != undefined) {
+      const dialogRef = this.dialogService.openDialog(DialogSaveChanges, "Unsaved Changes", "Move All Cards from " + this.board.lists[indexFromList].title + " to " + selectedMoveBoard.lists[indexToList].title + " on board " + selectedMoveBoard.title);
 
       dialogRef.afterClosed().subscribe(result => {
         if (result) {
-          this.moveAllCards(indexFromList, indexToList);
+          this.moveAllCards(indexFromList, indexToList, selectedMoveBoard);
         }
         else {
           this.selectedMoveAllCards = undefined;
+          this.selectedMoveBoard = undefined;
         }
       });
+    }
+    else {
+      this.selectedMoveAllCards = undefined;
+      this.selectedMoveBoard = undefined;
     }
   }
 
@@ -680,45 +712,146 @@ export class BoardComponent {
     });
   }
 
-  moveList(indexFromList, position, indexToList) {
-    if (indexFromList != undefined && position != undefined && indexToList != undefined) {
+  copyList(indexFromList, position, indexToList, selectedMoveBoard) {
+    if (indexFromList != undefined && position != undefined && indexToList != undefined && selectedMoveBoard != undefined) {
       let index = indexToList;
-      if (position == "before") {
-        index--;
+      let newList = this.board.lists[indexFromList];
+      newList.id = null;
+      if (this.board.id != selectedMoveBoard.id) {
+        if (position == "after") {
+          index++;
+        }
+        selectedMoveBoard.lists.splice(index, 0, newList);
+        this.webSocketService.updateBoard(selectedMoveBoard, this.wc);
       }
-      this.board.lists.splice(index, 0, this.board.lists.splice(indexFromList, 1)[0]);
-      this.webSocketService.updateBoard(this.board, this.wc);
-      this.selectedMoveList = undefined;
-      this.selectedMoveListPosition = undefined;
+      else {
+        if (position == "before" && index != 0 && indexToList > indexFromList) {
+          index--;
+        }
+        else if (position == "after" && index != selectedMoveBoard.lists.length - 1 && indexToList < indexFromList) {
+          index++;
+        }
+        this.board.lists.splice(index, 0, newList);
+        this.webSocketService.updateBoard(this.board, this.wc);
+      }
+      this.selectedCopyList = undefined;
+      this.selectedCopyListPosition = undefined;
+      this.selectedMoveBoard = undefined;
+      this.snackBarService.openSuccessSnackBar("Successfully moved", "X");
+    }
+    else if (selectedMoveBoard && selectedMoveBoard.lists.length < 2) {
+      let index = 0;
+      let newList = this.board.lists[indexFromList];
+      newList.id = null;
+      if (this.board.id != selectedMoveBoard.id) {
+        selectedMoveBoard.lists.splice(index, 0, newList);
+        this.webSocketService.updateBoard(selectedMoveBoard, this.wc);
+      }
+      else {
+        this.board.lists.splice(index, 0, newList);
+        this.webSocketService.updateBoard(this.board, this.wc);
+      }
+      this.selectedCopyList = undefined;
+      this.selectedCopyListPosition = undefined;
+      this.selectedMoveBoard = undefined;
       this.snackBarService.openSuccessSnackBar("Successfully moved", "X");
     }
 
   }
 
-  moveListDialog(indexFromList, position, indexToList) {
-    if (indexToList != undefined && position != undefined) {
-      const dialogRef = this.dialogService.openDialog(DialogSaveChanges, "Unsaved Changes", "Move List " + position + " " + this.board.lists[indexToList].title);
+  copyListDialog(indexFromList, position, indexToList, selectedMoveBoard) {
+    if ((indexFromList != undefined && position != undefined && indexToList != undefined && selectedMoveBoard) || (selectedMoveBoard && selectedMoveBoard.lists.length < 2)) {
+      const dialogRef = this.dialogService.openDialog(DialogSaveChanges, "Unsaved Changes", "Copy List " + position + " " + this.board.lists[indexToList].title + " on board " + selectedMoveBoard?.title);
 
       dialogRef.afterClosed().subscribe(result => {
         if (result) {
-          this.moveList(indexFromList, position, indexToList);
+          this.copyList(indexFromList, position, indexToList, selectedMoveBoard);
+        }
+        else {
+          this.selectedCopyList = undefined;
+          this.selectedCopyListPosition = undefined;
+          this.selectedMoveBoard = undefined;
+        }
+      });
+    }
+    else {
+      this.selectedCopyList = undefined;
+      this.selectedCopyListPosition = undefined;
+      this.selectedMoveBoard = undefined;
+    }
+  }
+
+  moveList(indexFromList, position, indexToList, selectedMoveBoard) {
+    if (indexFromList != undefined && position != undefined && indexToList != undefined && selectedMoveBoard != undefined) {
+      let index = indexToList;
+      if (this.board.id != selectedMoveBoard.id) {
+        if (position == "after") {
+          index++;
+        }
+        selectedMoveBoard.lists.splice(index, 0, this.board.lists.splice(indexFromList, 1)[0]);
+        this.webSocketService.updateBoard(selectedMoveBoard, this.wc);
+        this.webSocketService.updateBoard(this.board, this.wc);
+      }
+      else {
+        if (position == "before" && index != 0 && indexToList > indexFromList) {
+          index--;
+        }
+        else if (position == "after" && index != selectedMoveBoard.lists.length - 1 && indexToList < indexFromList) {
+          index++;
+        }
+        this.board.lists.splice(index, 0, this.board.lists.splice(indexFromList, 1)[0]);
+        this.webSocketService.updateBoard(this.board, this.wc);
+      }
+      this.selectedMoveList = undefined;
+      this.selectedMoveListPosition = undefined;
+      this.selectedMoveBoard = undefined;
+      this.snackBarService.openSuccessSnackBar("Successfully moved", "X");
+    }
+    else if (selectedMoveBoard && selectedMoveBoard.lists.length == 0) {
+      let index = 0;
+      if (this.board.id != selectedMoveBoard.id) {
+        selectedMoveBoard.lists.splice(index, 0, this.board.lists.splice(indexFromList, 1)[0]);
+        this.webSocketService.updateBoard(selectedMoveBoard, this.wc);
+        this.webSocketService.updateBoard(this.board, this.wc);
+      }
+      else {
+        this.board.lists.splice(index, 0, this.board.lists.splice(indexFromList, 1)[0]);
+        this.webSocketService.updateBoard(this.board, this.wc);
+      }
+      this.selectedMoveList = undefined;
+      this.selectedMoveListPosition = undefined;
+      this.selectedMoveBoard = undefined;
+      this.snackBarService.openSuccessSnackBar("Successfully moved", "X");
+    }
+
+  }
+
+  moveListDialog(indexFromList, position, indexToList, selectedMoveBoard) {
+    if ((indexFromList != undefined && position != undefined && indexToList != undefined && selectedMoveBoard) || (selectedMoveBoard && selectedMoveBoard.lists.length == 0)) {
+      const dialogRef = this.dialogService.openDialog(DialogSaveChanges, "Unsaved Changes", "Move List " + position + " " + this.board.lists[indexToList].title + " on board " + selectedMoveBoard.title);
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.moveList(indexFromList, position, indexToList, selectedMoveBoard);
         }
         else {
           this.selectedMoveList = undefined;
           this.selectedMoveListPosition = undefined;
+          this.selectedMoveBoard = undefined;
         }
       });
     }
     else {
       this.selectedMoveList = undefined;
       this.selectedMoveListPosition = undefined;
+      this.selectedMoveBoard = undefined;
     }
   }
 
   calculateCheckedTasks(listIndex, cardIndex) {
     let checkedNumber: number[] = [];
     let sum = 0;
-    this.board.lists[listIndex].cards[cardIndex].checklists.forEach(checklist => {
+    this.board.lists[listIndex].cards[cardIndex]?.checklists.forEach(checklist => {
       checklist.tasks.forEach(task => {
         if (task.done) {
           sum += 1;

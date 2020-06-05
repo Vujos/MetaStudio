@@ -37,6 +37,9 @@ public class UserService {
     @Autowired
     private ActivityService activityService;
 
+    @Autowired
+    private BoardService boardService;
+
     public UserService() {
     }
 
@@ -103,6 +106,11 @@ public class UserService {
             for (Activity activity : user.getActivities()) {
                 if (activity.getId() == null) {
                     activityService.addActivity(activity);
+                }
+            }
+            for (Board template : user.getTemplates()){
+                if(template.getId() == null){
+                    boardService.addBoard(template);
                 }
             }
             userRepo.save(user);

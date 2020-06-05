@@ -22,8 +22,7 @@
       </mat-menu>
       &nbsp;
       <mat-checkbox [color]="checkboxColor" matTooltip="Finished"
-        [(ngModel)]="data.board.lists[data.listIndex].cards[data.cardIndex].done"
-        (change)="doneCardDialog()">
+        [(ngModel)]="data.board.lists[data.listIndex].cards[data.cardIndex] ? data.board.lists[data.listIndex].cards[data.cardIndex].done : data" (change)="doneCardDialog()">
       </mat-checkbox>
       <br>
       <span *ngFor="let label of data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.labels; index as i">
@@ -48,6 +47,66 @@
         [dynamicHeight]='true'>
         <mat-tab label="General">
           <br>
+          <button class="white background-color-default" mat-button [matMenuTriggerFor]="copyCardMenu"
+            #copyCardTrigger="matMenuTrigger">Copy card</button>
+          <mat-menu #copyCardMenu="matMenu" (closed)="copyCardDialog(selectedCopyCard, selectedMoveBoard)">
+            <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+              <mat-form-field>
+                <mat-label>Select a board</mat-label>
+                <mat-select [(value)]="selectedMoveBoard">
+                  <ng-container *ngFor="let boardSelected of allUserBoards">
+                    <mat-option [value]="boardSelected" *ngIf="boardSelected.lists.length>0">{{boardSelected.title}}
+                    </mat-option>
+                  </ng-container>
+                </mat-select>
+              </mat-form-field>
+              <div *ngIf="selectedMoveBoard">
+                <mat-form-field>
+                  <mat-label>Select a list</mat-label>
+                  <mat-select [(value)]="selectedCopyCard">
+                    <mat-option *ngFor="let list of selectedMoveBoard?.lists; index as j" [value]="j">
+                      {{list.title}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <br>
+              <button class="center white background-color-default transform-scale" mat-button
+                (click)="copyCard(selectedCopyCard, selectedMoveBoard)">Copy</button>
+            </div>
+          </mat-menu>
+          &nbsp;
+          <button class="white background-color-default" mat-button [matMenuTriggerFor]="moveCardMenu"
+            #moveCardTrigger="matMenuTrigger">Move card</button>
+          <mat-menu #moveCardMenu="matMenu" (closed)="moveCardDialog(selectedMoveCard, selectedMoveBoard)">
+            <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+              <mat-form-field>
+                <mat-label>Select a board</mat-label>
+                <mat-select [(value)]="selectedMoveBoard">
+                  <ng-container *ngFor="let boardSelected of allUserBoards">
+                    <mat-option [value]="boardSelected" *ngIf="boardSelected.lists.length>0">{{boardSelected.title}}
+                    </mat-option>
+                  </ng-container>
+                </mat-select>
+              </mat-form-field>
+              <div *ngIf="selectedMoveBoard">
+                <mat-form-field>
+                  <mat-label>Select a list</mat-label>
+                  <mat-select [(value)]="selectedMoveCard">
+                    <ng-container *ngFor="let listSelected of selectedMoveBoard?.lists; index as j">
+                      <mat-option *ngIf="data.listIndex!=j || listSelected.id != data.board.lists[data.listIndex].id"
+                        [value]="j">{{listSelected.title}}
+                      </mat-option>
+                    </ng-container>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <br>
+              <button class="center white background-color-default transform-scale" mat-button
+                (click)="moveCard(selectedMoveCard, selectedMoveBoard)">Move</button>
+            </div>
+          </mat-menu>
+          &nbsp;
           <button class="white background-color-default" mat-button [matMenuTriggerFor]="labelsMenu"
             #labelsTrigger="matMenuTrigger">Add Labels</button>
           <mat-menu #labelsMenu="matMenu">
@@ -72,19 +131,19 @@
               <textarea cdkTextareaAutosize #cardDescriptionAutosize="cdkTextareaAutosize" cdkAutosizeMinRows="1"
                 cdkAutosizeMaxRows="5" matInput placeholder="Enter card description" #cardDescriptionInput
                 formControlName="description" (focusout)="saveCardDescription()"
-                [value]="this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].description"></textarea>
+                [value]="this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.description"></textarea>
             </mat-form-field>
             <br>
             <mat-form-field class="width-48">
               <mat-label>Start date</mat-label>
               <input formControlName="startDate" matInput type="datetime-local" (focusout)="saveStartDate()"
-                [value]="this.dateService.getAngularDateTimeLocal(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].startDate)">
+                [value]="this.dateService.getAngularDateTimeLocal(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.startDate)">
             </mat-form-field>
             <span class="width-4"></span>
             <mat-form-field class="width-48">
               <mat-label>Due date</mat-label>
               <input formControlName="endDate" matInput type="datetime-local" (focusout)="saveEndDate()"
-                [value]="this.dateService.getAngularDateTimeLocal(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].endDate)">
+                [value]="this.dateService.getAngularDateTimeLocal(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.endDate)">
             </mat-form-field>
           </div>
           <br>

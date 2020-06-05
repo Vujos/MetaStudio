@@ -20,6 +20,7 @@ import { RoutesService } from '../shared/routes.service';
 import { SnackBarService } from '../shared/snack-bar.service';
 import { UserService } from '../users/user.service';
 import { WebSocketService } from '../web-socket/web-socket.service';
+import { Board } from '../models/board.model';
 
 @Component({
   selector: 'app-card-details',
@@ -59,6 +60,11 @@ export class CardDetailsComponent implements OnInit {
   newUser = "";
   errorMessageNewUser = undefined;
 
+  selectedCopyCard;
+  selectedMoveCard;
+  selectedMoveBoard: Board;
+  allUserBoards: Board[];
+
   currentUser = undefined;
 
   private wc;
@@ -79,7 +85,78 @@ export class CardDetailsComponent implements OnInit {
 
     this.userService.getByQuery(this.authService.getCurrentUser()).subscribe(currentUser => {
       this.currentUser = currentUser;
+      this.allUserBoards = this.currentUser.boards.concat(...this.currentUser.teams.map(team => team.boards));
     })
+  }
+
+  copyCard(indexToList, selectedMoveBoard) {
+    if (this.data.listIndex != undefined && indexToList != undefined && selectedMoveBoard != undefined) {
+      let newCard = this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex];
+      newCard.id = null;
+      selectedMoveBoard.lists[indexToList].cards.push(newCard);
+      this.addActivity(this.currentUser.id, this.currentUser.fullName, `copied card from list ${this.data.board.lists[this.data.listIndex].title} to list ${selectedMoveBoard.lists[indexToList].title}` + " on board " + selectedMoveBoard.title);
+      this.webSocketService.updateBoard(selectedMoveBoard, this.wc);
+      this.selectedCopyCard = undefined;
+      this.selectedMoveBoard = undefined;
+      this.snackBarService.openSuccessSnackBar("Successfully copied", "X");
+    }
+  }
+
+  copyCardDialog(indexToList, selectedMoveBoard) {
+    if (this.data.listIndex != undefined && indexToList != undefined && selectedMoveBoard != undefined) {
+      const dialogRef = this.dialogService.openDialog(DialogSaveChanges, "Unsaved Changes", "Copy Card from " + this.data.board.lists[this.data.listIndex].title + " to " + selectedMoveBoard.lists[indexToList].title + " on board " + selectedMoveBoard.title);
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.copyCard(indexToList, selectedMoveBoard);
+        }
+        else {
+          this.selectedCopyCard = undefined;
+          this.selectedMoveBoard = undefined;
+        }
+      });
+    }
+    else {
+      this.selectedCopyCard = undefined;
+      this.selectedMoveBoard = undefined;
+    }
+  }
+
+  moveCard(indexToList, selectedMoveBoard) {
+    if (this.data.listIndex != undefined && indexToList != undefined && selectedMoveBoard != undefined) {
+      selectedMoveBoard.lists[indexToList].cards.push(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex]);
+      this.data.board.lists[this.data.listIndex].cards.splice(this.data.cardIndex, 1);
+      this.addActivity(this.currentUser.id, this.currentUser.fullName, `moved card from list ${this.data.board.lists[this.data.listIndex].title} to list ${selectedMoveBoard.lists[indexToList].title}` + " on board " + selectedMoveBoard.title);
+      if (this.data.board.id == selectedMoveBoard.id) {
+        selectedMoveBoard.lists[this.data.listIndex].cards = [];
+      }
+      this.webSocketService.updateBoard(selectedMoveBoard, this.wc);
+      this.selectedMoveCard = undefined;
+      this.selectedMoveBoard = undefined;
+      this.snackBarService.openSuccessSnackBar("Successfully moved", "X");
+    }
+
+  }
+
+  moveCardDialog(indexToList, selectedMoveBoard) {
+    if (indexToList != undefined && selectedMoveBoard != undefined) {
+      const dialogRef = this.dialogService.openDialog(DialogSaveChanges, "Unsaved Changes", "Move Card from " + this.data.board.lists[this.data.listIndex].title + " to " + selectedMoveBoard.lists[indexToList].title + " on board " + selectedMoveBoard.title);
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.dialogRef.close();
+          this.moveCard(indexToList, selectedMoveBoard);
+        }
+        else {
+          this.selectedMoveCard = undefined;
+          this.selectedMoveBoard = undefined;
+        }
+      });
+    }
+    else {
+      this.selectedMoveCard = undefined;
+      this.selectedMoveBoard = undefined;
+    }
   }
 
   addLabel() {

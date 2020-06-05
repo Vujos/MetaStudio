@@ -61,57 +61,57 @@ export class ProfileDetailsComponent implements OnInit {
     this.userService.getOne(idUser).subscribe(data => {
       this.loadingData = false;
       this.currentUser = data;
-    }, error => {
-      this.router.navigate(['/']);
-    })
 
-    this.boardService.getCommonBoards(idUser, this.authService.getCurrentUser()).subscribe(boards => {
-      this.boards = boards;
-      this.filteredBoards = boards;
 
-      this.boards.forEach(board => {
-        let cards = 0;
-        this.cardsPerBoardsLabels.push(board.title);
-        board.lists.forEach(list => {
-          list.cards.forEach(card => {
-            cards++;
-            if (card.done) {
-              this.finishedCards++;
-            }
-            else {
-              this.unfinishedCards++;
-            }
-            card.checklists.forEach(checklist => {
-              checklist.tasks.forEach(task => {
-                if (task.done) {
-                  this.finishedTasks++;
-                }
-                else {
-                  this.unfinishedTasks++;
-                }
+      this.boardService.getCommonBoards(idUser, this.authService.getCurrentUser()).subscribe(boards => {
+        this.boards = boards;
+        this.filteredBoards = boards;
+
+        this.boards.forEach(board => {
+          let cards = 0;
+          this.cardsPerBoardsLabels.push(board.title);
+          board.lists.forEach(list => {
+            list.cards.forEach(card => {
+              cards++;
+              if (card.done) {
+                this.finishedCards++;
+              }
+              else {
+                this.unfinishedCards++;
+              }
+              card.checklists.forEach(checklist => {
+                checklist.tasks.forEach(task => {
+                  if (task.done) {
+                    this.finishedTasks++;
+                  }
+                  else {
+                    this.unfinishedTasks++;
+                  }
+                });
               });
             });
           });
+          this.cardsPerBoards.push(cards);
         });
-        this.cardsPerBoards.push(cards);
+
+        this.boardsPerTeamsLabels = this.currentUser.teams.map(team => team.name);
+        this.boardsPerTeams = this.currentUser.teams.map(team => team.boards.length);
+
+        let labelsTasks = ["Finished", "Unfinished"];
+        let valuesTasks = [this.finishedTasks, this.unfinishedTasks];
+        this.pieChartTasks = new PieChartData("Tasks", labelsTasks, valuesTasks, 100, 100);
+
+        this.barChartBoards = new BarChartData("Number of boards per teams", this.boardsPerTeamsLabels, this.boardsPerTeams);
+
+        let labelsCards = ["Finished", "Unfinished"];
+        let valuesCards = [this.finishedCards, this.unfinishedCards];
+        this.pieChartCards = new PieChartData("Cards", labelsCards, valuesCards, 100, 100);
+
+        this.barChartCards = new BarChartData("Number of cards per boards", this.cardsPerBoardsLabels, this.cardsPerBoards);
       });
-
-      this.boardsPerTeamsLabels = this.currentUser.teams.map(team => team.name);
-      this.boardsPerTeams = this.currentUser.teams.map(team => team.boards.length);
-
-      let labelsTasks = ["Finished", "Unfinished"];
-      let valuesTasks = [this.finishedTasks, this.unfinishedTasks];
-      this.pieChartTasks = new PieChartData("Tasks", labelsTasks, valuesTasks, 100, 100);
-
-      this.barChartBoards = new BarChartData("Number of boards per teams", this.boardsPerTeamsLabels, this.boardsPerTeams);
-
-      let labelsCards = ["Finished", "Unfinished"];
-      let valuesCards = [this.finishedCards, this.unfinishedCards];
-      this.pieChartCards = new PieChartData("Cards", labelsCards, valuesCards, 100, 100);
-
-      this.barChartCards = new BarChartData("Number of cards per boards", this.cardsPerBoardsLabels, this.cardsPerBoards);
-    });
-
+    }, error => {
+      this.router.navigate(['/']);
+    })
   }
 
   selectedTabChange(event) {
