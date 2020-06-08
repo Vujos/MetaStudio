@@ -220,6 +220,35 @@
           <button mat-menu-item (click)="addTemplate()">Save as a template</button>
 
           <mat-divider></mat-divider>
+
+          <button mat-menu-item [routerLink]="['/board', board?.parentBoard?.boardId]" [disabled]="!board?.parentBoard" [matTooltip]="board?.parentBoard ? board.parentBoard.title : 'No parent board'">Go to the parent board</button>
+          
+          <button mat-menu-item [matMenuTriggerFor]="childBoardsMenu"
+            #childBoardsTrigger="matMenuTrigger">Sub boards</button>
+          <mat-menu #childBoardsMenu="matMenu">
+            <div (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+              <div *ngIf="board?.childBoards?.length==0" class="menu-item-padding">
+                <h3 class="gray">No sub boards</h3>
+              </div>
+              <mat-divider *ngIf="board?.childBoards?.length>0"></mat-divider>
+              <div *ngFor="let subBoard of board?.childBoards; index as i">
+                <div>
+                  <br>
+                  <div class="text-align-right menu-item-margin">
+                    <div>
+                      <h3 class="text-align-left margin-0 link" [routerLink]="['/board', subBoard.boardId]">{{subBoard.title}}
+                      </h3>
+                    </div>
+                  </div>
+                  <br>
+                  <mat-divider></mat-divider>
+                </div>
+              </div>
+            </div>
+          </mat-menu>
+
+          <mat-divider></mat-divider>
+
           <button mat-menu-item (click)="$event.stopPropagation();showAddList()">New list</button>
           <button [disabled]="board?.lists.length < 1" class="delete" mat-menu-item
             (click)="deleteAllListsDialog()">Delete all lists</button>

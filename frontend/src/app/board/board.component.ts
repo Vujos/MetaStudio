@@ -88,6 +88,7 @@ export class BoardComponent {
   allUserBoards: Board[];
 
   private wc;
+  private subscription;
 
   constructor(private dialog: MatDialog, private route: ActivatedRoute, private routesService: RoutesService, private boardService: BoardService, private webSocketService: WebSocketService, public userService: UserService, private authService: AuthService, private router: Router, private colorsService: ColorsService, private dialogService: DialogService, private snackBarService: SnackBarService, private teamService: TeamService, public dateService: DateService) {
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
@@ -143,7 +144,8 @@ export class BoardComponent {
         this.openCardDetailsDialog(listIndex, cardIndex, tabIndex);
       }
     }, error => {
-      this.router.navigate(['/']);
+      this.router.navigate(['/'])
+      return;
     });
 
     this.userService.getByQuery(this.authService.getCurrentUser()).subscribe(currentUser => {
@@ -153,7 +155,7 @@ export class BoardComponent {
 
     this.wc = this.webSocketService.getClient();
     this.wc.connect({}, () => {
-      this.wc.subscribe("/topic/boards/update/" + id, (msg) => {
+      this.subscription = this.wc.subscribe("/topic/boards/update/" + id, (msg) => {
         if (JSON.parse(msg.body).statusCodeValue == 204 && this.board.users[0].id != this.currentUser.id) {
           const dialogRef = this.dialogService.openDialog(DialogOkComponent, "Content Deleted", "The owner has deleted the board");
           dialogRef.afterClosed().subscribe(result => {
@@ -207,8 +209,12 @@ export class BoardComponent {
   }
 
   ngOnDestroy() {
-    if (this.wc && this.authService.isLoggedIn()) {
+    try {
+      this.subscription.unsubscribe();
       this.wc.disconnect();
+    }
+    catch {
+
     }
   }
 

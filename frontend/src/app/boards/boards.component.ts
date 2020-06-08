@@ -31,6 +31,7 @@ export class BoardsComponent implements OnInit {
   currentUser = undefined;
 
   private wc;
+  private subscription;
 
   boards: Board[];
 
@@ -60,7 +61,7 @@ export class BoardsComponent implements OnInit {
 
       this.wc = this.webSocketService.getClient();
       this.wc.connect({}, () => {
-        this.wc.subscribe("/topic/users/update/" + this.authService.getCurrentUser(), (msg) => {
+        this.subscription = this.wc.subscribe("/topic/users/update/" + this.authService.getCurrentUser(), (msg) => {
           this.userService.getOne(this.currentUser.id).subscribe(user => {
             let data = user;
             this.boards = data.boards;
@@ -83,8 +84,12 @@ export class BoardsComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    if (this.wc && this.authService.isLoggedIn()) {
+    try {
+      this.subscription.unsubscribe();
       this.wc.disconnect();
+    }
+    catch {
+
     }
   }
 
@@ -103,6 +108,8 @@ export class BoardsComponent implements OnInit {
           lists: [],
           priority: 1,
           activities: [],
+          parentBoard: null,
+          childBoards: [],
           deleted: false
         }
       ).subscribe(data => {

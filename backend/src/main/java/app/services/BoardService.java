@@ -21,10 +21,13 @@ import app.models.Activity;
 import app.models.Board;
 import app.models.Card;
 import app.models.Checklist;
+import app.models.ChildBoard;
 import app.models.List;
 import app.models.Team;
 import app.models.User;
 import app.repositories.BoardRepository;
+import app.repositories.ChildBoardRepository;
+import app.repositories.ParentBoardRepository;
 
 @Service
 public class BoardService {
@@ -34,6 +37,12 @@ public class BoardService {
 
     @Autowired
     private BoardRepository boardRepo;
+
+    @Autowired
+    private ParentBoardRepository parentBoardRepo;
+
+    @Autowired
+    private ChildBoardRepository childBoardRepo;
 
     @Autowired
     private ListService listService;
@@ -171,6 +180,14 @@ public class BoardService {
                     activityService.addActivity(activity);
                 }
             }
+            if (board.getParentBoard() != null && board.getParentBoard().getId() == null) {
+                parentBoardRepo.save(board.getParentBoard());
+            }
+            for (ChildBoard childBoard : board.getChildBoards()) {
+                if (childBoard.getId() == null) {
+                    childBoardRepo.save(childBoard);
+                }
+            }
             boardRepo.save(board);
         }
     }
@@ -184,7 +201,7 @@ public class BoardService {
             }
             updateBoard(id, board);
             template.convertAndSend("/topic/boards/update/" + id,
-                        new ResponseEntity<HttpStatus>(HttpStatus.NO_CONTENT));
+                    new ResponseEntity<HttpStatus>(HttpStatus.NO_CONTENT));
             return new ResponseEntity<HttpStatus>(HttpStatus.NO_CONTENT);
         }
         updateBoard(id, board);

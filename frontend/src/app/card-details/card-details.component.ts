@@ -21,6 +21,8 @@ import { SnackBarService } from '../shared/snack-bar.service';
 import { UserService } from '../users/user.service';
 import { WebSocketService } from '../web-socket/web-socket.service';
 import { Board } from '../models/board.model';
+import { ParentBoard } from '../models/parent-board.model';
+import { ChildBoard } from '../models/child-board.model';
 
 @Component({
   selector: 'app-card-details',
@@ -416,7 +418,10 @@ export class CardDetailsComponent implements OnInit {
       lists.push(new List(null, checklist.title, cards, 1, new Date(), false));
     })
 
-    let users: User[] = this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].members;
+    let users: User[] = [];
+    this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].members.forEach(member => {
+      users.push(member);
+    });
     this.userService.getByQuery(this.authService.getCurrentUser()).subscribe(currentUser => {
       if (!users.includes(currentUser)) {
         users.unshift(currentUser);
@@ -433,6 +438,8 @@ export class CardDetailsComponent implements OnInit {
           lists: lists,
           priority: 1,
           activities: [],
+          parentBoard: new ParentBoard(null, this.data.board.id, this.data.board.title, new Date(), false),
+          childBoards: [],
           deleted: false
         }
       ).subscribe(data => {
@@ -441,6 +448,8 @@ export class CardDetailsComponent implements OnInit {
           user.boards.push(newBoard);
           this.webSocketService.updateUser(user, this.wc);
         })
+        this.data.board.childBoards.push(new ChildBoard(null, newBoard.id, newBoard.title, new Date(), false));
+        this.webSocketService.updateBoard(this.data.board, this.wc);
         this.dialogRef.close();
         this.router.navigate(['/']);
       });
@@ -470,7 +479,7 @@ export class CardDetailsComponent implements OnInit {
     this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].doneDate = new Date();
     let action = "finished card";
     if (!this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].done) {
-      let action = "marked as unfinished card";
+      action = "marked as unfinished card";
     }
     this.addActivity(this.currentUser.id, this.currentUser.fullName, action, this.routesService.getCardRouteIndices(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title);
   }

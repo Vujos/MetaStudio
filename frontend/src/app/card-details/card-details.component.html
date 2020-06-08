@@ -22,7 +22,7 @@
       </mat-menu>
       &nbsp;
       <mat-checkbox [color]="checkboxColor" matTooltip="Finished"
-        [(ngModel)]="data.board.lists[data.listIndex].cards[data.cardIndex] ? data.board.lists[data.listIndex].cards[data.cardIndex].done : data" (change)="doneCardDialog()">
+        [(ngModel)]="data.board.lists[data.listIndex].cards[data.cardIndex].done" (change)="doneCardDialog()">
       </mat-checkbox>
       <br>
       <span *ngFor="let label of data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.labels; index as i">

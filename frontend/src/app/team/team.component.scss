@@ -115,6 +115,7 @@ display: inline-block;
   font-size: 14px;
   margin: 10px;
   border-radius: 5px;
+  min-height: 80px;
 }
 
 .example-list-boards.cdk-drop-list-dragging .example-box-boards {
@@ -169,6 +170,7 @@ display: inline-block;
   margin: 10px;
   border-radius: 5px;
   text-align: left;
+  min-height: 80px;
 }
 
 /* .example-list-members.cdk-drop-list-dragging .example-box-members {

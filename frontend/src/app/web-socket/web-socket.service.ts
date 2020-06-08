@@ -18,6 +18,7 @@ export class WebSocketService {
 
   getClient() {
     let client = Stomp.client(this.url);
+    client.reconnect_delay = 5000;
     client.debug = false;
     return client;
   }

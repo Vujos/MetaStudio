@@ -37,9 +37,14 @@ public class Board {
     private ArrayList<List> lists;
 
     private Integer priority;
-    
+
     @DBRef
     private ArrayList<Activity> activities;
+
+    private ParentBoard parentBoard;
+
+    @DBRef
+    private ArrayList<ChildBoard> childBoards;
 
     @NotNull
     private Boolean deleted = false;
@@ -49,7 +54,7 @@ public class Board {
 
     public Board(String id, String title, Date date, String description, String background, ArrayList<User> users,
             ArrayList<Team> teams, ArrayList<List> lists, Integer priority, ArrayList<Activity> activities,
-            @NotNull Boolean deleted) {
+            ParentBoard parentBoard, ArrayList<ChildBoard> childBoards, @NotNull Boolean deleted) {
         this.id = id;
         this.title = title;
         this.date = date;
@@ -60,6 +65,8 @@ public class Board {
         this.lists = lists;
         this.priority = priority;
         this.activities = activities;
+        this.parentBoard = parentBoard;
+        this.childBoards = childBoards;
         this.deleted = deleted;
     }
 
@@ -141,6 +148,22 @@ public class Board {
 
     public void setActivities(ArrayList<Activity> activities) {
         this.activities = activities;
+    }
+
+    public ParentBoard getParentBoard() {
+        return parentBoard;
+    }
+
+    public void setParentBoard(ParentBoard parentBoard) {
+        this.parentBoard = parentBoard;
+    }
+
+    public ArrayList<ChildBoard> getChildBoards() {
+        return childBoards;
+    }
+
+    public void setChildBoards(ArrayList<ChildBoard> childBoards) {
+        this.childBoards = childBoards;
     }
 
     public Boolean getDeleted() {

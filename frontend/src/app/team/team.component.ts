@@ -32,6 +32,7 @@ export class TeamComponent implements OnInit {
   currentUser = undefined;
 
   private wc;
+  private subscription;
 
   team: Team;
 
@@ -71,7 +72,7 @@ export class TeamComponent implements OnInit {
 
     this.wc = this.webSocketService.getClient();
     this.wc.connect({}, () => {
-      this.wc.subscribe("/topic/teams/update/" + id, (msg) => {
+      this.subscription = this.wc.subscribe("/topic/teams/update/" + id, (msg) => {
         if (JSON.parse(msg.body).statusCodeValue == 204 && this.team.members[0].id != this.currentUser.id) {
           const dialogRef = this.dialogService.openDialog(DialogOkComponent, "Content Deleted", "The owner has deleted the team");
           dialogRef.afterClosed().subscribe(result => {
@@ -100,8 +101,12 @@ export class TeamComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    if (this.wc && this.authService.isLoggedIn()) {
+    try {
+      this.subscription.unsubscribe();
       this.wc.disconnect();
+    }
+    catch {
+
     }
   }
 
@@ -120,6 +125,8 @@ export class TeamComponent implements OnInit {
             lists: [],
             priority: 1,
             activities: [],
+            parentBoard: null,
+            childBoards: [],
             deleted: false
           }
         ).subscribe(data => {

@@ -79,6 +79,10 @@
       <div class="example-box-boards" *ngFor="let board of boards" cdkDrag [routerLink]="['/board', board.id]"
         [ngStyle]="{'background-color':board.background, 'color': colorsService.checkBackground(board.background) ? 'black' : 'white'}">
         {{board.title}}
+        <span *ngIf="board.parentBoard" matTooltip="This is a sub board. Click to go to the parent board."
+          (click)="$event.stopPropagation()" [routerLink]="['/board', board.parentBoard.boardId]">
+          <mat-icon>call_split</mat-icon>
+        </span>
       </div>
       <div class="placeholder-boards" *ngIf="boards?.length==0">
         <h1 class="no-boards">No boards</h1>
