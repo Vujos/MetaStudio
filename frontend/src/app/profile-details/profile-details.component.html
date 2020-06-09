@@ -25,6 +25,35 @@
             <mat-tab label="General" *ngIf="currentUser?.id == loggedUser?.id">
                 <app-profile></app-profile>
             </mat-tab>
+            <mat-tab label="Skills">
+                <br>
+                <mat-form-field>
+                    <mat-label>Select skill</mat-label>
+                    <mat-select [(ngModel)]="selectedSkill">
+                        <mat-option *ngFor="let skillGeneral of skillGenerals" [value]="skillGeneral">
+                            {{skillGeneral.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                &nbsp;
+                <button class="white background-color-default transform-scale" mat-button
+            (click)="addSkill()">Add</button>
+                <br>
+                <div class="user-skills">
+                    <div *ngFor="let skill of currentUser?.skills">
+                        <p>{{skill.name.name}}</p>
+                        <div class="container">
+                            <div class="skills" [ngStyle]="{'width':skill.level*10+'%', 'background-color':skillLevelColor(skill.level*10)}">{{skill.level*10}}%</div>
+                        </div>
+                        <br><br>
+                    </div>
+                    <div class="placeholder-profile-details" *ngIf="currentUser?.skills.length == 0">
+                        <h1 class="gray">
+                            No
+                            skills</h1>
+                    </div>
+                </div>
+            </mat-tab>
             <mat-tab label="Cards">
                 <br>
                 <mat-form-field>
@@ -139,21 +168,21 @@
                 </div>
                 <br><br><br>
                 <app-pie-chart class="inline-block"
-                    *ngIf="currentUser?.id == loggedUser?.id ? selectedTabIndex == 3 : selectedTabIndex == 2"
+                    *ngIf="currentUser?.id == loggedUser?.id ? selectedTabIndex == 4 : selectedTabIndex == 3"
                     [pieChartData]="pieChartCards">
                 </app-pie-chart>
                 <app-pie-chart class="inline-block"
-                    *ngIf="currentUser?.id == loggedUser?.id ? selectedTabIndex == 3 : selectedTabIndex == 2"
+                    *ngIf="currentUser?.id == loggedUser?.id ? selectedTabIndex == 4 : selectedTabIndex == 3"
                     [pieChartData]="pieChartTasks">
                 </app-pie-chart>
                 <br><br><br>
                 <app-bar-chart class="inline-block width-100 height-50"
-                    *ngIf="currentUser?.id == loggedUser?.id ? selectedTabIndex == 3 : selectedTabIndex == 2"
+                    *ngIf="currentUser?.id == loggedUser?.id ? selectedTabIndex == 4 : selectedTabIndex == 3"
                     [barChartData]="barChartBoards">
                 </app-bar-chart>
                 <br><br>
                 <app-bar-chart class="inline-block width-100 height-50"
-                    *ngIf="currentUser?.id == loggedUser?.id ? selectedTabIndex == 3 : selectedTabIndex == 2"
+                    *ngIf="currentUser?.id == loggedUser?.id ? selectedTabIndex == 4 : selectedTabIndex == 3"
                     [barChartData]="barChartCards">
                 </app-bar-chart>
             </mat-tab>

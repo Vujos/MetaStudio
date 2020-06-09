@@ -69,6 +69,8 @@ export class CardDetailsComponent implements OnInit {
 
   currentUser = undefined;
 
+  suggestionMemberBySkills = undefined;
+
   private wc;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: CardDetailsData, public dateService: DateService, private fb: FormBuilder, private dialogRef: MatDialogRef<CardDetailsComponent>, private webSocketService: WebSocketService, public userService: UserService, private authService: AuthService, private boardService: BoardService, private router: Router, private snackBarService: SnackBarService, private dialogService: DialogService, private routesService: RoutesService) { }
@@ -376,6 +378,7 @@ export class CardDetailsComponent implements OnInit {
           this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].members = cardMembers;
           this.webSocketService.updateBoard(this.data.board, this.wc);
           this.snackBarService.openSuccessSnackBar("Successfully added", "X");
+          this.suggestionMemberBySkills = undefined;
         }
       }, error => {
         this.errorMessageNewUser = "That user does not exist"
@@ -413,7 +416,7 @@ export class CardDetailsComponent implements OnInit {
     this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists.forEach(checklist => {
       let cards: Card[] = [];
       checklist.tasks.forEach(task => {
-        cards.push(new Card(null, task.title, new Date(), "", [], new Date(), new Date(), [], [], [], false, null, [], false));
+        cards.push(new Card(null, task.title, new Date(), "", [], new Date(), new Date(), [], [], [], false, null, [], [], false));
       })
       lists.push(new List(null, checklist.title, cards, 1, new Date(), false));
     })
@@ -507,5 +510,11 @@ export class CardDetailsComponent implements OnInit {
     this.webSocketService.updateBoard(this.data.board, this.wc);
     this.currentUser.activities.unshift(activity);
     this.webSocketService.updateUser(this.currentUser, this.wc);
+  }
+
+  getSuggestionMemberBySkills(){
+    this.userService.getOneBySkills(this.data.board.id, this.currentUser.skills).subscribe(user => {
+      this.suggestionMemberBySkills = user;
+    });
   }
 }

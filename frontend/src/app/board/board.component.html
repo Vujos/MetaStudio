@@ -134,20 +134,27 @@
                 <h3 class="gray">No users</h3>
               </div>
               <mat-divider *ngIf="board?.users.length>1"></mat-divider>
-              <div *ngFor="let user of board?.users; index as i">
+              <br>
+              <div *ngFor="let user of board?.users; index as i" class="menu-item-padding">
                 <div *ngIf="currentUser?.id != user.id">
-                  <br>
-                  <div class="text-align-right menu-item-margin">
-                    <div class="display-inline-block">
-                      <h3 class="text-align-left margin-0 link" [routerLink]="['/profile', user?.id]">{{user.fullName}}
-                      </h3>
-                      <p class="text-align-left" matTooltip="Username">@{{user.username}}</p>
+                  <div class="text-align-right">
+                    <div class="float-left">
+                      <div class="profile-picture-card-members">
+                        <span><b>{{userService.userInitials({"fullName" : user.fullName})}}</b></span>
+                      </div>
+                      &nbsp;
+                      <div class="suggestion-card-member">
+                        <h3 class="text-align-left margin-0 link" [routerLink]="['/profile', user.id]">
+                          {{user.fullName}}</h3>
+                        <span class="text-align-left" matTooltip="Username">@{{user.username}}</span>
+                      </div>
                     </div>
-                    &nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     <button class="delete" mat-icon-button matTooltip="Delete user" (click)="deleteUserDialog(i)">
                       <mat-icon>delete_outline</mat-icon>
                     </button>
                   </div>
+                  <br>
                   <mat-divider></mat-divider>
                 </div>
               </div>
@@ -221,10 +228,12 @@
 
           <mat-divider></mat-divider>
 
-          <button mat-menu-item [routerLink]="['/board', board?.parentBoard?.boardId]" [disabled]="!board?.parentBoard" [matTooltip]="board?.parentBoard ? board.parentBoard.title : 'No parent board'">Go to the parent board</button>
-          
-          <button mat-menu-item [matMenuTriggerFor]="childBoardsMenu"
-            #childBoardsTrigger="matMenuTrigger">Sub boards</button>
+          <button mat-menu-item [routerLink]="['/board', board?.parentBoard?.boardId]" [disabled]="!board?.parentBoard"
+            [matTooltip]="board?.parentBoard ? board.parentBoard.title : 'No parent board'">Go to the parent
+            board</button>
+
+          <button mat-menu-item [matMenuTriggerFor]="childBoardsMenu" #childBoardsTrigger="matMenuTrigger">Sub
+            boards</button>
           <mat-menu #childBoardsMenu="matMenu">
             <div (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
               <div *ngIf="board?.childBoards?.length==0" class="menu-item-padding">
@@ -236,7 +245,8 @@
                   <br>
                   <div class="text-align-right menu-item-margin">
                     <div>
-                      <h3 class="text-align-left margin-0 link" [routerLink]="['/board', subBoard.boardId]">{{subBoard.title}}
+                      <h3 class="text-align-left margin-0 link" [routerLink]="['/board', subBoard.boardId]">
+                        {{subBoard.title}}
                       </h3>
                     </div>
                   </div>
@@ -329,7 +339,8 @@
                           </ng-container>
                         </mat-select>
                       </mat-form-field>
-                      <div *ngIf="selectedMoveBoard?.lists.length>0 && (selectedMoveBoard?.id != board.id || board.lists.length>1)">
+                      <div
+                        *ngIf="selectedMoveBoard?.lists.length>0 && (selectedMoveBoard?.id != board.id || board.lists.length>1)">
                         <br>
                         <mat-form-field>
                           <mat-label>Select a position</mat-label>
@@ -427,7 +438,8 @@
                         <mat-label>Select a board</mat-label>
                         <mat-select [(value)]="selectedMoveBoard">
                           <ng-container *ngFor="let boardSelected of allUserBoards">
-                            <mat-option [value]="boardSelected" *ngIf="boardSelected.lists.length>0">{{boardSelected.title}}
+                            <mat-option [value]="boardSelected" *ngIf="boardSelected.lists.length>0">
+                              {{boardSelected.title}}
                             </mat-option>
                           </ng-container>
                         </mat-select>
@@ -459,7 +471,8 @@
                         <mat-label>Select a board</mat-label>
                         <mat-select [(value)]="selectedMoveBoard">
                           <ng-container *ngFor="let boardSelected of allUserBoards">
-                            <mat-option [value]="boardSelected" *ngIf="boardSelected.lists.length>0">{{boardSelected.title}}
+                            <mat-option [value]="boardSelected" *ngIf="boardSelected.lists.length>0">
+                              {{boardSelected.title}}
                             </mat-option>
                           </ng-container>
                         </mat-select>

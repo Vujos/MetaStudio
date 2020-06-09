@@ -49,7 +49,7 @@ export class TeamComponent implements OnInit {
 
   lightBackground = false;
 
-  constructor(private boardService: BoardService, private routesService: RoutesService, private snackBarService: SnackBarService, private dialogService: DialogService, private route: ActivatedRoute, private authService: AuthService, private router: Router, private userService: UserService, private webSocketService: WebSocketService, public colorsService: ColorsService, private teamService: TeamService) { }
+  constructor(private boardService: BoardService, private routesService: RoutesService, private snackBarService: SnackBarService, private dialogService: DialogService, private route: ActivatedRoute, private authService: AuthService, private router: Router, public userService: UserService, private webSocketService: WebSocketService, public colorsService: ColorsService, private teamService: TeamService) { }
 
   ngOnInit() {
     if (!this.authService.isLoggedIn()) {

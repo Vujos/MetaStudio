@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { User } from '../models/user.model';
 import { Board } from '../models/board.model';
 import { Team } from '../models/team.model';
+import { Skill } from '../models/skill.model';
 
 @Injectable({
   providedIn: 'root'
@@ -60,6 +61,10 @@ export class UserService {
 
   leaveTeam(teamId: string, userId: string) {
     return this.http.delete(this.userUrl + `/leaveTeam/${teamId}/${userId}`);
+  }
+
+  getOneBySkills(boardId: String, skills: Skill[]) {
+    return this.http.post<User>(this.userUrl + `/${boardId}/skills`, skills);
   }
 
   userInitials(currentUser){

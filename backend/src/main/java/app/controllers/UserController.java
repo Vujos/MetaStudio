@@ -1,5 +1,6 @@
 package app.controllers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
 
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.models.Board;
+import app.models.Skill;
 import app.models.Team;
 import app.models.User;
 import app.services.LoginService;
@@ -123,6 +125,15 @@ public class UserController {
         }
 
         return new ResponseEntity<User>(HttpStatus.NO_CONTENT);
+    }
+
+    @RequestMapping(value = "/{boardId}/skills", method = RequestMethod.POST)
+    public ResponseEntity<User> getUserBySkills(@PathVariable String boardId, @RequestBody ArrayList<Skill> skills) {
+        Optional<User> user = userService.getUserBySkills(boardId, skills);
+        if (user.isPresent()) {
+            return new ResponseEntity<User>(user.get(), HttpStatus.OK);
+        }
+        return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
     }
 
 }

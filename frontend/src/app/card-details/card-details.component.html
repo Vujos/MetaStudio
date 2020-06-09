@@ -234,9 +234,10 @@
         <mat-tab label="Members">
           <br>
           <button class="white background-color-default" mat-button [matMenuTriggerFor]="addUsersMenu"
-            #addUsersTrigger="matMenuTrigger" (menuOpened)="addUsersInput.focus()">Add members</button>
+            #addUsersTrigger="matMenuTrigger" (menuOpened)="addUsersInput.focus(); getSuggestionMemberBySkills()">Add
+            members</button>
           <mat-menu #addUsersMenu="matMenu" (closed)="resetAddUser()">
-            <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+            <div class="menu-item-padding-all" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
               <mat-form-field>
                 <mat-label>Email address or username</mat-label>
                 <input #addUsersInput placeholder="Enter email address or username" matInput [(ngModel)]="newUser"
@@ -246,6 +247,22 @@
               <button class="center transform-scale white background-color-default" mat-button
                 (click)="addUser()">Add</button>
               <p *ngIf="errorMessageNewUser" class="error-message white">{{errorMessageNewUser}}</p>
+              <div *ngIf="suggestionMemberBySkills">
+                <br><br>
+                <div>Suggestion</div>
+                <hr>
+                <br>
+                <div class="profile-picture-card-members">
+                  <span><b>{{userService.userInitials({"fullName" : suggestionMemberBySkills.fullName})}}</b></span>
+                </div>
+                &nbsp;&nbsp;
+                <div class="suggestion-card-member">
+                  <h3 class="text-align-left margin-0 link" [routerLink]="['/profile', suggestionMemberBySkills.id]"
+                    mat-dialog-close>
+                    {{suggestionMemberBySkills.fullName}}</h3>
+                  <span class="text-align-left" matTooltip="Username">@{{suggestionMemberBySkills.username}}</span>
+                </div>
+              </div>
             </div>
           </mat-menu>
           <br><br>
@@ -255,15 +272,21 @@
             <br>
             <div class="text-align-right">
               <div class="float-left">
-                <h3 class="text-align-left margin-0 link" [routerLink]="['/profile', member.id]" mat-dialog-close>
-                  {{member.fullName}}</h3>
-                <p class="text-align-left" matTooltip="Username">@{{member.username}}</p>
+                <div class="profile-picture-card-members">
+                  <span><b>{{userService.userInitials({"fullName" : member.fullName})}}</b></span>
+                </div>
+                &nbsp;&nbsp;
+                <div class="suggestion-card-member">
+                  <h3 class="text-align-left margin-0 link" [routerLink]="['/profile', member.id]" mat-dialog-close>
+                    {{member.fullName}}</h3>
+                  <span class="text-align-left" matTooltip="Username">@{{member.username}}</span>
+                </div>
               </div>
               <button class="delete" mat-icon-button matTooltip="Delete member" (click)="deleteMemberDialog(i)">
                 <mat-icon>delete_outline</mat-icon>
               </button>
             </div>
-            <br><br>
+            <br>
             <mat-divider></mat-divider>
           </div>
           <br><br><br>

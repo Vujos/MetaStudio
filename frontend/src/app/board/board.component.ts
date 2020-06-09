@@ -284,6 +284,7 @@ export class BoardComponent {
         done: false,
         doneDate: null,
         activities: [],
+        skills: [],
         deleted: false
       });
       this.addActivity(this.currentUser.id, this.currentUser.fullName, "added card", this.routesService.getCardRouteIndices(this.board.id, index, this.board.lists[index]['cards'].length - 1), this.cardTitle[index].trim(), `to list ${this.board.lists[index].title}`);

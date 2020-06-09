@@ -7,6 +7,7 @@ import { RegisterComponent } from './register/register.component';
 import { ProfileComponent } from './profile/profile.component';
 import { TeamComponent } from './team/team.component';
 import { ProfileDetailsComponent } from './profile-details/profile-details.component';
+import { AdminComponent } from './admin/admin.component';
 
 
 const routes: Routes = [
@@ -20,6 +21,7 @@ const routes: Routes = [
   { path: 'card/:id/:listIndex/:cardIndex/:tabIndex', component: BoardComponent },
   { path: 'profile/:idUser', component: ProfileDetailsComponent },
   { path: 'team/:id', component: TeamComponent },
+  { path: 'admin', component: AdminComponent },
   { path: '**', redirectTo: '', pathMatch: 'full' }
 ];
 

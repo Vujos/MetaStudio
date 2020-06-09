@@ -1,6 +1,7 @@
 import { Checklist } from './checklist.model';
 import { User } from './user.model';
 import { Activity } from './activity.model';
+import { Skill } from './skill.model';
 
 export class Card {
     id: string;
@@ -16,9 +17,10 @@ export class Card {
     done: boolean;
     doneDate: Date;
     activities: Activity[];
+    skills: Skill[];
     deleted: boolean;
 
-    constructor(id: string, title: string, date: Date, description: string, members: User[], startDate: Date, endDate: Date, attachments: [], labels: string[], checklists: Checklist[], done: boolean, doneDate: Date, activities: Activity[], deleted: boolean) {
+    constructor(id: string, title: string, date: Date, description: string, members: User[], startDate: Date, endDate: Date, attachments: [], labels: string[], checklists: Checklist[], done: boolean, doneDate: Date, activities: Activity[], skills: Skill[], deleted: boolean) {
         this.id = id;
         this.title = title;
         this.date = date;
@@ -32,6 +34,7 @@ export class Card {
         this.done = done;
         this.doneDate = doneDate;
         this.activities = activities;
+        this.skills = skills;
         this.deleted = deleted;
     }
 }

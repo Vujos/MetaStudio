@@ -345,6 +345,23 @@ td {
   display: inline-block;
 }
 
+.profile-picture-card-members {
+  display: inline-flex;
+  margin: 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  background: #e1e1e1;
+}
+
+.suggestion-card-member{
+  display: inline-block;
+  vertical-align: middle;
+  text-align: left;
+}
+
 /*
 .mat-input-element {
   caret-color: black;

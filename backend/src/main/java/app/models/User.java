@@ -33,6 +33,9 @@ public class User {
     @DBRef(lazy = true)
     private ArrayList<Activity> activities;
 
+    @DBRef
+    private ArrayList<Skill> skills;
+
     @NotNull
     private Boolean deleted = false;
 
@@ -41,7 +44,7 @@ public class User {
 
     public User(String id, String fullName, String username, String email, String password, Date date,
             ArrayList<Board> boards, ArrayList<Team> teams, ArrayList<Board> templates, ArrayList<Activity> activities,
-            @NotNull Boolean deleted) {
+            ArrayList<Skill> skills, @NotNull Boolean deleted) {
         this.id = id;
         this.fullName = fullName;
         this.username = username;
@@ -52,6 +55,7 @@ public class User {
         this.teams = teams;
         this.templates = templates;
         this.activities = activities;
+        this.skills = skills;
         this.deleted = deleted;
     }
 
@@ -133,6 +137,14 @@ public class User {
 
     public void setActivities(ArrayList<Activity> activities) {
         this.activities = activities;
+    }
+
+    public ArrayList<Skill> getSkills() {
+        return skills;
+    }
+
+    public void setSkills(ArrayList<Skill> skills) {
+        this.skills = skills;
     }
 
     public Boolean getDeleted() {

@@ -1,7 +1,11 @@
 package app.services;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,8 +22,12 @@ import org.springframework.stereotype.Service;
 
 import app.models.Activity;
 import app.models.Board;
+import app.models.Skill;
+import app.models.SkillGeneral;
 import app.models.Team;
 import app.models.User;
+import app.repositories.SkillGeneralRepository;
+import app.repositories.SkillRepository;
 import app.repositories.UserRepository;
 
 @Service
@@ -39,6 +47,12 @@ public class UserService {
 
     @Autowired
     private BoardService boardService;
+
+    @Autowired
+    private SkillGeneralRepository skillGeneralRepo;
+
+    @Autowired
+    private SkillRepository skillRepo;
 
     public UserService() {
     }
@@ -108,9 +122,14 @@ public class UserService {
                     activityService.addActivity(activity);
                 }
             }
-            for (Board template : user.getTemplates()){
-                if(template.getId() == null){
+            for (Board template : user.getTemplates()) {
+                if (template.getId() == null) {
                     boardService.addBoard(template);
+                }
+            }
+            for (Skill skill : user.getSkills()){
+                if(skill.getId() == null){
+                    skillRepo.save(skill);
                 }
             }
             userRepo.save(user);
@@ -216,6 +235,98 @@ public class UserService {
         query = Query.query(Criteria.where("$id").is(new ObjectId(userId)));
         update = new Update().pull("members", query);
         mongoTemplate.updateMulti(Query.query(Criteria.where("_id").is(new ObjectId(teamId))), update, "teams");
+    }
+
+    public String runPython(String x, String y, String query) {
+        String[] cmd = { "python", "C:/Users/stank/Desktop/a.py", x, y, query };
+        Process p;
+        String s = null;
+        try {
+            p = Runtime.getRuntime().exec(cmd);
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+
+            // read the output from the command
+            System.out.println("Here is the standard output of the command:");
+            while ((s = stdInput.readLine()) != null) {
+                System.out.println(s);
+                return s;
+            }
+
+            // read any errors from the attempted command
+            System.out.println("Here is the standard error of the command (if any):");
+            while ((s = stdError.readLine()) != null) {
+                System.out.println(s);
+                return s;
+            }
+            return s;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return s;
+        }
+    }
+
+    public Optional<User> getUserBySkills(String boardId, ArrayList<Skill> skills) {
+        Optional<Board> board = boardService.getBoardByIdInternalServer(boardId);
+        ArrayList<User> users = new ArrayList<>();
+        if (board.isPresent()) {
+            users.addAll(board.get().getUsers());
+            for (ArrayList<User> teamUsers : board.get().getTeams().stream().map(team -> team.getMembers())
+                    .collect(Collectors.toList())) {
+                users.addAll(teamUsers);
+            }
+        }
+        List<String> yy = users.stream().map(user -> user.getId()).collect(Collectors.toList());
+        ArrayList<Integer> y = new ArrayList<>();
+        for (int i = 0; i < yy.size(); i++) {
+            y.add(i);
+        }
+        List<SkillGeneral> allSkills = skillGeneralRepo.findAll();
+        ArrayList<ArrayList<Integer>> x = new ArrayList<>();
+        ArrayList<Integer> userSkills = new ArrayList<>();
+
+        for (User user : users) {
+            for (SkillGeneral skillGeneral : allSkills) {
+                boolean exists = false;
+                for (Skill skill : user.getSkills()) {
+                    if (skill.getName().getId().equals(skillGeneral.getId())) {
+                        userSkills.add(1);
+                        exists = true;
+                        break;
+                    }
+                }
+                if (!exists) {
+                    userSkills.add(0);
+                }
+            }
+            ArrayList<Integer> userSkillsCopy = new ArrayList<Integer>();
+            userSkillsCopy.addAll(userSkills);
+            x.add(userSkillsCopy);
+            userSkills.clear();
+        }
+        ArrayList<ArrayList<Integer>> q = new ArrayList<>();
+        ArrayList<Integer> query = new ArrayList<>();
+        for (SkillGeneral skillGeneral : allSkills) {
+            boolean exists = false;
+            for (Skill skill : skills) {
+                if (skill.getName().getId().equals(skillGeneral.getId())) {
+                    query.add(1);
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists) {
+                query.add(0);
+            }
+        }
+        q.add(query);
+        String result = runPython(x.toString(), y.toString(), q.toString());
+        Optional<User> user = getUserById(yy.get(Integer.parseInt(result.substring(1, result.length()-1))));
+        if (user.isPresent()) {
+            user.get().getBoards().removeIf(obj -> obj.getDeleted() == true);
+        }
+        return user;
     }
 
 }

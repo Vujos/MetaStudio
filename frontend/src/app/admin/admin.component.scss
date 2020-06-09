@@ -1,0 +1,55 @@
+table {
+  width: 100%;
+  text-align: left;
+}
+
+tr.mat-row:hover {
+  background-color:  rgb(210, 255, 220);
+}
+
+// .mat-form-field {
+//   font-size: 14px;
+//   width: 100%;
+// }
+
+.skills-div {
+  margin: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.mat-elevation-z8 {
+  width: 95%;
+  background-color: rgb(210, 255, 220);
+}
+
+.background-light-green{
+  background-color: rgb(210, 255, 220);
+}
+
+.search-button {
+  margin: 10px;
+  width: 90%;
+}
+
+.add-skill {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.spinner {
+  margin: 0 auto;
+}
+
+.cell {
+  margin: 10px;
+}
+
+.transform-scale:hover{
+  transform:scale(1.1,1.1);
+  -webkit-transform:scale(1.1,1.1);
+  -moz-transform:scale(1.1,1.1);
+}
