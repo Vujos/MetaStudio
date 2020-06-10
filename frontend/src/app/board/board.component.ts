@@ -212,6 +212,7 @@ export class BoardComponent {
 
   ngOnDestroy() {
     try {
+      this.dialogRef.close();
       this.subscription.unsubscribe();
       this.wc.disconnect();
     }
@@ -285,7 +286,7 @@ export class BoardComponent {
         checklists: [],
         done: false,
         doneDate: null,
-        activities: [],
+        activities: [new Activity(null, this.currentUser.id, this.currentUser.fullName, "created this card", this.board.id, this.board.title)],
         skills: [],
         deleted: false
       });

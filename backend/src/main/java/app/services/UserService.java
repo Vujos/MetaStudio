@@ -130,7 +130,7 @@ public class UserService {
                     boardService.addBoard(template);
                 }
             }
-            for (Skill skill : user.getSkills()){
+            for (Skill skill : user.getSkills()) {
                 skillRepo.save(skill);
             }
             userRepo.save(user);
@@ -250,7 +250,7 @@ public class UserService {
 
             // System.out.println("Here is the standard output of the command:");
             while ((s = stdInput.readLine()) != null) {
-                //System.out.println(s);
+                // System.out.println(s);
                 return s;
             }
 
@@ -266,7 +266,11 @@ public class UserService {
         }
     }
 
-    public Optional<User> getUserBySkills(String boardId, ArrayList<Skill> skills) {
+    public Optional<User> getUserBySkills(String boardId, Integer listIndex, Integer cardIndex,
+            ArrayList<Skill> skills) {
+        if (skills.size() == 0) {
+            return Optional.empty();
+        }
         Optional<Board> board = boardService.getBoardByIdInternalServer(boardId);
         ArrayList<User> users = new ArrayList<>();
         if (board.isPresent()) {
@@ -275,6 +279,12 @@ public class UserService {
                     .collect(Collectors.toList())) {
                 users.addAll(teamUsers);
             }
+        }
+        Set<String> usersOnCardIds = ((Collection<User>) board.get().getLists().get(listIndex).getCards().get(cardIndex)
+                .getMembers()).stream().map(obj -> obj.getId()).collect(Collectors.toSet());
+        users.removeIf(obj -> usersOnCardIds.contains(obj.getId()));
+        if (users.size() == 0) {
+            return Optional.empty();
         }
         List<String> yy = users.stream().map(user -> user.getId()).collect(Collectors.toList());
         ArrayList<Integer> y = new ArrayList<>();
@@ -321,7 +331,7 @@ public class UserService {
         }
         q.add(query);
         String result = runPython(x.toString(), y.toString(), q.toString());
-        Optional<User> user = getUserById(yy.get(Integer.parseInt(result.substring(1, result.length()-1))));
+        Optional<User> user = getUserById(yy.get(Integer.parseInt(result.substring(1, result.length() - 1))));
         if (user.isPresent()) {
             user.get().getBoards().removeIf(obj -> obj.getDeleted() == true);
         }

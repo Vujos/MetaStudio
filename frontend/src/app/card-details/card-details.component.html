@@ -350,6 +350,40 @@
             </div>
           </div>
         </mat-tab>
+
+        <mat-tab label="Activity">
+          <div class="text-align-center">
+            <br>
+            <div class="activities-card-details">
+              <div
+                *ngFor="let activity of data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.activities">
+                <div class="profile-picture-card-details-activity">
+                  <span><b>{{userService.userInitials({"fullName" : activity.performerFullName})}}</b></span>
+                </div>
+                &nbsp;&nbsp;
+                <div class="activity-card-details">
+                  <b class="link" [routerLink]="['/profile', activity.performerId]">{{activity.performerFullName}}</b>
+                  {{activity.action}} <span class="link-active"
+                    [routerLink]="[activity.objectLink]">{{activity.objectName}}</span><span>
+                    {{activity.location}} </span><span class="link-active"
+                    [routerLink]="[activity.locationObjectLink]">{{activity.locationObjectName}}</span>
+                  <br>
+                  <span class="activity-date-card-details">{{dateService.getLocaleDateTime(activity.date)}}<span
+                      *ngIf="activity.boardName"> - on board
+                      <span class="link-active"
+                        [routerLink]="['/board', activity.boardId]"><b>{{activity.boardName}}</b></span></span></span>
+                </div>
+                <br><br>
+              </div>
+              <div class="placeholder-card-details"
+                *ngIf="data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.activities.length == 0">
+                <h1 class="gray">
+                  No
+                  activity</h1>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
       </mat-tab-group>
     </div>
     <div mat-dialog-actions class="actions" align="end">

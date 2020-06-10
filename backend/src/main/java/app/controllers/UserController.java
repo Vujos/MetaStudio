@@ -127,13 +127,13 @@ public class UserController {
         return new ResponseEntity<User>(HttpStatus.NO_CONTENT);
     }
 
-    @RequestMapping(value = "/{boardId}/skills", method = RequestMethod.POST)
-    public ResponseEntity<User> getUserBySkills(@PathVariable String boardId, @RequestBody ArrayList<Skill> skills) {
-        Optional<User> user = userService.getUserBySkills(boardId, skills);
+    @RequestMapping(value = "/{boardId}/{listIndex}/{cardIndex}/skills", method = RequestMethod.POST)
+    public ResponseEntity<User> getUserBySkills(@PathVariable String boardId, @PathVariable Integer listIndex, @PathVariable Integer cardIndex, @RequestBody ArrayList<Skill> skills) {
+        Optional<User> user = userService.getUserBySkills(boardId, listIndex, cardIndex, skills);
         if (user.isPresent()) {
             return new ResponseEntity<User>(user.get(), HttpStatus.OK);
         }
-        return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<User>(HttpStatus.NO_CONTENT);
     }
 
 }

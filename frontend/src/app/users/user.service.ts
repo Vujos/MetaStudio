@@ -63,8 +63,8 @@ export class UserService {
     return this.http.delete(this.userUrl + `/leaveTeam/${teamId}/${userId}`);
   }
 
-  getOneBySkills(boardId: String, skills: Skill[]) {
-    return this.http.post<User>(this.userUrl + `/${boardId}/skills`, skills);
+  getOneBySkills(boardId: String, listIndex: number, cardIndex: number, skills: Skill[]) {
+    return this.http.post<User>(this.userUrl + `/${boardId}/${listIndex}/${cardIndex}/skills`, skills);
   }
 
   userInitials(currentUser){

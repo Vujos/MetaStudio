@@ -47,6 +47,9 @@ public class CardService {
         for (Checklist checklist : card.getChecklists()) {
             checklistService.addChecklist(checklist);
         }
+        for (Activity activity : card.getActivities()){
+            activityService.addActivity(activity);
+        }
         cardRepo.save(card);
         return HttpStatus.CREATED;
     }

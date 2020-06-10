@@ -87,6 +87,11 @@
   text-decoration: underline;
 }
 
+.link-active{
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .dialog-content {
     margin: 0;
     padding: 0;
@@ -180,4 +185,33 @@
 
 .hidden {
     visibility: hidden;
+}
+
+.activities-card-details{
+  padding: 20px;
+  text-align: left;
+  display: inline-block;
+}
+
+.profile-picture-card-details-activity {
+  display: inline-flex;
+  margin: 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  background: #e1e1e1;
+}
+
+.activity-card-details {
+  display: inline-block;
+  align-self: center;
+  vertical-align: middle;
+  text-align: left;
+}
+
+.activity-date-card-details{
+  color: #666;
+  font-size: 14px;
 }
