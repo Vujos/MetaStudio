@@ -65,6 +65,7 @@ public class UserService {
         Optional<User> user = userRepo.findById(id);
         if (user.isPresent()) {
             user.get().getBoards().removeIf(obj -> obj.getDeleted() == true);
+            user.get().getSkills().removeIf(obj -> obj.getDeleted() == true);
         }
         return user;
     }
@@ -73,6 +74,7 @@ public class UserService {
         Optional<User> user = userRepo.findByUsername(username);
         if (user.isPresent()) {
             user.get().getBoards().removeIf(obj -> obj.getDeleted() == true);
+            user.get().getSkills().removeIf(obj -> obj.getDeleted() == true);
         }
         return user;
     }
@@ -81,6 +83,7 @@ public class UserService {
         Optional<User> user = userRepo.findByEmail(email);
         if (user.isPresent()) {
             user.get().getBoards().removeIf(obj -> obj.getDeleted() == true);
+            user.get().getSkills().removeIf(obj -> obj.getDeleted() == true);
         }
         return user;
     }
@@ -128,9 +131,7 @@ public class UserService {
                 }
             }
             for (Skill skill : user.getSkills()){
-                if(skill.getId() == null){
-                    skillRepo.save(skill);
-                }
+                skillRepo.save(skill);
             }
             userRepo.save(user);
         }
@@ -247,15 +248,13 @@ public class UserService {
 
             BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 
-            // read the output from the command
-            System.out.println("Here is the standard output of the command:");
+            // System.out.println("Here is the standard output of the command:");
             while ((s = stdInput.readLine()) != null) {
-                System.out.println(s);
+                //System.out.println(s);
                 return s;
             }
 
-            // read any errors from the attempted command
-            System.out.println("Here is the standard error of the command (if any):");
+            // System.out.println("Here is the standard error of the command (if any):");
             while ((s = stdError.readLine()) != null) {
                 System.out.println(s);
                 return s;

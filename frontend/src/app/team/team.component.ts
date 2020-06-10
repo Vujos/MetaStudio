@@ -54,7 +54,7 @@ export class TeamComponent implements OnInit {
   ngOnInit() {
     if (!this.authService.isLoggedIn()) {
       this.router.navigate(['/login']);
-      return
+      return;
     }
     let id = this.route.snapshot.paramMap.get("id");
 
@@ -101,13 +101,7 @@ export class TeamComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    try {
-      this.subscription.unsubscribe();
-      this.wc.disconnect();
-    }
-    catch {
-
-    }
+    this.disconnectWebSocket();
   }
 
   addBoard() {
@@ -278,7 +272,7 @@ export class TeamComponent implements OnInit {
   deleteTeam() {
     this.team.deleted = true;
     this.teamService.update(this.team.id, this.team).subscribe();
-    //this.router.navigate(['/']);
+    this.router.navigate(['/']);
   }
 
   deleteTeamDialog() {
@@ -321,6 +315,16 @@ export class TeamComponent implements OnInit {
   dropBoard(event: CdkDragDrop<string[]>) {
     moveItemInArray(this.team.boards, event.previousIndex, event.currentIndex);
     this.webSocketService.updateTeam(this.team, this.wc);
+  }
+
+  disconnectWebSocket(){
+    try {
+      this.subscription.unsubscribe();
+      this.wc.disconnect();
+    }
+    catch {
+
+    }
   }
 
   /* dropMember(event: CdkDragDrop<string[]>) {

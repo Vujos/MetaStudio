@@ -8,21 +8,23 @@ import { AuthService } from 'src/app/auth/auth.service';
 import { BoardService } from '../boards/board.service';
 import { DialogSaveChanges } from '../dialog/dialog-save-changes';
 import { Activity } from '../models/activity.model';
+import { Board } from '../models/board.model';
 import { CardDetailsData } from '../models/card-details-data.model';
 import { Card } from '../models/card.model';
 import { Checklist } from '../models/checklist.model';
+import { ChildBoard } from '../models/child-board.model';
 import { List } from '../models/list.model';
+import { ParentBoard } from '../models/parent-board.model';
+import { Skill } from '../models/skill.model';
 import { Task } from '../models/task.model';
 import { User } from '../models/user.model';
 import { DateService } from '../shared/date.service';
 import { DialogService } from '../shared/dialog.service';
 import { RoutesService } from '../shared/routes.service';
+import { SkillGeneralService } from '../shared/skill-general.service';
 import { SnackBarService } from '../shared/snack-bar.service';
 import { UserService } from '../users/user.service';
 import { WebSocketService } from '../web-socket/web-socket.service';
-import { Board } from '../models/board.model';
-import { ParentBoard } from '../models/parent-board.model';
-import { ChildBoard } from '../models/child-board.model';
 
 @Component({
   selector: 'app-card-details',
@@ -71,9 +73,13 @@ export class CardDetailsComponent implements OnInit {
 
   suggestionMemberBySkills = undefined;
 
+  selectedSkill = undefined;
+  skillGenerals = [];
+  skillLevel = 50;
+
   private wc;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: CardDetailsData, public dateService: DateService, private fb: FormBuilder, private dialogRef: MatDialogRef<CardDetailsComponent>, private webSocketService: WebSocketService, public userService: UserService, private authService: AuthService, private boardService: BoardService, private router: Router, private snackBarService: SnackBarService, private dialogService: DialogService, private routesService: RoutesService) { }
+  constructor(@Inject(MAT_DIALOG_DATA) public data: CardDetailsData, private skillGeneralService: SkillGeneralService, public dateService: DateService, private fb: FormBuilder, private dialogRef: MatDialogRef<CardDetailsComponent>, private webSocketService: WebSocketService, public userService: UserService, private authService: AuthService, private boardService: BoardService, private router: Router, private snackBarService: SnackBarService, private dialogService: DialogService, private routesService: RoutesService) { }
 
   ngOnInit() {
     this.cardForm = this.fb.group({
@@ -90,6 +96,8 @@ export class CardDetailsComponent implements OnInit {
     this.userService.getByQuery(this.authService.getCurrentUser()).subscribe(currentUser => {
       this.currentUser = currentUser;
       this.allUserBoards = this.currentUser.boards.concat(...this.currentUser.teams.map(team => team.boards));
+
+      this.getSkillGenerals();
     })
   }
 
@@ -512,9 +520,69 @@ export class CardDetailsComponent implements OnInit {
     this.webSocketService.updateUser(this.currentUser, this.wc);
   }
 
-  getSuggestionMemberBySkills(){
+  getSuggestionMemberBySkills() {
     this.userService.getOneBySkills(this.data.board.id, this.currentUser.skills).subscribe(user => {
       this.suggestionMemberBySkills = user;
+    });
+  }
+
+  addSkill() {
+    if (this.selectedSkill && this.skillLevel != 0) {
+      this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].skills.push(new Skill(null, this.selectedSkill, this.skillLevel, false));
+      this.addActivity(this.currentUser.id, this.currentUser.fullName, `added skill ${this.selectedSkill.name} to card`, this.routesService.getCardRouteIndicesSkills(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title);
+      this.skillGenerals = this.skillGenerals.filter(skillGeneral => skillGeneral.id != this.selectedSkill.id);
+      this.selectedSkill = undefined;
+    }
+    else if(!this.selectedSkill){
+      this.snackBarService.openErrorSnackBar("No selected skill", "X");
+    }
+    else if(this.skillLevel == 0){
+      this.snackBarService.openErrorSnackBar("Skill level must be greater than zero", "X");
+    }
+  }
+
+  skillLevelColor(skillLevelInPercentage) {
+    if (skillLevelInPercentage >= 90) {
+      return "#4caf50";
+    }
+    else if (skillLevelInPercentage >= 80 && skillLevelInPercentage < 90) {
+      return "#2196f3";
+    }
+    else if (skillLevelInPercentage >= 70 && skillLevelInPercentage < 80) {
+      return "#ff8c00";
+    }
+    else if (skillLevelInPercentage >= 60 && skillLevelInPercentage < 70) {
+      return "#f44336";
+    }
+    else if (skillLevelInPercentage < 60) {
+      return "#808080";
+    }
+  }
+
+  formatLabel(value: number) {
+    return value + '%';
+  }
+
+  setSkillLevel(event){
+   this.skillLevel = event.value;
+  }
+
+  deleteSkillDialog(index){
+    const dialogRef = this.dialogService.openDialog(DialogSaveChanges, "Confirmation", "Delete this skill");
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].skills[index].deleted = true;
+        this.addActivity(this.currentUser.id, this.currentUser.fullName, `deleted skill ${this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].skills[index].name.name} from card`, this.routesService.getCardRouteIndicesSkills(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].title);
+        this.skillGenerals.push(this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].skills[index].name);
+        this.snackBarService.openSuccessSnackBar("Successfully deleted", "X");
+      }
+    });
+  }
+
+  getSkillGenerals(){
+    this.skillGeneralService.getAll().subscribe(data => {
+      this.skillGenerals = data.filter((skillGeneral => !this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].skills.map(skill => skill.name.id).includes(skillGeneral.id)));
     });
   }
 }

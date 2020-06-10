@@ -137,10 +137,12 @@ export class BoardComponent {
       if (listId && cardId) {
         let listIndexFromId = this.board.lists.indexOf(this.board.lists.filter((list) => list.id == listId)[0]);
         let cardIndexFromId = this.board.lists[listIndexFromId].cards.indexOf(this.board.lists[listIndexFromId].cards.filter((card) => card.id == cardId)[0]);
-        this.openCardDetailsDialog(listIndexFromId, cardIndexFromId);
+        if(this.board.lists[listIndexFromId].cards[cardIndexFromId]){
+          this.openCardDetailsDialog(listIndexFromId, cardIndexFromId);
+        }
       }
 
-      if (listIndex && cardIndex) {
+      if (listIndex && cardIndex && this.board.lists[listIndex].cards[cardIndex]) {
         this.openCardDetailsDialog(listIndex, cardIndex, tabIndex);
       }
     }, error => {
@@ -714,7 +716,7 @@ export class BoardComponent {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.board.lists[index].deleted = true;
-        this.webSocketService.updateBoard(this.board, this.wc);
+        this.addActivity(this.currentUser.id, this.currentUser.fullName, `deleted list`, this.routesService.getBoardRoute(this.board.id), this.board.lists[index].title, "from board");
       }
     });
   }
@@ -922,7 +924,7 @@ export class BoardComponent {
   }
 
   openCardDetailsDialog(listIndex, cardIndex, tabIndex = 0) {
-    this.dialogRef = this.dialog.open(CardDetailsComponent, { data: { board: this.board, listIndex: listIndex, cardIndex: cardIndex, checkedNumber: this.calculateCheckedTasks(listIndex, cardIndex), tabIndex: tabIndex }, autoFocus: false, width: '50%' });
+    this.dialogRef = this.dialog.open(CardDetailsComponent, { data: { board: this.board, listIndex: listIndex, cardIndex: cardIndex, checkedNumber: this.calculateCheckedTasks(listIndex, cardIndex), tabIndex: tabIndex }, autoFocus: false, width: '80%' });
   }
 
   addActivity(performerId: string, performerFullName: string, action: string, objectLink: string = null, objectName: string = null, location: string = null, locationObjectLink: string = null, locationObjectName: string = null, boardId: string = this.board.id, boardName: string = this.board.title) {

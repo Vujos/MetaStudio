@@ -9,6 +9,9 @@ import { ColorsService } from '../shared/colors.service';
 import { DateService } from '../shared/date.service';
 import { SkillGeneralService } from '../shared/skill-general.service';
 import { UserService } from '../users/user.service';
+import { SnackBarService } from '../shared/snack-bar.service';
+import { DialogSaveChanges } from '../dialog/dialog-save-changes';
+import { DialogService } from '../shared/dialog.service';
 
 @Component({
   selector: 'app-profile-details',
@@ -35,6 +38,7 @@ export class ProfileDetailsComponent implements OnInit {
 
   selectedSkill = undefined;
   skillGenerals = [];
+  skillLevel = 50;
 
   finishedTasks = 0;
   unfinishedTasks = 0;
@@ -48,7 +52,7 @@ export class ProfileDetailsComponent implements OnInit {
 
   selectedTabIndex = 0;
 
-  constructor(private authService: AuthService, private skillGeneralService: SkillGeneralService, private router: Router, public userService: UserService, private route: ActivatedRoute, private boardService: BoardService, public colorsService: ColorsService, public dateService: DateService) {
+  constructor(private authService: AuthService, private dialogService: DialogService, private snackBarService: SnackBarService, private skillGeneralService: SkillGeneralService, private router: Router, public userService: UserService, private route: ActivatedRoute, private boardService: BoardService, public colorsService: ColorsService, public dateService: DateService) {
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
   }
 
@@ -115,9 +119,7 @@ export class ProfileDetailsComponent implements OnInit {
         this.barChartCards = new BarChartData("Number of cards per boards", this.cardsPerBoardsLabels, this.cardsPerBoards);
       });
 
-      this.skillGeneralService.getAll().subscribe(data => {
-        this.skillGenerals = data.filter((skillGeneral => !this.currentUser.skills.map(skill => skill.name.id).includes(skillGeneral.id)));
-      });
+      this.getSkillGenerals();
 
     }, error => {
       this.router.navigate(['/']);
@@ -141,13 +143,19 @@ export class ProfileDetailsComponent implements OnInit {
   }
 
   addSkill() {
-    if (this.selectedSkill) {
-      this.currentUser.skills.push(new Skill(null, this.selectedSkill, 1, false));
+    if (this.selectedSkill && this.skillLevel != 0) {
+      this.currentUser.skills.push(new Skill(null, this.selectedSkill, this.skillLevel, false));
       this.userService.update(this.currentUser.id, this.currentUser).subscribe(user => {
         this.currentUser = user;
         this.skillGenerals = this.skillGenerals.filter((skillGeneral => !this.currentUser.skills.map(skill => skill.name.id).includes(skillGeneral.id)));
       });
       this.selectedSkill = undefined;
+    }
+    else if(!this.selectedSkill){
+      this.snackBarService.openErrorSnackBar("No selected skill", "X");
+    }
+    else if(this.skillLevel == 0){
+      this.snackBarService.openErrorSnackBar("Skill level must be greater than zero", "X");
     }
   }
 
@@ -167,5 +175,34 @@ export class ProfileDetailsComponent implements OnInit {
     else if (skillLevelInPercentage < 60) {
       return "#808080";
     }
+  }
+
+  formatLabel(value: number) {
+    return value + '%';
+  }
+
+  setSkillLevel(event){
+   this.skillLevel = event.value;
+  }
+
+  deleteSkillDialog(index){
+    const dialogRef = this.dialogService.openDialog(DialogSaveChanges, "Confirmation", "Delete this skill");
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.currentUser.skills[index].deleted = true;
+        this.userService.update(this.currentUser.id, this.currentUser).subscribe(user => {
+          this.currentUser = user;
+          this.snackBarService.openSuccessSnackBar("Successfully deleted", "X");
+          this.getSkillGenerals();
+        });
+      }
+    });
+  }
+
+  getSkillGenerals(){
+    this.skillGeneralService.getAll().subscribe(data => {
+      this.skillGenerals = data.filter((skillGeneral => !this.currentUser.skills.map(skill => skill.name.id).includes(skillGeneral.id)));
+    });
   }
 }

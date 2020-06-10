@@ -285,3 +285,16 @@ td {
   width: 50%;
   display: inline-block;
 }
+
+.width-50 {
+  width: 50%;
+}
+
+.card-skill {
+  display: flex;
+  align-items: center;
+}
+
+.hidden {
+  visibility: hidden;
+}

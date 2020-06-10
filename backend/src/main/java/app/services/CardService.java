@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import app.models.Activity;
 import app.models.Card;
 import app.models.Checklist;
+import app.models.Skill;
 import app.repositories.CardRepository;
+import app.repositories.SkillRepository;
 
 @Service
 public class CardService {
@@ -23,6 +25,9 @@ public class CardService {
     @Autowired
     private ActivityService activityService;
 
+    @Autowired
+    private SkillRepository skillRepo;
+
     public CardService() {
     }
 
@@ -31,7 +36,11 @@ public class CardService {
     }
 
     public Optional<Card> getCardById(String id) {
-        return cardRepo.findById(id);
+        Optional<Card> card = cardRepo.findById(id);
+        if (card.isPresent()) {
+            card.get().getSkills().removeIf(obj -> obj.getDeleted() == true);
+        }
+        return card;
     }
 
     public HttpStatus addCard(Card card) {
@@ -65,6 +74,9 @@ public class CardService {
                 if(activity.getId() == null){
                     activityService.addActivity(activity);
                 }
+            }
+            for (Skill skill : card.getSkills()){
+                skillRepo.save(skill);
             }
             cardRepo.save(card);
         }

@@ -131,3 +131,53 @@
     vertical-align: middle;
     text-align: left;
 }
+
+.white {
+  color: white !important;
+}
+
+.card-skills {
+  width: 50%;
+  display: inline-block;
+}
+
+.container {
+  width: 100%;
+  background-color: #ddd;
+}
+
+.skills {
+  text-align: right;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  color: white;
+}
+
+.text-align-center {
+    text-align: center;
+}
+
+.width-50{
+    width: 50%;
+}
+
+.placeholder-card-details{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.gray{
+    color: gray;
+}
+
+.card-skill {
+    display: flex;
+    align-items: center;
+}
+
+.hidden {
+    visibility: hidden;
+}

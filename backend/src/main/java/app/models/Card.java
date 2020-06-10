@@ -43,6 +43,9 @@ public class Card {
     @DBRef
     private ArrayList<Activity> activities;
 
+    @DBRef
+    private ArrayList<Skill> skills;
+
     @NotNull
     private Boolean deleted = false;
 
@@ -51,7 +54,8 @@ public class Card {
 
     public Card(String id, String title, Date date, String description, ArrayList<User> members, Date startDate,
             Date endDate, ArrayList<String> attachments, ArrayList<String> labels, ArrayList<Checklist> checklists,
-            Boolean done, Date doneDate, ArrayList<Activity> activities, @NotNull Boolean deleted) {
+            Boolean done, Date doneDate, ArrayList<Activity> activities, ArrayList<Skill> skills,
+            @NotNull Boolean deleted) {
         this.id = id;
         this.title = title;
         this.date = date;
@@ -65,6 +69,7 @@ public class Card {
         this.done = done;
         this.doneDate = doneDate;
         this.activities = activities;
+        this.skills = skills;
         this.deleted = deleted;
     }
 
@@ -170,6 +175,14 @@ public class Card {
 
     public void setActivities(ArrayList<Activity> activities) {
         this.activities = activities;
+    }
+
+    public ArrayList<Skill> getSkills() {
+        return skills;
+    }
+
+    public void setSkills(ArrayList<Skill> skills) {
+        this.skills = skills;
     }
 
     public Boolean getDeleted() {

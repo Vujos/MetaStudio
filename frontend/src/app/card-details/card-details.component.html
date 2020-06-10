@@ -229,6 +229,10 @@
             <br><br>
             <mat-divider></mat-divider>
           </div>
+          <div class="placeholder-card-details"
+            *ngIf="data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.checklists.length == 0">
+            <h1 class="gray">No checklists</h1>
+          </div>
           <br><br><br>
         </mat-tab>
         <mat-tab label="Members">
@@ -289,7 +293,62 @@
             <br>
             <mat-divider></mat-divider>
           </div>
+          <div class="placeholder-card-details"
+            *ngIf="data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.members.length == 0">
+            <h1 class="gray">No members</h1>
+          </div>
           <br><br><br>
+        </mat-tab>
+        <mat-tab label="Required skills">
+          <div class="text-align-center">
+            <br>
+            <mat-form-field>
+              <mat-label>Select skill</mat-label>
+              <mat-select [(ngModel)]="selectedSkill">
+                <mat-option *ngFor="let skillGeneral of skillGenerals" [value]="skillGeneral">
+                  {{skillGeneral.name}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <br>
+            <div *ngIf="selectedSkill">
+              <span>Skill level</span>
+              <mat-slider (input)="setSkillLevel($event)" [max]="100" [min]="0" [displayWith]="formatLabel" [step]="10"
+                [thumbLabel]="true" [tickInterval]="1" [(ngModel)]="skillLevel" class="width-50">
+              </mat-slider>
+              <span>{{skillLevel}}%</span>
+            </div>
+            <button class="white background-color-default transform-scale" mat-button (click)="addSkill()">Add</button>
+            <br><br><br>
+            <div class="card-skills">
+              <div
+                *ngFor="let skill of data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.skills; index as s">
+                <p class="margin-0">{{skill.name.name}}</p>
+                <div class="card-skill">
+                  <span class="hidden">
+                    <button class="delete" mat-icon-button matTooltip="Delete skill" (click)="deleteSkillDialog(s)">
+                      <mat-icon>delete_outline</mat-icon>
+                    </button>
+                    &nbsp;
+                  </span>
+                  <div class="container">
+                    <div class="skills"
+                      [ngStyle]="{'width':skill.level+'%', 'background-color':skillLevelColor(skill.level)}">
+                      {{skill.level}}%</div>
+                  </div>
+                  &nbsp;
+                  <button class="delete" mat-icon-button matTooltip="Delete skill" (click)="deleteSkillDialog(s)">
+                    <mat-icon>delete_outline</mat-icon>
+                  </button>
+                  <br>
+                </div>
+              </div>
+            </div>
+            <div class="placeholder-card-details"
+              *ngIf="data.board.lists[this.data.listIndex].cards[this.data.cardIndex]?.skills.length == 0">
+              <h1 class="gray">No required skills</h1>
+            </div>
+          </div>
         </mat-tab>
       </mat-tab-group>
     </div>

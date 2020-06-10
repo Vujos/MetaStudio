@@ -70,7 +70,7 @@ public class UserController {
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     public ResponseEntity<User> updateUser(@PathVariable String id, @RequestBody User user) {
         userService.updateUser(id, user);
-        return new ResponseEntity<User>(user, HttpStatus.CREATED);
+        return new ResponseEntity<User>(userService.getUserById(id).get(), HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/update/{id}", method = RequestMethod.PUT)

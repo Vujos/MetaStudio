@@ -28,6 +28,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatSliderModule } from '@angular/material/slider';
 
 @NgModule({
   imports: [
@@ -59,7 +60,8 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatFormFieldModule,
     MatAutocompleteModule,
     MatSlideToggleModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatSliderModule
   ],
   exports: [
     MatInputModule,
@@ -90,7 +92,8 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatFormFieldModule,
     MatAutocompleteModule,
     MatSlideToggleModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatSliderModule
   ]
 })
 export class MaterialModule { }

@@ -93,6 +93,7 @@ public class BoardService {
                 list.getCards().removeIf(obj -> obj.getDeleted() == true);
                 for (Card card : list.getCards()) {
                     card.getChecklists().removeIf(obj -> obj.getDeleted() == true);
+                    card.getSkills().removeIf(obj -> obj.getDeleted() == true);
                     for (Checklist checklist : card.getChecklists()) {
                         checklist.getTasks().removeIf(obj -> obj.getDeleted() == true);
                     }
@@ -112,6 +113,7 @@ public class BoardService {
                         list.getCards().removeIf(obj -> obj.getDeleted() == true);
                         for (Card card : list.getCards()) {
                             card.getChecklists().removeIf(obj -> obj.getDeleted() == true);
+                            card.getSkills().removeIf(obj -> obj.getDeleted() == true);
                             for (Checklist checklist : card.getChecklists()) {
                                 checklist.getTasks().removeIf(obj -> obj.getDeleted() == true);
                             }
@@ -128,6 +130,7 @@ public class BoardService {
                             list.getCards().removeIf(obj -> obj.getDeleted() == true);
                             for (Card card : list.getCards()) {
                                 card.getChecklists().removeIf(obj -> obj.getDeleted() == true);
+                                card.getSkills().removeIf(obj -> obj.getDeleted() == true);
                                 for (Checklist checklist : card.getChecklists()) {
                                     checklist.getTasks().removeIf(obj -> obj.getDeleted() == true);
                                 }

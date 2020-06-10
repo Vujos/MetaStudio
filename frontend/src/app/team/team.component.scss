@@ -275,6 +275,9 @@ display: inline-block;
   display:flex;
   align-items: center;
   justify-content: center;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
 }
 
 .width-2{

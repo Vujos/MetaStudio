@@ -27,6 +27,10 @@ export class RoutesService {
     return `/card/${boardId}/${listIndex}/${cardIndex}/2`;
   }
 
+  getCardRouteIndicesSkills(boardId: string, listIndex: number, cardIndex: number) {
+    return `/card/${boardId}/${listIndex}/${cardIndex}/3`;
+  }
+
   getUserRoute(userId) {
     return `/profile/${userId}`;
   }
