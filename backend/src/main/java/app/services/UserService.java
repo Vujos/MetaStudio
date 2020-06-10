@@ -239,7 +239,7 @@ public class UserService {
     }
 
     public String runPython(String x, String y, String query) {
-        String[] cmd = { "python", "C:/Users/stank/Desktop/a.py", x, y, query };
+        String[] cmd = { "python", "backend/src/main/python/knn.py", x, y, query };
         Process p;
         String s = null;
         try {
