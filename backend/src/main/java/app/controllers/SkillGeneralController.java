@@ -28,6 +28,13 @@ public class SkillGeneralController {
         return new ResponseEntity<Iterable<SkillGeneral>>(skillGeneralService.getSkillGenerals(), HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/{page}/{pageSize}")
+    public ResponseEntity<Iterable<SkillGeneral>> getSkillGeneralsPageable(@PathVariable Integer page,
+            @PathVariable Integer pageSize) {
+        return new ResponseEntity<Iterable<SkillGeneral>>(skillGeneralService.getSkillGeneralsPageable(page, pageSize),
+                HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<SkillGeneral> getSkillGeneralById(@PathVariable String id) {
         Optional<SkillGeneral> skillGeneral = skillGeneralService.getSkillGeneralById(id);
@@ -43,7 +50,8 @@ public class SkillGeneralController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<SkillGeneral> updateSkillGeneral(@PathVariable String id, @RequestBody SkillGeneral skillGeneral) {
+    public ResponseEntity<SkillGeneral> updateSkillGeneral(@PathVariable String id,
+            @RequestBody SkillGeneral skillGeneral) {
         skillGeneralService.updateSkillGeneral(id, skillGeneral);
         return new ResponseEntity<SkillGeneral>(skillGeneral, HttpStatus.CREATED);
     }

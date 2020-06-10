@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
@@ -30,32 +30,28 @@ export class AdminComponent implements OnInit {
 
   ngOnInit() {
     this.dataSourceSkills.paginator = this.paginator;
-    /* this.getAll({ 'pageIndex': 0, 'pageSize': 5 }); */
-    this.getAll();
+    this.getAll({ 'pageIndex': 0, 'pageSize': 5 });
   }
 
-  /* getAll(event) { */
-  getAll() {
-    /* this.skillGeneralService.getAll(event.pageIndex, event.pageSize).subscribe((value: { content: SkillGeneral[] }) => { */
-    this.skillGeneralService.getAll().subscribe(skills => {
-      this.skills = skills;
-      this.dataSourceSkills.data = skills;
+  getAll(event) {
+    this.skillGeneralService.getAllPageable(event.pageIndex, event.pageSize).subscribe((value: { content: SkillGeneral[] }) => {
+      this.skills = value.content;
+      this.dataSourceSkills.data = value.content;
       this.loading = false;
-      /* this.length = value['totalElements']; */
-      this.length = skills.length;
+      this.length = value['totalElements'];
     });
   }
 
-  addSkill(){
+  addSkill() {
     this.skillName = this.skillName.trim();
-    if(this.skillName != ""){
+    if (this.skillName != "") {
       this.skillGeneralService.add(new SkillGeneral(null, this.skillName, false)).subscribe(data => {
-        this.getAll();
+        this.getAll({ 'pageIndex': 0, 'pageSize': 5 });
         this.skillName = "";
         this.skillNameElement.nativeElement.focus();
       })
     }
-    else{
+    else {
       this.skillName = "";
       this.skillNameElement.nativeElement.focus();
     }
@@ -64,8 +60,7 @@ export class AdminComponent implements OnInit {
 
   delete(id: string) {
     this.skillGeneralService.delete(id).subscribe(() => {
-      /* this.getAll({ 'pageIndex': 0, 'pageSize': 5 }); */
-      this.getAll();
+      this.getAll({ 'pageIndex': 0, 'pageSize': 5 });
       this.snackBarService.openSuccessSnackBar("Successfully deleted", "X");
     });
   }

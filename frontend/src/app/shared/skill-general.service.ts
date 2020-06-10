@@ -16,6 +16,10 @@ export class SkillGeneralService {
     return this.http.get<SkillGeneral[]>(this.skillGeneralUrl);
   }
 
+  getAllPageable(pageIndex, pageSize) {
+    return this.http.get<{ content: SkillGeneral[] }>(this.skillGeneralUrl + `/${pageIndex}` + `/${pageSize}`);
+  }
+
   getOne(id: String) {
     return this.http.get<SkillGeneral>(this.skillGeneralUrl + `/${id}`);
   }

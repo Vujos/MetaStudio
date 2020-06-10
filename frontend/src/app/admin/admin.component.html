@@ -53,10 +53,8 @@
                     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                 </table>
             </div>
-            <!-- <mat-paginator [length]="length" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons
-                (page)="getAll($event)"></mat-paginator> -->
             <mat-paginator [length]="length" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons
-                (page)="getAll()"></mat-paginator>
+                (page)="getAll($event)"></mat-paginator>
         </ng-template>
     </div>
 </div>
