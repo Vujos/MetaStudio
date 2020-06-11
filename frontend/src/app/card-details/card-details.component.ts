@@ -386,7 +386,6 @@ export class CardDetailsComponent implements OnInit {
           this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].members = cardMembers;
           this.webSocketService.updateBoard(this.data.board, this.wc);
           this.snackBarService.openSuccessSnackBar("Successfully added", "X");
-          this.suggestionMemberBySkills = undefined;
         }
       }, error => {
         this.errorMessageNewUser = "That user does not exist"
@@ -417,6 +416,7 @@ export class CardDetailsComponent implements OnInit {
   resetAddUser() {
     this.newUser = "";
     this.errorMessageNewUser = undefined;
+    this.suggestionMemberBySkills = undefined;
   }
 
   makeCardBoard() {

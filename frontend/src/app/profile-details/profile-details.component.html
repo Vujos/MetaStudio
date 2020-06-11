@@ -27,25 +27,28 @@
             </mat-tab>
             <mat-tab label="Skills">
                 <br>
-                <mat-form-field>
-                    <mat-label>Select skill</mat-label>
-                    <mat-select [(ngModel)]="selectedSkill">
-                        <mat-option *ngFor="let skillGeneral of skillGenerals" [value]="skillGeneral">
-                            {{skillGeneral.name}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <br>
-                <div *ngIf="selectedSkill">
-                    <span>Skill level</span>
-                    <mat-slider (input)="setSkillLevel($event)" [max]="100" [min]="0" [displayWith]="formatLabel"
-                        [step]="10" [thumbLabel]="true" [tickInterval]="1" [(ngModel)]="skillLevel" class="width-50">
-                    </mat-slider>
-                    <span>{{skillLevel}}%</span>
+                <div *ngIf="currentUser?.id == loggedUser?.id">
+                    <mat-form-field>
+                        <mat-label>Select skill</mat-label>
+                        <mat-select [(ngModel)]="selectedSkill">
+                            <mat-option *ngFor="let skillGeneral of skillGenerals" [value]="skillGeneral">
+                                {{skillGeneral.name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <br>
+                    <div *ngIf="selectedSkill">
+                        <span>Skill level</span>
+                        <mat-slider (input)="setSkillLevel($event)" [max]="100" [min]="0" [displayWith]="formatLabel"
+                            [step]="10" [thumbLabel]="true" [tickInterval]="1" [(ngModel)]="skillLevel"
+                            class="width-50">
+                        </mat-slider>
+                        <span>{{skillLevel}}%</span>
+                    </div>
+                    <button class="white background-color-default transform-scale" mat-button
+                        (click)="addSkill()">Add</button>
+                    <br><br><br>
                 </div>
-                <button class="white background-color-default transform-scale" mat-button
-                    (click)="addSkill()">Add</button>
-                <br><br><br>
                 <div class="user-skills">
                     <div *ngFor="let skill of currentUser?.skills; index as s">
                         <p class="margin-0">{{skill.name.name}}</p>

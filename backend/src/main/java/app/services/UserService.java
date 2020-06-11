@@ -300,7 +300,7 @@ public class UserService {
                 boolean exists = false;
                 for (Skill skill : user.getSkills()) {
                     if (skill.getName().getId().equals(skillGeneral.getId())) {
-                        userSkills.add(1);
+                        userSkills.add(skill.getLevel());
                         exists = true;
                         break;
                     }
@@ -320,7 +320,7 @@ public class UserService {
             boolean exists = false;
             for (Skill skill : skills) {
                 if (skill.getName().getId().equals(skillGeneral.getId())) {
-                    query.add(1);
+                    query.add(skill.getLevel());
                     exists = true;
                     break;
                 }
