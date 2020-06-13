@@ -266,6 +266,11 @@
                     {{suggestionMemberBySkills.fullName}}</h3>
                   <span class="text-align-left" matTooltip="Username">@{{suggestionMemberBySkills.username}}</span>
                 </div>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <div class="suggestion-card-member-add">
+                  <button class="center transform-scale white background-color-default" mat-button
+                (click)="addUser(suggestionMemberBySkills.username)">Add</button>
+                </div>
               </div>
             </div>
           </mat-menu>

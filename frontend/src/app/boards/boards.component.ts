@@ -129,6 +129,7 @@ export class BoardsComponent implements OnInit {
     else {
       this.boardTitle = "";
       this.boardTitleElement.nativeElement.focus();
+      this.snackBarService.openErrorSnackBar("No board title entered", "X");
     }
 
   }
@@ -161,6 +162,7 @@ export class BoardsComponent implements OnInit {
     else {
       this.teamName = "";
       this.teamNameElement.nativeElement.focus();
+      this.snackBarService.openErrorSnackBar("No team name entered", "X");
     }
 
   }

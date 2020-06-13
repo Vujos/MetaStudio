@@ -112,6 +112,12 @@ export class CardDetailsComponent implements OnInit {
       this.selectedMoveBoard = undefined;
       this.snackBarService.openSuccessSnackBar("Successfully copied", "X");
     }
+    else if (selectedMoveBoard == undefined) {
+      this.snackBarService.openErrorSnackBar("No board selected", "X");
+    }
+    else if (indexToList == undefined) {
+      this.snackBarService.openErrorSnackBar("No list selected", "X");
+    }
   }
 
   copyCardDialog(indexToList, selectedMoveBoard) {
@@ -147,7 +153,12 @@ export class CardDetailsComponent implements OnInit {
       this.selectedMoveBoard = undefined;
       this.snackBarService.openSuccessSnackBar("Successfully moved", "X");
     }
-
+    else if (selectedMoveBoard == undefined) {
+      this.snackBarService.openErrorSnackBar("No board selected", "X");
+    }
+    else if (indexToList == undefined) {
+      this.snackBarService.openErrorSnackBar("No list selected", "X");
+    }
   }
 
   moveCardDialog(indexToList, selectedMoveBoard) {
@@ -270,6 +281,7 @@ export class CardDetailsComponent implements OnInit {
       this.data.checkedNumber[this.data.checkedNumber.length] = 0;
     }
     this.checklistTitle = "";
+    this.snackBarService.openErrorSnackBar("No checklist title entered", "X");
   }
 
   addItem(index) {
@@ -280,6 +292,7 @@ export class CardDetailsComponent implements OnInit {
       this.addActivityCard(this.currentUser.id, this.currentUser.fullName, `added task`, this.routesService.getCardRouteIndicesChecklists(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.itemTitle, "to checklist", this.routesService.getCardRouteIndicesChecklists(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].title);
     }
     this.itemTitle = "";
+    this.snackBarService.openErrorSnackBar("No item title entered", "X");
   }
 
   updateTask(checklistIndex, taskIndex) {
@@ -342,8 +355,8 @@ export class CardDetailsComponent implements OnInit {
     this.data.checkedNumber[index]--;
   }
 
-  addUser() {
-    this.newUser = this.newUser.trim()
+  addUser(user = this.newUser) {
+    this.newUser = user.trim()
     if (this.newUser != "") {
       if (this.newUser.startsWith("@")) {
         this.newUser = this.newUser.slice(1);
@@ -392,7 +405,9 @@ export class CardDetailsComponent implements OnInit {
       });
     }
     else {
-      this.resetAddUser();
+      this.newUser = "";
+      this.errorMessageNewUser = undefined;
+      this.snackBarService.openErrorSnackBar("No email address or username entered", "X");
     }
   }
 
@@ -542,10 +557,10 @@ export class CardDetailsComponent implements OnInit {
       this.skillGenerals = this.skillGenerals.filter(skillGeneral => skillGeneral.id != this.selectedSkill.id);
       this.selectedSkill = undefined;
     }
-    else if(!this.selectedSkill){
+    else if (!this.selectedSkill) {
       this.snackBarService.openErrorSnackBar("No selected skill", "X");
     }
-    else if(this.skillLevel == 0){
+    else if (this.skillLevel == 0) {
       this.snackBarService.openErrorSnackBar("Skill level must be greater than zero", "X");
     }
   }
@@ -572,11 +587,11 @@ export class CardDetailsComponent implements OnInit {
     return value + '%';
   }
 
-  setSkillLevel(event){
-   this.skillLevel = event.value;
+  setSkillLevel(event) {
+    this.skillLevel = event.value;
   }
 
-  deleteSkillDialog(index){
+  deleteSkillDialog(index) {
     const dialogRef = this.dialogService.openDialog(DialogSaveChanges, "Confirmation", "Delete this skill");
 
     dialogRef.afterClosed().subscribe(result => {
@@ -589,7 +604,7 @@ export class CardDetailsComponent implements OnInit {
     });
   }
 
-  getSkillGenerals(){
+  getSkillGenerals() {
     this.skillGeneralService.getAll().subscribe(data => {
       this.skillGenerals = data.filter((skillGeneral => !this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].skills.map(skill => skill.name.id).includes(skillGeneral.id)));
     });

@@ -99,9 +99,10 @@
               </div>
             </mat-menu>
 
-            <button mat-menu-item [matMenuTriggerFor]="addUsersFromTeamMenu"
-              #addUsersFromTeamTrigger="matMenuTrigger">Add
-              users from team</button>
+            <span [matTooltip]="currentUser?.teams.length > 0 ? '' : 'No teams'">
+              <button [disabled]="currentUser?.teams.length == 0" mat-menu-item
+                [matMenuTriggerFor]="addUsersFromTeamMenu" #addUsersFromTeamTrigger="matMenuTrigger">Add
+                users from team</button></span>
             <mat-menu #addUsersFromTeamMenu="matMenu" (closed)="resetAddUsersFromTeam()">
               <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
                 <mat-form-field>
@@ -162,7 +163,9 @@
           </mat-menu>
           <mat-divider></mat-divider>
 
-          <button mat-menu-item [matMenuTriggerFor]="addTeamsMenu" #addTeamsTrigger="matMenuTrigger">Add teams</button>
+          <span [matTooltip]="currentUser?.teams.length > 0 ? '' : 'No teams'">
+            <button [disabled]="currentUser?.teams.length == 0" mat-menu-item [matMenuTriggerFor]="addTeamsMenu"
+              #addTeamsTrigger="matMenuTrigger">Add teams</button></span>
           <mat-menu #addTeamsMenu="matMenu" (closed)="resetAddTeam()">
             <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
               <mat-form-field>
@@ -205,8 +208,11 @@
           </mat-menu>
           <mat-divider></mat-divider>
 
-          <button mat-menu-item [matMenuTriggerFor]="createFromTemplateMenu"
-            #createFromTemplateTrigger="matMenuTrigger">Create board from template</button>
+          <span [matTooltip]="currentUser?.templates.length > 0 ? '' : 'No templates'">
+            <button [disabled]="currentUser?.templates.length == 0" mat-menu-item
+              [matMenuTriggerFor]="createFromTemplateMenu" #createFromTemplateTrigger="matMenuTrigger">Create board from
+              template</button>
+          </span>
           <mat-menu #createFromTemplateMenu="matMenu" (closed)="resetCreateFromTemplate()">
             <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
               <mat-form-field>
@@ -228,9 +234,11 @@
 
           <mat-divider></mat-divider>
 
-          <button mat-menu-item [routerLink]="['/board', board?.parentBoard?.boardId]" [disabled]="!board?.parentBoard"
-            [matTooltip]="board?.parentBoard ? board.parentBoard.title : 'No parent board'">Go to the parent
-            board</button>
+          <span [matTooltip]="board?.parentBoard ? board.parentBoard.title : 'No parent board'">
+            <button mat-menu-item [routerLink]="['/board', board?.parentBoard?.boardId]"
+              [disabled]="!board?.parentBoard">Go to the parent board
+            </button>
+          </span>
 
           <button mat-menu-item [matMenuTriggerFor]="childBoardsMenu" #childBoardsTrigger="matMenuTrigger">Sub
             boards</button>

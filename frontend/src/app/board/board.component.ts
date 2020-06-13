@@ -137,7 +137,7 @@ export class BoardComponent {
       if (listId && cardId) {
         let listIndexFromId = this.board.lists.indexOf(this.board.lists.filter((list) => list.id == listId)[0]);
         let cardIndexFromId = this.board.lists[listIndexFromId].cards.indexOf(this.board.lists[listIndexFromId].cards.filter((card) => card.id == cardId)[0]);
-        if(this.board.lists[listIndexFromId].cards[cardIndexFromId]){
+        if (this.board.lists[listIndexFromId].cards[cardIndexFromId]) {
           this.openCardDetailsDialog(listIndexFromId, cardIndexFromId);
         }
       }
@@ -263,6 +263,7 @@ export class BoardComponent {
     }
     this.listTitle = "";
     this.listTitleElement.nativeElement.focus();
+    this.snackBarService.openErrorSnackBar("No list title entered", "X");
   }
 
   showAddCard(index) {
@@ -294,6 +295,7 @@ export class BoardComponent {
     }
     this.cardTitle[index] = "";
     this.cardTitleElements['_results'][index].nativeElement.focus();
+    this.snackBarService.openErrorSnackBar("No card title entered", "X");
   }
 
   saveBoardDescription() {
@@ -433,6 +435,7 @@ export class BoardComponent {
     }
     else {
       this.resetAddUser();
+      this.snackBarService.openErrorSnackBar("No email address or username entered", "X");
     }
   }
 
@@ -504,6 +507,7 @@ export class BoardComponent {
     }
     else {
       this.resetAddTeam();
+      this.snackBarService.openErrorSnackBar("No team selected", "X");
     }
   }
 
@@ -581,7 +585,11 @@ export class BoardComponent {
         })
       })
       this.addActivity(this.currentUser.id, this.currentUser.fullName, "created board", this.routesService.getBoardRoute(this.board.id), this.board.title, "from template", null, null, null, null);
+      this.snackBarService.openSuccessSnackBar("Successfully created", "X");
       this.resetCreateFromTemplate();
+    }
+    else {
+      this.snackBarService.openErrorSnackBar("No template selected", "X");
     }
   }
 
@@ -642,6 +650,12 @@ export class BoardComponent {
       this.selectedMoveBoard = undefined;
       this.snackBarService.openSuccessSnackBar("Successfully copied", "X");
     }
+    else if (selectedMoveBoard == undefined) {
+      this.snackBarService.openErrorSnackBar("No board selected", "X");
+    }
+    else if (indexToList == undefined) {
+      this.snackBarService.openErrorSnackBar("No list selected", "X");
+    }
   }
 
   copyAllCardsDialog(indexFromList, indexToList, selectedMoveBoard) {
@@ -677,7 +691,12 @@ export class BoardComponent {
       this.selectedMoveBoard = undefined;
       this.snackBarService.openSuccessSnackBar("Successfully moved", "X");
     }
-
+    else if (selectedMoveBoard == undefined) {
+      this.snackBarService.openErrorSnackBar("No board selected", "X");
+    }
+    else if (indexToList == undefined) {
+      this.snackBarService.openErrorSnackBar("No list selected", "X");
+    }
   }
 
   moveAllCardsDialog(indexFromList, indexToList, selectedMoveBoard) {
@@ -707,6 +726,7 @@ export class BoardComponent {
       if (result) {
         this.board.lists[index].cards = [];
         this.addActivity(this.currentUser.id, this.currentUser.fullName, `deleted all cards from list ${this.board.lists[index].title}`);
+        this.snackBarService.openSuccessSnackBar("Successfully deleted", "X");
       }
     });
   }
@@ -718,6 +738,7 @@ export class BoardComponent {
       if (result) {
         this.board.lists[index].deleted = true;
         this.addActivity(this.currentUser.id, this.currentUser.fullName, `deleted list`, this.routesService.getBoardRoute(this.board.id), this.board.lists[index].title, "from board");
+        this.snackBarService.openSuccessSnackBar("Successfully deleted", "X");
       }
     });
   }
