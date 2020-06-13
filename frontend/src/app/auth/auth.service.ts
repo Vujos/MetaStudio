@@ -24,6 +24,14 @@ export class AuthService {
     return null;
   }
 
+  getCurrentRole() {
+    const token = localStorage.getItem('token');
+    if (token) {
+      return decode(token).role[0].authority;
+    }
+    return null;
+  }
+
   isLoggedIn() {
     if (localStorage.getItem('token')) {
       return true;

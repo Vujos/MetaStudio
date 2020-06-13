@@ -12,7 +12,7 @@ tr.mat-row:hover {
 //   width: 100%;
 // }
 
-.skills-div {
+.roles-div {
   margin: 20px;
   display: flex;
   justify-content: center;
@@ -34,7 +34,7 @@ tr.mat-row:hover {
   width: 90%;
 }
 
-.add-skill {
+.add-role {
   justify-content: center;
   align-items: center;
   text-align: center;
@@ -52,8 +52,4 @@ tr.mat-row:hover {
   transform:scale(1.1,1.1);
   -webkit-transform:scale(1.1,1.1);
   -moz-transform:scale(1.1,1.1);
-}
-
-.text-align-center {
-  text-align: center;
 }

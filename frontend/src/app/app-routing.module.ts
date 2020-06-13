@@ -8,20 +8,21 @@ import { ProfileComponent } from './profile/profile.component';
 import { TeamComponent } from './team/team.component';
 import { ProfileDetailsComponent } from './profile-details/profile-details.component';
 import { AdminComponent } from './admin/admin.component';
+import { RoleGuard } from './auth/role.guard';
 
 
 const routes: Routes = [
-  { path: '', component: BoardsComponent },
+  { path: '', component: BoardsComponent, canActivate: [RoleGuard], data: { expectedRoles: ['user'] } },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  { path: 'profile', component: ProfileComponent },
-  { path: 'board/:id', component: BoardComponent },
-  { path: 'board/:id/:listId/:cardId', component: BoardComponent },
-  { path: 'card/:id/:listIndex/:cardIndex', component: BoardComponent },
-  { path: 'card/:id/:listIndex/:cardIndex/:tabIndex', component: BoardComponent },
-  { path: 'profile/:idUser', component: ProfileDetailsComponent },
-  { path: 'team/:id', component: TeamComponent },
-  { path: 'admin', component: AdminComponent },
+  { path: 'profile', component: ProfileComponent, canActivate: [RoleGuard], data: { expectedRoles: ['user'] } },
+  { path: 'board/:id', component: BoardComponent, canActivate: [RoleGuard], data: { expectedRoles: ['user'] } },
+  { path: 'board/:id/:listId/:cardId', component: BoardComponent, canActivate: [RoleGuard], data: { expectedRoles: ['user'] } },
+  { path: 'card/:id/:listIndex/:cardIndex', component: BoardComponent, canActivate: [RoleGuard], data: { expectedRoles: ['user'] } },
+  { path: 'card/:id/:listIndex/:cardIndex/:tabIndex', component: BoardComponent, canActivate: [RoleGuard], data: { expectedRoles: ['user'] } },
+  { path: 'profile/:idUser', component: ProfileDetailsComponent, canActivate: [RoleGuard], data: { expectedRoles: ['user'] } },
+  { path: 'team/:id', component: TeamComponent, canActivate: [RoleGuard], data: { expectedRoles: ['user'] } },
+  { path: 'admin', component: AdminComponent, canActivate: [RoleGuard], data: { expectedRoles: ['admin'] } },
   { path: '**', redirectTo: '', pathMatch: 'full' }
 ];
 

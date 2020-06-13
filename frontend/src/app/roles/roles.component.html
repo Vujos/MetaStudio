@@ -1,0 +1,60 @@
+<div class="add-role">
+    <mat-form-field>
+        <mat-label>Enter role name</mat-label>
+        <input #roleNameInput matInput [(ngModel)]="roleName" (keyup.enter)="addRole()">
+    </mat-form-field>
+    &nbsp;
+    <button class="transform-scale" mat-raised-button color="primary" (click)="addRole()">
+        Add role
+    </button>
+</div>
+<div class="roles-div">
+    <div class="mat-elevation-z8">
+        <!-- <mat-form-field class="search-button">
+            <input #query matInput placeholder="Pretraga" [disabled]="loading? true:false"
+                (keyup)="checkQuery($event.target.value)" (keyup.enter)="search($event.target.value)">
+        </mat-form-field>
+        <button mat-icon-button (click)="search(query.value)" [disabled]="loading? true:false">
+            <mat-icon>search</mat-icon>
+        </button> -->
+        <mat-spinner class="spinner" *ngIf="loading else loaded"></mat-spinner>
+        <ng-template #loaded>
+            <div style="overflow-x:auto;">
+                <table mat-table [dataSource]="dataSourceRoles">
+
+                    <ng-container matColumnDef="no">
+                        <th mat-header-cell *matHeaderCellDef>
+                            <div class="cell">#</div>
+                        </th>
+                        <td mat-cell *matCellDef="let i = index;">
+                            <div class="cell">{{i+1}}</div>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="name">
+                        <th mat-header-cell *matHeaderCellDef>
+                            <div class="cell">Name</div>
+                        </th>
+                        <td mat-cell *matCellDef="let role">
+                            <div class="cell">{{role.name}}</div>
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="actions">
+                        <th mat-header-cell *matHeaderCellDef> </th>
+                        <td mat-cell *matCellDef="let role">
+                            <button class="transform-scale" mat-raised-button color="warn" (click)="openDialog(role)">
+                                Delete
+                            </button>
+                        </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+            </div>
+            <mat-paginator [length]="length" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons
+                (page)="getAll($event)"></mat-paginator>
+        </ng-template>
+    </div>
+</div>

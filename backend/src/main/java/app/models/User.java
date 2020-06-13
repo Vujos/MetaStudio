@@ -36,6 +36,9 @@ public class User {
     @DBRef
     private ArrayList<Skill> skills;
 
+    @DBRef
+    private ArrayList<Role> roles;
+
     @NotNull
     private Boolean deleted = false;
 
@@ -44,7 +47,7 @@ public class User {
 
     public User(String id, String fullName, String username, String email, String password, Date date,
             ArrayList<Board> boards, ArrayList<Team> teams, ArrayList<Board> templates, ArrayList<Activity> activities,
-            ArrayList<Skill> skills, @NotNull Boolean deleted) {
+            ArrayList<Skill> skills, ArrayList<Role> roles, @NotNull Boolean deleted) {
         this.id = id;
         this.fullName = fullName;
         this.username = username;
@@ -56,6 +59,7 @@ public class User {
         this.templates = templates;
         this.activities = activities;
         this.skills = skills;
+        this.roles = roles;
         this.deleted = deleted;
     }
 
@@ -145,6 +149,14 @@ public class User {
 
     public void setSkills(ArrayList<Skill> skills) {
         this.skills = skills;
+    }
+
+    public ArrayList<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(ArrayList<Role> roles) {
+        this.roles = roles;
     }
 
     public Boolean getDeleted() {

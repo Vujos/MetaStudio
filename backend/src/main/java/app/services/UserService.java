@@ -22,10 +22,12 @@ import org.springframework.stereotype.Service;
 
 import app.models.Activity;
 import app.models.Board;
+import app.models.Role;
 import app.models.Skill;
 import app.models.SkillGeneral;
 import app.models.Team;
 import app.models.User;
+import app.repositories.RoleRepository;
 import app.repositories.SkillGeneralRepository;
 import app.repositories.SkillRepository;
 import app.repositories.UserRepository;
@@ -53,6 +55,9 @@ public class UserService {
 
     @Autowired
     private SkillRepository skillRepo;
+
+    @Autowired
+    private RoleRepository roleRepo;
 
     public UserService() {
     }
@@ -105,6 +110,15 @@ public class UserService {
             return HttpStatus.NOT_ACCEPTABLE;
         } else {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setRoles(new ArrayList<Role>());
+            Optional<Role> role = roleRepo.findByName("user");
+            if(role.isPresent()){
+                user.getRoles().add(role.get());
+            }
+            else{
+                roleRepo.save(new Role(null, "user"));
+                user.getRoles().add(roleRepo.findByName("user").get());
+            }
             userRepo.save(user);
             return HttpStatus.CREATED;
         }

@@ -22,6 +22,7 @@ import { LowerCaseUrlSerializer } from './lower-case-url-serializer';
 import { PieChartComponent } from './pie-chart/pie-chart.component';
 import { BarChartComponent } from './bar-chart/bar-chart.component';
 import { AdminComponent } from './admin/admin.component';
+import { RolesComponent } from './roles/roles.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import { AdminComponent } from './admin/admin.component';
     ProfileDetailsComponent,
     PieChartComponent,
     BarChartComponent,
-    AdminComponent
+    AdminComponent,
+    RolesComponent
   ],
   imports: [
     BrowserModule,

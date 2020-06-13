@@ -26,9 +26,10 @@ export class LoginComponent implements OnInit {
       emailInput: ['', { validators: [Validators.required] }],
       passwordInput: ['', { validators: [Validators.required] }]
     });
-    if (this.authService.isLoggedIn()) {
+    if (this.authService.getCurrentRole() == "admin") {
+      this.router.navigate(['/admin']);
+    } else {
       this.router.navigate(['/']);
-      return
     }
   }
 
@@ -43,7 +44,11 @@ export class LoginComponent implements OnInit {
         if (response.token) {
           localStorage.setItem('token', response.token);
           this.message = "";
-          this.router.navigate(['/']);
+          if (this.authService.getCurrentRole() == "admin") {
+            this.router.navigate(['/admin']);
+          } else {
+            this.router.navigate(['/']);
+          }
         } else {
           this.message = "Wrong email and/or password";
         }

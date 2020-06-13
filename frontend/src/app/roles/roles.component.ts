@@ -3,82 +3,75 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { DialogSaveChanges } from '../dialog/dialog-save-changes';
-import { SkillGeneral } from '../models/skill-general.model';
+import { Role } from '../models/role.model';
 import { DialogService } from '../shared/dialog.service';
-import { SkillGeneralService } from '../shared/skill-general.service';
+import { RoleService } from '../shared/role.service';
 import { SnackBarService } from '../shared/snack-bar.service';
-import { AuthService } from '../auth/auth.service';
-import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-admin',
-  templateUrl: './admin.component.html',
-  styleUrls: ['./admin.component.scss']
+  selector: 'app-roles',
+  templateUrl: './roles.component.html',
+  styleUrls: ['./roles.component.scss']
 })
-export class AdminComponent implements OnInit {
+export class RolesComponent implements OnInit {
 
-  @ViewChild('skillNameInput') skillNameElement: ElementRef;
+  @ViewChild('roleNameInput') roleNameElement: ElementRef;
 
   loading = true;
   length: number;
-  skillName = "";
-  skills: SkillGeneral[] = [];
+  roleName = "";
+  roles: Role[] = [];
   displayedColumns: string[] = ['no', 'name', 'actions'];
-  dataSourceSkills = new MatTableDataSource<SkillGeneral>(this.skills);
+  dataSourceRoles = new MatTableDataSource<Role>(this.roles);
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  constructor(public dialog: MatDialog, private authService: AuthService, private router: Router, private dialogService: DialogService, private skillGeneralService: SkillGeneralService, private snackBarService: SnackBarService) { }
+  constructor(public dialog: MatDialog, private dialogService: DialogService, private roleService: RoleService, private snackBarService: SnackBarService) { }
 
   ngOnInit() {
-    this.dataSourceSkills.paginator = this.paginator;
+    this.dataSourceRoles.paginator = this.paginator;
     this.getAll({ 'pageIndex': 0, 'pageSize': 5 });
   }
 
   getAll(event) {
-    this.skillGeneralService.getAllPageable(event.pageIndex, event.pageSize).subscribe((value: { content: SkillGeneral[] }) => {
-      this.skills = value.content;
-      this.dataSourceSkills.data = value.content;
+    this.roleService.getAllPageable(event.pageIndex, event.pageSize).subscribe((value: { content: Role[] }) => {
+      this.roles = value.content;
+      this.dataSourceRoles.data = value.content;
       this.loading = false;
       this.length = value['totalElements'];
     });
   }
 
-  addSkill() {
-    this.skillName = this.skillName.trim();
-    if (this.skillName != "") {
-      this.skillGeneralService.add(new SkillGeneral(null, this.skillName, false)).subscribe(data => {
+  addRole() {
+    this.roleName = this.roleName.trim();
+    if (this.roleName != "") {
+      this.roleService.add(new Role(null, this.roleName)).subscribe(data => {
         this.getAll({ 'pageIndex': 0, 'pageSize': 5 });
-        this.skillName = "";
-        this.skillNameElement.nativeElement.focus();
+        this.roleName = "";
+        this.roleNameElement.nativeElement.focus();
       })
     }
     else {
-      this.skillName = "";
-      this.skillNameElement.nativeElement.focus();
+      this.roleName = "";
+      this.roleNameElement.nativeElement.focus();
     }
   }
 
 
   delete(id: string) {
-    this.skillGeneralService.delete(id).subscribe(() => {
+    this.roleService.delete(id).subscribe(() => {
       this.getAll({ 'pageIndex': 0, 'pageSize': 5 });
       this.snackBarService.openSuccessSnackBar("Successfully deleted", "X");
     });
   }
 
-  openDialog(skill: SkillGeneral): void {
-    const dialogRef = this.dialogService.openDialog(DialogSaveChanges, "Confirmation", "Delete this skill");
+  openDialog(role: Role): void {
+    const dialogRef = this.dialogService.openDialog(DialogSaveChanges, "Confirmation", "Delete this role");
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.delete(skill.id);
+        this.delete(role.id);
       }
     });
-  }
-
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/login']);
   }
 
   /* getPatientsByQuery(pageIndex, pageSize, query) {
