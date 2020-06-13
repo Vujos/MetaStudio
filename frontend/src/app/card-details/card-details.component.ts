@@ -280,8 +280,10 @@ export class CardDetailsComponent implements OnInit {
       this.checklistTrigger.closeMenu();
       this.data.checkedNumber[this.data.checkedNumber.length] = 0;
     }
+    else{
+      this.snackBarService.openErrorSnackBar("No checklist title entered", "X");
+    }
     this.checklistTitle = "";
-    this.snackBarService.openErrorSnackBar("No checklist title entered", "X");
   }
 
   addItem(index) {
@@ -291,8 +293,10 @@ export class CardDetailsComponent implements OnInit {
       this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].doneDate = null;
       this.addActivityCard(this.currentUser.id, this.currentUser.fullName, `added task`, this.routesService.getCardRouteIndicesChecklists(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.itemTitle, "to checklist", this.routesService.getCardRouteIndicesChecklists(this.data.board.id, this.data.listIndex, this.data.cardIndex), this.data.board.lists[this.data.listIndex].cards[this.data.cardIndex].checklists[index].title);
     }
+    else{
+      this.snackBarService.openErrorSnackBar("No item title entered", "X");
+    }
     this.itemTitle = "";
-    this.snackBarService.openErrorSnackBar("No item title entered", "X");
   }
 
   updateTask(checklistIndex, taskIndex) {

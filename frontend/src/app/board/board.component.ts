@@ -261,9 +261,11 @@ export class BoardComponent {
       );
       this.addActivity(this.currentUser.id, this.currentUser.fullName, "added list", this.routesService.getBoardRoute(this.board.id), this.listTitle.trim(), "to board");
     }
+    else{
+      this.snackBarService.openErrorSnackBar("No list title entered", "X");
+    }
     this.listTitle = "";
     this.listTitleElement.nativeElement.focus();
-    this.snackBarService.openErrorSnackBar("No list title entered", "X");
   }
 
   showAddCard(index) {
@@ -293,9 +295,11 @@ export class BoardComponent {
       });
       this.addActivity(this.currentUser.id, this.currentUser.fullName, "added card", this.routesService.getCardRouteIndices(this.board.id, index, this.board.lists[index]['cards'].length - 1), this.cardTitle[index].trim(), `to list ${this.board.lists[index].title}`);
     }
+    else{
+      this.snackBarService.openErrorSnackBar("No card title entered", "X");
+    }
     this.cardTitle[index] = "";
     this.cardTitleElements['_results'][index].nativeElement.focus();
-    this.snackBarService.openErrorSnackBar("No card title entered", "X");
   }
 
   saveBoardDescription() {
