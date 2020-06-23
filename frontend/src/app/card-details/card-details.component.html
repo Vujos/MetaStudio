@@ -1,6 +1,6 @@
 <div class="correct-dialog-margins">
   <div class="dialog-padding">
-    <button mat-icon-button class="close" mat-dialog-close [autofocus]="false">
+    <button mat-icon-button class="close close-correction" mat-dialog-close [autofocus]="false">
       <mat-icon>close</mat-icon>
     </button>
     <div mat-dialog-title>
@@ -108,7 +108,7 @@
           </mat-menu>
           &nbsp;
           <button class="white background-color-default" mat-button [matMenuTriggerFor]="labelsMenu"
-            #labelsTrigger="matMenuTrigger">Add Labels</button>
+            #labelsTrigger="matMenuTrigger">Add labels</button>
           <mat-menu #labelsMenu="matMenu">
             <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
               <mat-form-field>
@@ -151,7 +151,7 @@
         <mat-tab label="Checklists">
           <br>
           <button class="white background-color-default" mat-button [matMenuTriggerFor]="checklistMenu"
-            #checklistTrigger="matMenuTrigger" (menuOpened)="checklistInput.focus()">Add Checklists</button>
+            #checklistTrigger="matMenuTrigger" (menuOpened)="checklistInput.focus()">Add checklists</button>
           <mat-menu #checklistMenu="matMenu" (closed)="checklistTitle = ''">
             <div class="menu-item-padding" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
               <mat-form-field>

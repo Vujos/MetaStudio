@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ThemePalette } from '@angular/material/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -29,7 +29,8 @@ import { WebSocketService } from '../web-socket/web-socket.service';
 @Component({
   selector: 'app-card-details',
   templateUrl: './card-details.component.html',
-  styleUrls: ['./card-details.component.scss']
+  styleUrls: ['./card-details.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class CardDetailsComponent implements OnInit {
 

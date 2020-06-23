@@ -536,8 +536,10 @@ export class BoardComponent {
       })
     })
     this.teamService.leaveBoard(this.board.id, this.board.teams[index].id).subscribe();
+    let teamId = this.board.teams[index].id;
+    let teamName = this.board.teams[index].name;
     this.board.teams.splice(index, 1);
-    this.addActivity(this.currentUser.id, this.currentUser.fullName, "deleted team", this.routesService.getTeamRoute(this.board.teams[index].id), this.board.teams[index].name, "from board");
+    this.addActivity(this.currentUser.id, this.currentUser.fullName, "deleted team", this.routesService.getTeamRoute(teamId), teamName, "from board");
     this.snackBarService.openSuccessSnackBar("Successfully deleted", "X");
 
   }

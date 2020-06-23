@@ -135,9 +135,9 @@
                 <h3 class="gray">No users</h3>
               </div>
               <mat-divider *ngIf="board?.users.length>1"></mat-divider>
-              <br>
               <div *ngFor="let user of board?.users; index as i" class="menu-item-padding">
                 <div *ngIf="currentUser?.id != user.id">
+                  <br>
                   <div class="text-align-right">
                     <div class="float-left">
                       <div class="profile-picture-card-members">

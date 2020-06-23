@@ -1,3 +1,10 @@
+.mat-tab-header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1000 !important;
+    background-color: white !important;
+}
+
 .width-100{
     width: 100%;
 }
@@ -43,6 +50,9 @@
 
 .close{
     float: right;
+}
+
+.close-correction {
     top:-24px;
     right:-24px;
 }
