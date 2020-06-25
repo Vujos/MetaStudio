@@ -22,7 +22,7 @@ export class AuthInterceptor implements HttpInterceptor {
                     error => {
                         if(error.status == 403){
                             this.authService.logout();
-                            this.router.navigate(['/login']);
+                            //this.router.navigate(['/login']);
                         }
                     }
                 )
@@ -33,7 +33,7 @@ export class AuthInterceptor implements HttpInterceptor {
                 error => {
                     if(error.status == 403){
                         this.authService.logout();
-                        this.router.navigate(['/login']);
+                        //this.router.navigate(['/login']);
                     }
                 }
             )

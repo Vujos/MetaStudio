@@ -28,7 +28,7 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit() {
     if (!this.authService.isLoggedIn()) {
-      this.router.navigate(['/']);
+      this.router.navigate(['/home']);
       return
     }
     this.form = this.fb.group({
@@ -96,6 +96,10 @@ export class ProfileComponent implements OnInit {
         return
       }
     });
+  }
+
+  logout() {
+    this.authService.logout();
   }
 
 }

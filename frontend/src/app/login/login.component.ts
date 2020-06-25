@@ -29,7 +29,7 @@ export class LoginComponent implements OnInit {
     if (this.authService.getCurrentRole() == "admin") {
       this.router.navigate(['/admin']);
     } else {
-      this.router.navigate(['/']);
+      this.router.navigate(['/home']);
     }
   }
 
@@ -47,7 +47,7 @@ export class LoginComponent implements OnInit {
           if (this.authService.getCurrentRole() == "admin") {
             this.router.navigate(['/admin']);
           } else {
-            this.router.navigate(['/']);
+            this.router.navigate(['/home']);
           }
         } else {
           this.message = "Wrong email and/or password";

@@ -12,7 +12,8 @@ import { RoleGuard } from './auth/role.guard';
 
 
 const routes: Routes = [
-  { path: '', component: BoardsComponent, canActivate: [RoleGuard], data: { expectedRoles: ['user'] } },
+  { path: '', component: LoginComponent },
+  { path: 'home', component: BoardsComponent, canActivate: [RoleGuard], data: { expectedRoles: ['user'] } },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'profile', component: ProfileComponent, canActivate: [RoleGuard], data: { expectedRoles: ['user'] } },
@@ -23,7 +24,7 @@ const routes: Routes = [
   { path: 'profile/:idUser', component: ProfileDetailsComponent, canActivate: [RoleGuard], data: { expectedRoles: ['user'] } },
   { path: 'team/:id', component: TeamComponent, canActivate: [RoleGuard], data: { expectedRoles: ['user'] } },
   { path: 'admin', component: AdminComponent, canActivate: [RoleGuard], data: { expectedRoles: ['admin'] } },
-  { path: '**', redirectTo: '', pathMatch: 'full' }
+  { path: '**', redirectTo: 'home', pathMatch: 'full' }
 ];
 
 @NgModule({

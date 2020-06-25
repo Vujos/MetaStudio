@@ -189,7 +189,7 @@ export class BoardsComponent implements OnInit {
       this.loading = false;
       this.boards = data;
     }, error => {
-      this.router.navigate(['/']);
+      this.router.navigate(['/home']);
     })
   }
 
@@ -204,13 +204,13 @@ export class BoardsComponent implements OnInit {
         this.showTeams = false;
       }
     }, error => {
-      this.router.navigate(['/']);
+      this.router.navigate(['/home']);
     })
   }
 
   logout() {
     this.authService.logout();
-    this.router.navigate(['/login']);
+    //this.router.navigate(['/login']);
   }
 
   dropBoard(event: CdkDragDrop<string[]>) {

@@ -58,7 +58,7 @@ export class ProfileDetailsComponent implements OnInit {
 
   ngOnInit() {
     if (!this.authService.isLoggedIn()) {
-      this.router.navigate(['/']);
+      this.router.navigate(['/home']);
       return
     }
 
@@ -122,7 +122,7 @@ export class ProfileDetailsComponent implements OnInit {
       this.getSkillGenerals();
 
     }, error => {
-      this.router.navigate(['/']);
+      this.router.navigate(['/home']);
     })
   }
 

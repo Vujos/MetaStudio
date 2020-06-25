@@ -67,7 +67,7 @@ export class TeamComponent implements OnInit {
       this.teamBackground = this.team.background;
       this.lightBackground = this.colorsService.checkBackground(this.teamBackground);
     }, error => {
-      this.router.navigate(['/']);
+      this.router.navigate(['/home']);
     });
 
     this.wc = this.webSocketService.getClient();
@@ -76,7 +76,7 @@ export class TeamComponent implements OnInit {
         if (JSON.parse(msg.body).statusCodeValue == 204 && this.team.members[0].id != this.currentUser.id) {
           const dialogRef = this.dialogService.openDialog(DialogOkComponent, "Content Deleted", "The owner has deleted the team");
           dialogRef.afterClosed().subscribe(result => {
-            this.router.navigate(['/']);
+            this.router.navigate(['/home']);
           });
         }
         else {
@@ -89,7 +89,7 @@ export class TeamComponent implements OnInit {
             this.teamBackground = this.team.background;
             this.lightBackground = this.colorsService.checkBackground(this.teamBackground);
           }, error => {
-            this.router.navigate(['/']);
+            this.router.navigate(['/home']);
           })
         }
       })
@@ -272,7 +272,7 @@ export class TeamComponent implements OnInit {
   deleteTeam() {
     this.team.deleted = true;
     this.teamService.update(this.team.id, this.team).subscribe();
-    this.router.navigate(['/']);
+    this.router.navigate(['/home']);
   }
 
   deleteTeamDialog() {
@@ -293,7 +293,7 @@ export class TeamComponent implements OnInit {
       this.team.members.splice(index, 1);
       this.webSocketService.updateTeam(this.team, this.wc);
       this.wc.disconnect();
-      this.router.navigate(['/']);
+      this.router.navigate(['/home']);
     });
   }
 
@@ -309,7 +309,7 @@ export class TeamComponent implements OnInit {
 
   logout() {
     this.authService.logout();
-    this.router.navigate(['/login']);
+    //this.router.navigate(['/login']);
   }
 
   dropBoard(event: CdkDragDrop<string[]>) {

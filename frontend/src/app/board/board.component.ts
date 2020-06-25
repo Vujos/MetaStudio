@@ -146,7 +146,7 @@ export class BoardComponent {
         this.openCardDetailsDialog(listIndex, cardIndex, tabIndex);
       }
     }, error => {
-      this.router.navigate(['/'])
+      this.router.navigate(['/home'])
       return;
     });
 
@@ -161,7 +161,7 @@ export class BoardComponent {
         if (JSON.parse(msg.body).statusCodeValue == 204 && this.board.users[0].id != this.currentUser.id) {
           const dialogRef = this.dialogService.openDialog(DialogOkComponent, "Content Deleted", "The owner has deleted the board");
           dialogRef.afterClosed().subscribe(result => {
-            this.router.navigate(['/']);
+            this.router.navigate(['/home']);
           });
         }
         else {
@@ -203,7 +203,7 @@ export class BoardComponent {
               this.allUserBoards = this.currentUser.boards.concat(...this.currentUser.teams.map(team => team.boards));
             });
           }, error => {
-            this.router.navigate(['/']);
+            this.router.navigate(['/home']);
           })
         }
       })
@@ -375,7 +375,7 @@ export class BoardComponent {
   deleteBoard() {
     this.board.deleted = true;
     this.addActivityWebSocketFromServer(this.currentUser.id, this.currentUser.fullName, "deleted board");
-    //this.router.navigate(['/']);
+    //this.router.navigate(['/home']);
   }
 
   deleteBoardDialog() {
@@ -394,7 +394,7 @@ export class BoardComponent {
       this.board.users.splice(index, 1);
       this.addActivity(this.currentUser.id, this.currentUser.fullName, "left board");
       this.wc.disconnect();
-      this.router.navigate(['/']);
+      this.router.navigate(['/home']);
     });
   }
 
@@ -973,6 +973,6 @@ export class BoardComponent {
 
   logout() {
     this.authService.logout();
-    this.router.navigate(['/login']);
+    //this.router.navigate(['/login']);
   }
 }

@@ -41,10 +41,12 @@
                     <mat-error>{{formError.mapErrors(form.get('repeatNewPassword'), 'Repeat new password')}}</mat-error>
                 </mat-form-field>
                 <p class="message">{{message}}</p>
-                <!-- <button class="register-button" mat-raised-button [routerLink]="['/']">BACK</button> -->
-                &nbsp;
-                <button [disabled]="loading ? true : false" class="register-button" mat-raised-button
+                <!-- <button class="register-button" mat-raised-button [routerLink]="['/home']">BACK</button> -->
+                
+                <button [disabled]="loading ? true : false" class="register-button transform-scale" mat-raised-button
                     (click)="onSave()">Save</button>
+                <br><br>
+                <button class="transform-scale" mat-raised-button color="warn" (click)="logout()">Logout</button>
             </div>
         </ng-template>
     </div>

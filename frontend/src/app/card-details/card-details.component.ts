@@ -482,7 +482,7 @@ export class CardDetailsComponent implements OnInit {
         this.data.board.childBoards.push(new ChildBoard(null, newBoard.id, newBoard.title, new Date(), false));
         this.webSocketService.updateBoard(this.data.board, this.wc);
         this.dialogRef.close();
-        this.router.navigate(['/']);
+        this.router.navigate(['/home']);
       });
     })
   }

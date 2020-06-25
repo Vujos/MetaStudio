@@ -1,7 +1,7 @@
 <div class="project-manager" [ngStyle]="{'background-color':boardBackground}">
   <div class="project-manager-menu">
     <div class="project-manager-menu-padding">
-      <button mat-icon-button class="home transform-scale margin-top-10" [routerLink]="['/']" matTooltip="Home">
+      <button mat-icon-button class="home transform-scale margin-top-10" [routerLink]="['/home']" matTooltip="Home">
         <mat-icon>home</mat-icon>
       </button>
       <span *ngIf="!loading" class="board-title margin-top-10"><b>{{board?.title}}</b></span>
@@ -513,7 +513,7 @@
                 <input matInput [(ngModel)]="cardTitle[i]" #cardTitleInput (keyup.enter)="addCard(i)">
               </mat-form-field>
               &nbsp;
-              <button mat-button (click)="addCard(i)" class="black background-ebebeb padding-0 transform-scale">
+              <button mat-button (click)="addCard(i)" class="black background-ebebeb transform-scale">
                 Add card
               </button>
             </div>

@@ -30,7 +30,7 @@ export class RegisterComponent implements OnInit {
       password: ['', { validators: [Validators.required] }]
     });
     if (this.authService.isLoggedIn()) {
-      this.router.navigate(['/']);
+      this.router.navigate(['/home']);
       return
     }
   }
